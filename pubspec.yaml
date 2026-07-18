@@ -1,0 +1,66 @@
+name: attendee_app
+description: WowYou Attendee Experience
+publish_to: "none"
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  # Networking
+  http: ^1.6.0
+
+  # State Management
+  provider: ^6.1.5+1
+
+  # Local Storage
+  shared_preferences: ^2.5.3
+
+  # QR Event Pass
+  qr_flutter: ^4.1.0
+
+  # Keep QR Screen Awake
+  wakelock_plus: ^1.2.8
+
+  # Date Formatting
+  intl: ^0.20.2
+
+  # SVG Logos & Icons
+  flutter_svg: ^2.2.0
+
+  # Google Fonts
+  google_fonts: ^6.3.1
+
+  # Cached Images
+  cached_network_image: ^3.4.1
+
+  # External Links
+  url_launcher: ^6.3.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/icons/
+
+  # Example
+  #
+  # fonts:
+  #   - family: Inter
+  #     fonts:
+  #       - asset: assets/fonts/Inter-Regular.ttf
+  #       - asset: assets/fonts/Inter-Bold.ttf
+  #         weight: 700

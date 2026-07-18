@@ -1,20 +1,21 @@
-name: Build Flutter APK
+name: Build Android APK
 
 on:
   push:
     branches:
       - main
-      - master
-      - develop
 
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
-  build-apk:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Setup Java
@@ -26,16 +27,20 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: stable
+          channel: stable
           cache: true
 
-      - name: Install dependencies
+      - name: Install Packages
         run: flutter pub get
 
-      - name: Verify Flutter
-        run: flutter doctor -v
+      - name: Analyze
+        run: flutter analyze
 
-      - name: Build APK
+      - name: Run Tests
+        run: flutter test
+        continue-on-error: true
+
+      - name: Build Release APK
         run: flutter build apk --release
 
       - name: Upload APK

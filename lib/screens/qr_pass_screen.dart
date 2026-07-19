@@ -1,11 +1,17 @@
-import "dart:async";
-
 import "package:flutter/material.dart";
-import "package:qr_flutter/qr_flutter.dart";
-import "package:wakelock_plus/wakelock_plus.dart";
+
+import "../mixins/refresh_timer_mixin.dart";
+import "../mixins/wakelock_mixin.dart";
 
 import "../models/purchased_ticket.dart";
 import "../services/pass_service.dart";
+
+import "../widgets/pass/attendee_card.dart";
+import "../widgets/pass/countdown_card.dart";
+import "../widgets/pass/event_card.dart";
+import "../widgets/pass/qr_code_card.dart";
+import "../widgets/pass/refresh_button.dart";
+import "../widgets/pass/status_badge.dart";
 
 class QrPassScreen extends StatefulWidget {
   final PurchasedTicket ticket;
@@ -21,90 +27,104 @@ class QrPassScreen extends StatefulWidget {
 }
 
 class _QrPassScreenState
-    extends State<QrPassScreen> {
+    extends State<QrPassScreen>
+    with
+        RefreshTimerMixin<QrPassScreen>,
+        WakelockMixin {
   final PassService _passService =
       PassService();
 
-  Timer? _countdownTimer;
-  Timer? _refreshTimer;
+  bool _loading = true;
 
-  int secondsRemaining = 60;
+  String _qrToken = "";
 
-  bool loading = true;
+  PurchasedTicket get ticket =>
+      widget.ticket;
 
-  String qrToken = "";
+  @override
+  Duration get refreshDuration =>
+      const Duration(seconds: 60);
+
+  @override
+  Future<void> onRefresh() async {
+    await _loadSecurePass();
+  }
 
   @override
   void initState() {
     super.initState();
 
-    WakelockPlus.enable();
-
-    _loadSecurePass();
-
-    _countdownTimer = Timer.periodic(
-      const Duration(
-        seconds: 1,
-      ),
-      (_) {
-        if (!mounted) return;
-
-        if (secondsRemaining > 0) {
-          setState(() {
-            secondsRemaining--;
-          });
-        }
-      },
-    );
-
-    _refreshTimer = Timer.periodic(
-      const Duration(
-        seconds: 60,
-      ),
-      (_) {
-        _loadSecurePass();
-      },
-    );
+    _initialize();
   }
 
-  Future<void> _loadSecurePass() async {
-  if (loading) return;
+  Future<void> _initialize() async {
+  await enableWakeLock();
 
-  setState(() {
-    loading = true;
-  });
+  await _loadSecurePass();
+
+  startRefreshTimer();
+}
+
+Future<void> _loadSecurePass() async {
+  if (mounted) {
+    setState(() {
+      _loading = true;
+    });
+  }
 
   try {
-    final token =
-        await _passService
-            .generateSecurePass(
-      widget.ticket.id,
+    final token = await _passService.securePass(
+      ticket.id,
     );
 
     if (!mounted) return;
 
     setState(() {
-      qrToken = token;
-      secondsRemaining = 60;
-      loading = false;
+      _qrToken = token;
+      secondsRemaining =
+          refreshDuration.inSeconds;
+      _loading = false;
     });
-  } catch (_) {
+  } catch (e) {
     if (!mounted) return;
 
     setState(() {
-      loading = false;
+      _loading = false;
     });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          e.toString(),
+        ),
+      ),
+    );
   }
 }
 
-  @override
-  void dispose() {
-    _countdownTimer?.cancel();
-    _refreshTimer?.cancel();
-
-    WakelockPlus.disable();
-
-    super.dispose();
+  Widget _buildFooter() {
+    return const Column(
+      children: [
+        Text(
+          "Present this QR code only to an official WowYou event scanner.\nYour secure QR refreshes automatically every 60 seconds.",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.white54,
+            height: 1.5,
+          ),
+        ),
+        SizedBox(height: 40),
+        Text(
+          "Powered by WowYou Event Technology",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.white24,
+            fontSize: 12,
+            letterSpacing: 1,
+          ),
+        ),
+      ],
+    );
   }
 
   @override
@@ -115,9 +135,9 @@ class _QrPassScreenState
       backgroundColor: Colors.black,
 
       appBar: AppBar(
-        elevation: 0,
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
+        elevation: 0,
         title: const Text(
           "Secure Event Pass",
         ),
@@ -125,369 +145,81 @@ class _QrPassScreenState
 
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(
+          padding:
+              const EdgeInsets.all(
             24,
           ),
           child: Column(
             children: [
-              const SizedBox(
-                height: 10,
-              ),
-
               const Text(
                 "EVENT PASS",
                 style: TextStyle(
                   color: Color(
                     0xFFD4AF37,
                   ),
+                  fontWeight:
+                      FontWeight.bold,
                   letterSpacing: 3,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
                 ),
               ),
-
-              const SizedBox(
-                height: 14,
-              ),
-
-              Text(
-                widget.ticket.attendeeName,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-
-              if (widget
-                          .ticket
-                          .profession !=
-                      null ||
-                  widget.ticket.company !=
-                      null)
-                Padding(
-                  padding:
-                      const EdgeInsets.only(
-                    top: 6,
-                  ),
-                  child: Text(
-                    [
-                      widget.ticket
-                          .profession,
-                      widget.ticket
-                          .company,
-                    ]
-                        .whereType<String>()
-                        .join(" • "),
-                    style:
-                        const TextStyle(
-                      color:
-                          Colors.white70,
-                    ),
-                  ),
-                ),
 
               const SizedBox(
                 height: 24,
               ),
 
-              Text(
-                widget.ticket.eventTitle,
-                textAlign:
-                    TextAlign.center,
-                style:
-                    const TextStyle(
-                  color:
-                      Colors.white,
-                  fontSize: 20,
-                  fontWeight:
-                      FontWeight.w700,
-                ),
+              AttendeeCard(
+                ticket: ticket,
               ),
 
               const SizedBox(
-                height: 14,
+                height: 32,
               ),
 
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 8,
-                ),
-                decoration:
-                    BoxDecoration(
-                  color:
-                      const Color(
-                    0xFFD4AF37,
-                  ),
-                  borderRadius:
-                      BorderRadius.circular(
-                    30,
-                  ),
-                ),
-                child: Text(
-                  widget.ticket
-                      .ticketName
-                      .toUpperCase(),
-                  style:
-                      const TextStyle(
-                    color:
-                        Colors.black,
-                    fontWeight:
-                        FontWeight.bold,
-                  ),
-                ),
+              EventCard(
+                ticket: ticket,
               ),
 
               const SizedBox(
                 height: 30,
               ),
 
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(
-                  horizontal: 18,
-                  vertical: 10,
-                ),
-                decoration:
-                    BoxDecoration(
-                  color: widget
-                          .ticket
-                          .checkedIn
-                      ? Colors
-                          .green
-                          .shade700
-                      : const Color(
-                          0xFFD4AF37,
-                        ),
-                  borderRadius:
-                      BorderRadius.circular(
-                    30,
-                  ),
-                ),
-                child: Text(
-                  widget.ticket.checkedIn
-                      ? "CHECKED IN"
-                      : "READY FOR ENTRY",
-                  style:
-                      TextStyle(
-                    color: widget
-                            .ticket
-                            .checkedIn
-                        ? Colors.white
-                        : Colors.black,
-                    fontWeight:
-                        FontWeight.bold,
-                    letterSpacing: 1,
-                  ),
-                ),
+              StatusBadge(
+                checkedIn:
+                    ticket.checkedIn,
               ),
 
               const SizedBox(
                 height: 30,
               ),
 
-              loading
-                  ? const Padding(
-                      padding:
-                          EdgeInsets.all(
-                        40,
-                      ),
-                      child:
-                          CircularProgressIndicator(
-                        color:
-                            Color(
-                          0xFFD4AF37,
-                        ),
-                      ),
-                    )
-                  : Container(
-                      padding:
-                          const EdgeInsets.all(
-                        18,
-                      ),
-                      decoration:
-                          BoxDecoration(
-                        color:
-                            Colors.white,
-                        borderRadius:
-                            BorderRadius.circular(
-                          24,
-                        ),
-                        border:
-                            Border.all(
-                          color:
-                              const Color(
-                            0xFFD4AF37,
-                          ),
-                          width: 3,
-                        ),
-                      ),
-                      child:
-                          QrImageView(
-                        data:
-                            qrToken,
-                        version:
-                            QrVersions
-                                .auto,
-                        size:
-                            280,
-                      ),
-                    ),
-
-              const SizedBox(
-                height: 30,
-              ),
-
-              const Text(
-                "Refreshing Secure Pass",
-                style: TextStyle(
-                  color:
-                      Colors.white70,
-                ),
-              ),
-
-              const SizedBox(
-                height: 8,
-              ),
-
-              Text(
-                "${secondsRemaining}s",
-                style:
-                    const TextStyle(
-                  color:
-                      Color(
-                    0xFFD4AF37,
-                  ),
-                  fontSize: 34,
-                  fontWeight:
-                      FontWeight.bold,
-                ),
-              ),
-
-              const SizedBox(
-                height: 18,
-              ),
-
-              Row(
-                mainAxisAlignment:
-                    MainAxisAlignment
-                        .center,
-                children: [
-                  const Icon(
-                    Icons
-                        .location_on_outlined,
-                    color:
-                        Colors.white70,
-                    size: 18,
-                  ),
-
-                  const SizedBox(
-                    width: 6,
-                  ),
-
-                  Text(
-                    widget.ticket.venue,
-                    style:
-                        const TextStyle(
-                      color:
-                          Colors.white70,
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(
-                height: 8,
-              ),
-
-              Text(
-                "${widget.ticket.startDate.day}/${widget.ticket.startDate.month}/${widget.ticket.startDate.year}",
-                style:
-                    const TextStyle(
-                  color:
-                      Colors.white54,
-                ),
+              QrCodeCard(
+                loading: _loading,
+                qrToken: _qrToken,
               ),
 
               const SizedBox(
                 height: 30,
               ),
 
-              SizedBox(
-                width:
-                    double.infinity,
-                child:
-                    OutlinedButton.icon(
-                  onPressed: loading
-                      ? null
-                      : _loadSecurePass,
-                  style:
-                      OutlinedButton.styleFrom(
-                    foregroundColor:
-                        const Color(
-                      0xFFD4AF37,
-                    ),
-                    side:
-                        const BorderSide(
-                      color:
-                          Color(
-                        0xFFD4AF37,
-                      ),
-                    ),
-                    padding:
-                        const EdgeInsets.symmetric(
-                      vertical: 16,
-                    ),
-                    shape:
-                        RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(
-                        16,
-                      ),
-                    ),
-                  ),
-                  icon: const Icon(
-                    Icons.refresh,
-                  ),
-                  label: const Text(
-                    "Refresh Pass",
-                  ),
-                ),
-              ),
+              CountdownCard(
+  secondsRemaining: secondsRemaining,
+),
 
               const SizedBox(
                 height: 30,
               ),
 
-              const Text(
-                "Present this QR code only to an official WowYou event scanner.\nYour secure pass refreshes every 60 seconds.",
-                textAlign:
-                    TextAlign.center,
-                style: TextStyle(
-                  color:
-                      Colors.white54,
-                  height: 1.5,
-                ),
+              RefreshButton(
+                loading: _loading,
+                onPressed:
+                    _loadSecurePass,
               ),
 
               const SizedBox(
-                height: 40,
+                height: 32,
               ),
 
-              const Text(
-                "Powered by WowYou Event Technology",
-                textAlign:
-                    TextAlign.center,
-                style: TextStyle(
-                  color:
-                      Colors.white24,
-                  fontSize: 12,
-                  letterSpacing: 1,
-                ),
-              ),
+              _buildFooter(),
             ],
           ),
         ),

@@ -254,17 +254,12 @@ class _RegisterScreenState
                           const EdgeInsets.all(
                         14,
                       ),
-                      decoration:
-                          BoxDecoration(
-                        color: Colors.red
-                            .withOpacity(
-                          .08,
-                        ),
-                        borderRadius:
-                            BorderRadius.circular(
-                          14,
-                        ),
-                      ),
+                      decoration: BoxDecoration(
+  color: Colors.red.withValues(alpha: 0.08),
+  borderRadius: BorderRadius.circular(
+    14,
+  ),
+),
                       child: Text(
                         error!,
                         style:

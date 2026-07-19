@@ -19,7 +19,7 @@ class EventBanner extends StatelessWidget {
           height: 320,
           width: double.infinity,
           child: Image.network(
-            ticket.coverImage,
+  ticket.coverImage ?? "",
             fit: BoxFit.cover,
             errorBuilder: (
               context,
@@ -27,9 +27,7 @@ class EventBanner extends StatelessWidget {
               stackTrace,
             ) {
               return Container(
-                color: const Color(
-                  0xFF181818,
-                ),
+                color: const Color(0xFF181818),
                 child: const Center(
                   child: Icon(
                     Icons.image,
@@ -58,32 +56,21 @@ class EventBanner extends StatelessWidget {
 
         SafeArea(
           child: Padding(
-            padding:
-                const EdgeInsets.all(
-              24,
-            ),
+            padding: const EdgeInsets.all(24),
             child: Row(
               children: [
                 Container(
-                  decoration:
-                      BoxDecoration(
-                    color:
-                        Colors.black45,
-                    borderRadius:
-                        BorderRadius.circular(
-                      16,
-                    ),
+                  decoration: BoxDecoration(
+                    color: Colors.black45,
+                    borderRadius: BorderRadius.circular(16),
                   ),
                   child: IconButton(
                     onPressed: () {
-                      Navigator.pop(
-                        context,
-                      );
+                      Navigator.pop(context);
                     },
                     icon: const Icon(
                       Icons.arrow_back,
-                      color:
-                          Colors.white,
+                      color: Colors.white,
                     ),
                   ),
                 ),
@@ -97,116 +84,62 @@ class EventBanner extends StatelessWidget {
           right: 24,
           bottom: 24,
           child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment
-                    .start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 8,
-                ),
-                decoration:
-                    BoxDecoration(
-                  color:
-                      const Color(
-                    0xFFD4AF37,
-                  ),
-                  borderRadius:
-                      BorderRadius.circular(
-                    40,
-                  ),
-                ),
-                child: Text(
-                  ticket.ticketName.toUpperCase(),
-                  style:
-                      const TextStyle(
-                    color:
-                        Colors.black,
-                    fontWeight:
-                        FontWeight.bold,
-                  ),
-                ),
-              ),
-
-              const SizedBox(
-                height: 18,
-              ),
-
               Text(
                 ticket.eventTitle,
-                style:
-                    const TextStyle(
-                  color:
-                      Colors.white,
+                style: const TextStyle(
+                  color: Colors.white,
                   fontSize: 30,
-                  fontWeight:
-                      FontWeight.w900,
+                  fontWeight: FontWeight.w900,
                 ),
               ),
 
-              const SizedBox(
-                height: 16,
-              ),
+              const SizedBox(height: 16),
 
               Row(
                 children: [
                   const Icon(
                     Icons.location_on,
-                    color:
-                        Color(
-                      0xFFD4AF37,
-                    ),
+                    color: Color(0xFFD4AF37),
                     size: 20,
                   ),
 
-                  const SizedBox(
-                    width: 8,
-                  ),
+                  const SizedBox(width: 8),
 
                   Expanded(
                     child: Text(
                       ticket.venue,
-                      style:
-                          const TextStyle(
-                        color:
-                            Colors.white70,
+                      style: const TextStyle(
+                        color: Colors.white70,
                       ),
                     ),
                   ),
                 ],
               ),
 
-              const SizedBox(
-                height: 8,
-              ),
+              const SizedBox(height: 8),
 
               Row(
                 children: [
                   const Icon(
                     Icons.calendar_today,
-                    color:
-                        Color(
-                      0xFFD4AF37,
-                    ),
+                    color: Color(0xFFD4AF37),
                     size: 20,
                   ),
 
-                  const SizedBox(
-                    width: 8,
-                  ),
+                  const SizedBox(width: 8),
 
-                  Text(
-                    DateFormat(
-                      "EEE, d MMM yyyy • h:mm a",
-                    ).format(
-                      ticket.startDate,
-                    ),
-                    style:
-                        const TextStyle(
-                      color:
-                          Colors.white70,
+                  Expanded(
+                    child: Text(
+                      DateFormat(
+                        "EEE, d MMM yyyy • h:mm a",
+                      ).format(
+                        ticket.startDate,
+                      ),
+                      style: const TextStyle(
+                        color: Colors.white70,
+                      ),
                     ),
                   ),
                 ],

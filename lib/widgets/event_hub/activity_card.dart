@@ -26,7 +26,7 @@ class ActivityCard extends StatelessWidget {
             width: 46,
             height: 46,
             decoration: BoxDecoration(
-              color: color.withOpacity(.15),
+              color: color.withValues(alpha: .15),
               borderRadius:
                   BorderRadius.circular(
                 14,

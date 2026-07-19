@@ -4,7 +4,7 @@ import "../models/purchased_ticket.dart";
 import "../services/purchase_service.dart";
 
 import "home_screen.dart";
-import "event_pass_screen.dart";
+import 'eventhubscreen.dart';
 
 import "../widgets/my_events/my_event_card.dart";
 import "../widgets/my_events/empty_events.dart";
@@ -153,7 +153,7 @@ class _MyEventsScreenState
                                 MaterialPageRoute(
                                   builder:
                                       (_) =>
-                                          EventPassScreen(
+                                          EventHubScreen(
                                     ticket:
                                         ticket,
                                   ),
@@ -203,7 +203,7 @@ class _MyEventsScreenState
                                   MaterialPageRoute(
                                     builder:
                                         (_) =>
-                                            EventPassScreen(
+                                            EventHubScreen(
                                       ticket:
                                           ticket,
                                     ),

@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 
 import "../../models/purchased_ticket.dart";
+import "../../screens/networking/networking_screen.dart";
 
 class NetworkingCard extends StatelessWidget {
   final PurchasedTicket ticket;
@@ -14,128 +15,134 @@ class NetworkingCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(22),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: const Color(0xFF181818),
         borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: const Color(0xFFD4AF37).withValues(alpha: 0.15),
+        ),
       ),
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          /// Header
           Row(
-            children: const [
-              Icon(
-                Icons.groups_rounded,
-                color: Color(0xFFD4AF37),
-                size: 28,
+            children: [
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFD4AF37),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Icon(
+                  Icons.auto_awesome,
+                  color: Colors.black,
+                  size: 28,
+                ),
               ),
 
-              SizedBox(width: 12),
+              const SizedBox(width: 16),
 
-              Expanded(
-                child: Text(
-                  "AI Networking",
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight:
-                        FontWeight.bold,
-                  ),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "AI Networking",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight:
+                            FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      "Meet the right people at this event",
+                      style: TextStyle(
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
 
           const Text(
-            "Our AI recommends attendees you should meet based on your profession, industry, skills and networking goals.",
+            "Our AI analyzes attendee profiles and recommends the most valuable people for you to connect with based on your profession, industry, interests and networking goals.",
             style: TextStyle(
-              color: Colors.grey,
-              height: 1.6,
+              color: Colors.white70,
+              height: 1.7,
             ),
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 28),
 
+          /// Features
           Container(
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
               color: const Color(0xFF222222),
-              borderRadius:
-                  BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(18),
             ),
-            child: Row(
+            child: Column(
               children: const [
-                CircleAvatar(
-                  radius: 28,
-                  backgroundColor:
-                      Color(0xFFD4AF37),
-                  child: Icon(
-                    Icons.auto_awesome,
-                    color: Colors.black,
-                  ),
+                _FeatureRow(
+                  icon: Icons.groups_rounded,
+                  title: "Smart AI Matches",
                 ),
-
-                SizedBox(width: 18),
-
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment
-                            .start,
-                    children: [
-                      Text(
-                        "AI Matches",
-                        style: TextStyle(
-                          fontWeight:
-                              FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                      ),
-
-                      SizedBox(height: 4),
-
-                      Text(
-                        "Complete your profile to unlock personalized networking recommendations.",
-                        style: TextStyle(
-                          color:
-                              Colors.grey,
-                        ),
-                      ),
-                    ],
-                  ),
+                SizedBox(height: 14),
+                _FeatureRow(
+                  icon: Icons.psychology_alt,
+                  title: "Personalized Recommendations",
+                ),
+                SizedBox(height: 14),
+                _FeatureRow(
+                  icon: Icons.handshake,
+                  title: "Build Valuable Connections",
                 ),
               ],
             ),
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 28),
 
+          /// CTA
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: () {
-                // TODO:
-                // Navigate to AI Matches
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        NetworkingScreen(
+                      eventId: ticket.eventId,
+                    ),
+                  ),
+                );
               },
               icon: const Icon(
                 Icons.auto_awesome,
               ),
               label: const Text(
-                "View AI Matches",
+                "Explore AI Matches",
               ),
               style:
                   ElevatedButton.styleFrom(
                 backgroundColor:
-                    const Color(
-                  0xFFD4AF37,
-                ),
+                    const Color(0xFFD4AF37),
                 foregroundColor:
                     Colors.black,
+                elevation: 0,
                 padding:
                     const EdgeInsets.symmetric(
-                  vertical: 16,
+                  vertical: 18,
                 ),
                 shape:
                     RoundedRectangleBorder(
@@ -149,6 +156,48 @@ class NetworkingCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _FeatureRow extends StatelessWidget {
+  final IconData icon;
+  final String title;
+
+  const _FeatureRow({
+    required this.icon,
+    required this.title,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(
+            color: const Color(0xFFD4AF37)
+                .withValues(alpha: 0.15),
+            borderRadius:
+                BorderRadius.circular(12),
+          ),
+          child: Icon(
+            icon,
+            color: const Color(0xFFD4AF37),
+            size: 20,
+          ),
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Text(
+            title,
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

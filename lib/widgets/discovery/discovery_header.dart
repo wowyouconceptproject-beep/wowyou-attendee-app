@@ -1,11 +1,8 @@
 import "package:flutter/material.dart";
 
 class DiscoveryHeader extends StatelessWidget {
-  final VoidCallback onSearch;
-
   const DiscoveryHeader({
     super.key,
-    required this.onSearch,
   });
 
   @override
@@ -30,8 +27,7 @@ class DiscoveryHeader extends StatelessWidget {
                 Expanded(
                   child: Column(
                     crossAxisAlignment:
-                        CrossAxisAlignment
-                            .start,
+                        CrossAxisAlignment.start,
                     children: [
                       Text(
                         "Good Morning",
@@ -39,8 +35,7 @@ class DiscoveryHeader extends StatelessWidget {
                             .textTheme
                             .bodyMedium
                             ?.copyWith(
-                              color:
-                                  Colors.grey,
+                              color: Colors.grey,
                             ),
                       ),
 
@@ -55,41 +50,11 @@ class DiscoveryHeader extends StatelessWidget {
                             .headlineLarge
                             ?.copyWith(
                               fontWeight:
-                                  FontWeight
-                                      .w900,
+                                  FontWeight.w900,
                             ),
                       ),
                     ],
                   ),
-                ),
-
-                Container(
-                  width: 52,
-                  height: 52,
-                  decoration:
-                      BoxDecoration(
-                    color:
-                        const Color(
-                      0xFF181818,
-                    ),
-                    borderRadius:
-                        BorderRadius.circular(
-                      16,
-                    ),
-                  ),
-                  child: IconButton(
-                    onPressed:
-                        onSearch,
-                    icon: const Icon(
-                      Icons.search,
-                      color:
-                          Colors.white,
-                    ),
-                  ),
-                ),
-
-                const SizedBox(
-                  width: 12,
                 ),
 
                 Container(
@@ -104,19 +69,14 @@ class DiscoveryHeader extends StatelessWidget {
                     gradient:
                         const LinearGradient(
                       colors: [
-                        Color(
-                          0xFFD4AF37,
-                        ),
-                        Color(
-                          0xFFB8860B,
-                        ),
+                        Color(0xFFD4AF37),
+                        Color(0xFFB8860B),
                       ],
                     ),
                   ),
                   child: const Icon(
                     Icons.person,
-                    color:
-                        Colors.black,
+                    color: Colors.black,
                   ),
                 ),
               ],
@@ -148,8 +108,7 @@ class DiscoveryHeader extends StatelessWidget {
                   .textTheme
                   .bodyLarge
                   ?.copyWith(
-                    color:
-                        Colors.grey,
+                    color: Colors.grey,
                     height: 1.6,
                   ),
             ),

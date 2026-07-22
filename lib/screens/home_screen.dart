@@ -4,10 +4,9 @@ import "../models/event.dart";
 import "../services/event_service.dart";
 
 import "event_details_screen.dart";
-import "search/search_screen.dart";
+
 
 import "../widgets/discovery/discovery_header.dart";
-import "../widgets/discovery/search_prompt_card.dart";
 import "../widgets/discovery/featured_event_card.dart";
 import "../widgets/discovery/trending_section.dart";
 import "../widgets/discovery/category_strip.dart";
@@ -81,39 +80,15 @@ class _HomeScreenState
         onRefresh: loadEvents,
         child: CustomScrollView(
           slivers: [
-            SliverToBoxAdapter(
-              child: DiscoveryHeader(
-                onSearch: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          const SearchScreen(),
-                    ),
-                  );
-                },
-              ),
-            ),
-
-            SliverToBoxAdapter(
-              child: SearchPromptCard(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          const SearchScreen(),
-                    ),
-                  );
-                },
-              ),
-            ),
-
             const SliverToBoxAdapter(
-              child: SizedBox(
-                height: 28,
-              ),
-            ),
+  child: DiscoveryHeader(),
+),
+
+const SliverToBoxAdapter(
+  child: SizedBox(
+    height: 28,
+  ),
+),
 
             if (events.isNotEmpty)
               SliverToBoxAdapter(

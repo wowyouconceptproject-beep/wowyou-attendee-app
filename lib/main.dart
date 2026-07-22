@@ -4,7 +4,7 @@ import "package:provider/provider.dart";
 import "providers/auth_provider.dart";
 
 import "screens/splash_screen.dart";
-import "screens/home_screen.dart";
+import "screens/main_navigation_screen.dart";
 import "screens/login_screen.dart";
 import "screens/register_screen.dart";
 import "screens/attendee_profile_screen.dart";
@@ -214,18 +214,18 @@ class WowYouAttendeeApp
           const SplashScreen(),
 
       routes: {
-        "/home": (_) =>
-            const HomeScreen(),
+  "/home": (_) =>
+      const MainNavigationScreen(),
 
-        "/login": (_) =>
-            const LoginScreen(),
+  "/login": (_) =>
+      const LoginScreen(),
 
-        "/register": (_) =>
-            const RegisterScreen(),
+  "/register": (_) =>
+      const RegisterScreen(),
 
-        "/profile-onboarding": (_) =>
-            const AttendeeProfileScreen(),
-      },
+  "/profile-onboarding": (_) =>
+      const AttendeeProfileScreen(),
+},
     );
   }
 }

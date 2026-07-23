@@ -10,21 +10,30 @@ import "attendee_profile_screen.dart";
 import "main_navigation_screen.dart";
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  const SplashScreen({
+    super.key,
+  });
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  State<SplashScreen> createState() =>
+      _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
+class _SplashScreenState
+    extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
-  final AttendeeProfileService _profileService =
-      AttendeeProfileService();
+  final AttendeeProfileService
+      _profileService =
+          AttendeeProfileService();
 
-  late final AnimationController _controller;
-  late final Animation<double> _fadeAnimation;
+  late final AnimationController
+      _controller;
 
-  String _status = "Preparing your experience...";
+  late final Animation<double>
+      _fadeAnimation;
+
+  String _status =
+      "Preparing your experience...";
 
   @override
   void initState() {
@@ -32,7 +41,9 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(
+        milliseconds: 1200,
+      ),
     )..repeat(reverse: true);
 
     _fadeAnimation = Tween<double>(
@@ -50,32 +61,56 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _bootstrap() async {
-    final auth = context.read<AuthProvider>();
+    final auth =
+        context.read<AuthProvider>();
 
-    setState(() {
-      _status = "Checking your account...";
-    });
+    if (mounted) {
+      setState(() {
+        _status =
+            "Checking your account...";
+      });
+    }
 
     await auth.loadUser();
 
     if (!mounted) return;
 
+    /*
+    |--------------------------------------------------------------------------
+    | Guest User
+    |--------------------------------------------------------------------------
+    */
+
     if (!auth.isAuthenticated) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => const MainNavigationScreen(),
+          builder: (_) =>
+              const MainNavigationScreen(),
         ),
       );
+
       return;
     }
 
-    setState(() {
-      _status = "Loading your profile...";
-    });
+    /*
+    |--------------------------------------------------------------------------
+    | Logged In
+    |--------------------------------------------------------------------------
+    */
+
+    if (mounted) {
+      setState(() {
+        _status =
+            "Loading your profile...";
+      });
+    }
 
     final profile =
-        await _profileService.getMyProfile(auth.token!);
+        await _profileService
+            .getMyProfile(
+      auth.token!,
+    );
 
     if (!mounted) return;
 
@@ -84,7 +119,9 @@ class _SplashScreenState extends State<SplashScreen>
     });
 
     await Future.delayed(
-      const Duration(milliseconds: 500),
+      const Duration(
+        milliseconds: 500,
+      ),
     );
 
     if (!mounted) return;
@@ -92,20 +129,25 @@ class _SplashScreenState extends State<SplashScreen>
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (_) => profile == null
-            ? const AttendeeProfileScreen()
-            : const MainNavigationScreen(),
+        builder: (_) =>
+            profile == null
+                ? const AttendeeProfileScreen()
+                : const MainNavigationScreen(),
       ),
     );
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
     return Scaffold(
-      backgroundColor: const Color(0xFF050505),
+      backgroundColor:
+          const Color(0xFF050505),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(
+          padding:
+              const EdgeInsets.symmetric(
             horizontal: 32,
           ),
           child: Column(
@@ -116,16 +158,22 @@ class _SplashScreenState extends State<SplashScreen>
                 animation: _fadeAnimation,
                 builder: (_, __) {
                   return Opacity(
-                    opacity: _fadeAnimation.value,
+                    opacity:
+                        _fadeAnimation.value,
                     child: Container(
                       width: 130,
                       height: 130,
-                      decoration: BoxDecoration(
+                      decoration:
+                          const BoxDecoration(
                         shape: BoxShape.circle,
-                        gradient: const RadialGradient(
+                        gradient:
+                            RadialGradient(
                           colors: [
-                            Color(0x33D4AF37),
-                            Colors.transparent,
+                            Color(
+                              0x33D4AF37,
+                            ),
+                            Colors
+                                .transparent,
                           ],
                         ),
                       ),
@@ -134,74 +182,108 @@ class _SplashScreenState extends State<SplashScreen>
                 },
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(
+                height: 16,
+              ),
 
               const Text(
                 "WOWYOU",
                 style: TextStyle(
-                  color: Color(0xFFD4AF37),
+                  color: Color(
+                    0xFFD4AF37,
+                  ),
                   fontSize: 42,
-                  fontWeight: FontWeight.w900,
+                  fontWeight:
+                      FontWeight.w900,
                   letterSpacing: 8,
                 ),
               ),
 
-              const SizedBox(height: 8),
+              const SizedBox(
+                height: 8,
+              ),
 
               Text(
                 "EVENT TECHNOLOGY",
                 style: TextStyle(
-                  color: Colors.white.withOpacity(.55),
+                  color: Colors.white
+                      .withValues(
+                    alpha: 0.55,
+                  ),
                   letterSpacing: 5,
                   fontSize: 12,
-                  fontWeight: FontWeight.w600,
+                  fontWeight:
+                      FontWeight.w600,
                 ),
               ),
 
-              const SizedBox(height: 40),
+              const SizedBox(
+                height: 40,
+              ),
 
               const Text(
                 "Where Events Connect\nPeople & Possibilities",
-                textAlign: TextAlign.center,
+                textAlign:
+                    TextAlign.center,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
                   height: 1.35,
-                  fontWeight: FontWeight.bold,
+                  fontWeight:
+                      FontWeight.bold,
                 ),
               ),
 
               const Spacer(),
 
               ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: const LinearProgressIndicator(
+                borderRadius:
+                    BorderRadius.circular(
+                  20,
+                ),
+                child:
+                    const LinearProgressIndicator(
                   minHeight: 4,
-                  backgroundColor: Color(0x22FFFFFF),
+                  backgroundColor:
+                      Color(
+                    0x22FFFFFF,
+                  ),
                   valueColor:
                       AlwaysStoppedAnimation(
-                    Color(0xFFD4AF37),
+                    Color(
+                      0xFFD4AF37,
+                    ),
                   ),
                 ),
               ),
 
-              const SizedBox(height: 18),
+              const SizedBox(
+                height: 18,
+              ),
 
               AnimatedSwitcher(
                 duration:
-                    const Duration(milliseconds: 300),
+                    const Duration(
+                  milliseconds: 300,
+                ),
                 child: Text(
                   _status,
-                  key: ValueKey(_status),
-                  style: const TextStyle(
-                    color: Colors.white70,
+                  key: ValueKey(
+                    _status,
+                  ),
+                  style:
+                      const TextStyle(
+                    color:
+                        Colors.white70,
                     fontSize: 14,
                     letterSpacing: 0.5,
                   ),
                 ),
               ),
 
-              const SizedBox(height: 48),
+              const SizedBox(
+                height: 48,
+              ),
             ],
           ),
         ),

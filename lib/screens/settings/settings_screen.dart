@@ -1,13 +1,19 @@
 import "package:flutter/material.dart";
+import "package:provider/provider.dart";
 
 import "../../models/user_settings.dart";
+import "../../providers/auth_provider.dart";
 import "../../services/settings_service.dart";
 
+import "../../widgets/auth/protected_feature_view.dart";
 import "../../widgets/settings/about_section.dart";
 import "../../widgets/settings/account_section.dart";
 import "../../widgets/settings/notification_section.dart";
 import "../../widgets/settings/profile_header.dart";
 import "../../widgets/settings/security_section.dart";
+
+import "../login_screen.dart";
+import "../register_screen.dart";
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({
@@ -35,14 +41,11 @@ class _SettingsScreenState
   @override
   void initState() {
     super.initState();
+
     _loadSettings();
   }
 
   Future<void> _loadSettings() async {
-    setState(() {
-      _loading = true;
-    });
-
     final settings =
         await _service.getSettings();
 
@@ -100,9 +103,47 @@ class _SettingsScreenState
 
   @override
   Widget build(BuildContext context) {
+    final auth =
+        context.watch<AuthProvider>();
+
+    if (!auth.isAuthenticated) {
+      return ProtectedFeatureView(
+        icon: Icons.person,
+        title: "Welcome to WOWYOU",
+        description:
+            "Create an account to personalize your event experience.",
+        benefits: const [
+          "Manage your profile",
+          "Notification preferences",
+          "Saved events",
+          "Secure account",
+        ],
+        onSignIn: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) =>
+                  const LoginScreen(),
+            ),
+          );
+        },
+        onCreateAccount: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) =>
+                  const RegisterScreen(),
+            ),
+          );
+        },
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Settings"),
+        title: const Text(
+          "Settings",
+        ),
       ),
       body: _loading
           ? const Center(
@@ -119,11 +160,9 @@ class _SettingsScreenState
                       const Text(
                         "Unable to load settings.",
                       ),
-
                       const SizedBox(
                         height: 16,
                       ),
-
                       FilledButton(
                         onPressed:
                             _loadSettings,

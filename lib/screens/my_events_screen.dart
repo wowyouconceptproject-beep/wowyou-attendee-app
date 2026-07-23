@@ -1,36 +1,37 @@
 import "package:flutter/material.dart";
+import "package:provider/provider.dart";
 
 import "../models/purchased_ticket.dart";
+import "../providers/auth_provider.dart";
 import "../services/purchase_service.dart";
 
-import "home_screen.dart";
-import 'eventhubscreen.dart';
-
-import "../widgets/my_events/my_event_card.dart";
+import "../widgets/auth/protected_feature_view.dart";
 import "../widgets/my_events/empty_events.dart";
+import "../widgets/my_events/my_event_card.dart";
 
-class MyEventsScreen
-    extends StatefulWidget {
+import "eventhubscreen.dart";
+import "home_screen.dart";
+import "login_screen.dart";
+import "register_screen.dart";
+
+class MyEventsScreen extends StatefulWidget {
   const MyEventsScreen({
     super.key,
   });
 
   @override
-  State<MyEventsScreen>
-      createState() =>
-          _MyEventsScreenState();
+  State<MyEventsScreen> createState() =>
+      _MyEventsScreenState();
 }
 
 class _MyEventsScreenState
     extends State<MyEventsScreen> {
-  final PurchaseService
-      _purchaseService =
-          PurchaseService();
+  final PurchaseService _purchaseService =
+      PurchaseService();
 
   bool loading = true;
 
-  List<PurchasedTicket>
-      tickets = [];
+  List<PurchasedTicket> tickets = [];
 
   @override
   void initState() {
@@ -39,11 +40,9 @@ class _MyEventsScreenState
     loadEvents();
   }
 
-  Future<void> loadEvents()
-      async {
+  Future<void> loadEvents() async {
     final result =
-        await _purchaseService
-            .getMyTickets();
+        await _purchaseService.getMyTickets();
 
     if (!mounted) return;
 
@@ -53,48 +52,74 @@ class _MyEventsScreenState
     });
   }
 
-  List<PurchasedTicket>
-      get upcoming {
+  List<PurchasedTicket> get upcoming {
     final now = DateTime.now();
 
     return tickets
         .where(
           (ticket) =>
-              ticket.startDate
-                  .isAfter(now),
+              ticket.startDate.isAfter(now),
         )
         .toList();
   }
 
-  List<PurchasedTicket>
-      get past {
+  List<PurchasedTicket> get past {
     final now = DateTime.now();
 
     return tickets
         .where(
           (ticket) =>
-              ticket.startDate
-                  .isBefore(now),
+              ticket.startDate.isBefore(now),
         )
         .toList();
   }
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
+  Widget build(BuildContext context) {
+    final auth =
+        context.watch<AuthProvider>();
+
+    if (!auth.isAuthenticated) {
+      return ProtectedFeatureView(
+        icon: Icons.event,
+        title: "Your Events",
+        description:
+            "Sign in to view your upcoming events, past events and everything you've registered for.",
+        benefits: const [
+          "View upcoming events",
+          "Access your Event Hub",
+          "Review past events",
+          "Stay updated with event activities",
+        ],
+        onSignIn: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) =>
+                  const LoginScreen(),
+            ),
+          );
+        },
+        onCreateAccount: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) =>
+                  const RegisterScreen(),
+            ),
+          );
+        },
+      );
+    }
+
     return Scaffold(
       backgroundColor:
-          const Color(
-        0xFF0B0B0B,
-      ),
-
+          const Color(0xFF0B0B0B),
       appBar: AppBar(
         title: const Text(
           "My Events",
         ),
       ),
-
       body: loading
           ? const Center(
               child:
@@ -113,10 +138,8 @@ class _MyEventsScreenState
                   },
                 )
               : RefreshIndicator(
-                  onRefresh:
-                      loadEvents,
-                  child:
-                      ListView(
+                  onRefresh: loadEvents,
+                  child: ListView(
                     children: [
                       if (upcoming
                           .isNotEmpty) ...[
@@ -132,28 +155,23 @@ class _MyEventsScreenState
                             "Upcoming",
                             style:
                                 TextStyle(
-                              fontSize:
-                                  28,
+                              fontSize: 28,
                               fontWeight:
                                   FontWeight
                                       .bold,
                             ),
                           ),
                         ),
-
                         ...upcoming.map(
                           (ticket) =>
                               MyEventCard(
-                            ticket:
-                                ticket,
-                            onOpen:
-                                () {
+                            ticket: ticket,
+                            onOpen: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder:
-                                      (_) =>
-                                          EventHubScreen(
+                                  builder: (_) =>
+                                      EventHubScreen(
                                     ticket:
                                         ticket,
                                   ),
@@ -163,7 +181,6 @@ class _MyEventsScreenState
                           ),
                         ),
                       ],
-
                       if (past
                           .isNotEmpty) ...[
                         const Padding(
@@ -178,32 +195,27 @@ class _MyEventsScreenState
                             "Past Events",
                             style:
                                 TextStyle(
-                              fontSize:
-                                  28,
+                              fontSize: 28,
                               fontWeight:
                                   FontWeight
                                       .bold,
                             ),
                           ),
                         ),
-
                         ...past.map(
                           (ticket) =>
                               Opacity(
-                            opacity:
-                                .75,
+                            opacity: .75,
                             child:
                                 MyEventCard(
                               ticket:
                                   ticket,
-                              onOpen:
-                                  () {
+                              onOpen: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder:
-                                        (_) =>
-                                            EventHubScreen(
+                                    builder: (_) =>
+                                        EventHubScreen(
                                       ticket:
                                           ticket,
                                     ),
@@ -214,7 +226,6 @@ class _MyEventsScreenState
                           ),
                         ),
                       ],
-
                       const SizedBox(
                         height: 40,
                       ),

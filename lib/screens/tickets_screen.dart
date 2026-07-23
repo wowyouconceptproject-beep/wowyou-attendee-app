@@ -1,27 +1,30 @@
 import "package:flutter/material.dart";
+import "package:provider/provider.dart";
 
 import "../models/event.dart";
+import "../providers/auth_provider.dart";
 import "../services/event_service.dart";
 import "../utils/storage.dart";
-import "event_details_screen.dart";
+import "../widgets/auth/protected_feature_view.dart";
 
-class TicketsScreen
-    extends StatefulWidget {
+import "event_details_screen.dart";
+import "login_screen.dart";
+import "register_screen.dart";
+
+class TicketsScreen extends StatefulWidget {
   const TicketsScreen({
     super.key,
   });
 
   @override
-  State<TicketsScreen>
-      createState() =>
-          _TicketsScreenState();
+  State<TicketsScreen> createState() =>
+      _TicketsScreenState();
 }
 
 class _TicketsScreenState
     extends State<TicketsScreen> {
-  final EventService
-      _eventService =
-          EventService();
+  final EventService _eventService =
+      EventService();
 
   List<Event> events = [];
 
@@ -34,31 +37,77 @@ class _TicketsScreenState
     loadTickets();
   }
 
-  Future<void> loadTickets()
-      async {
-    final token =
-        await Storage.getToken();
+  Future<void> loadTickets() async {
+    final token = await Storage.getToken();
 
     if (token == null) {
+      if (mounted) {
+        setState(() {
+          loading = false;
+        });
+      }
       return;
     }
 
-    final result =
-        await _eventService
-            .getMyRegistrations(
-      token,
-    );
+    try {
+      final result =
+          await _eventService.getMyRegistrations(
+        token,
+      );
 
-    setState(() {
-      events = result;
-      loading = false;
-    });
+      if (!mounted) return;
+
+      setState(() {
+        events = result;
+        loading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() {
+        loading = false;
+      });
+    }
   }
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
+  Widget build(BuildContext context) {
+    final auth =
+        context.watch<AuthProvider>();
+
+    if (!auth.isAuthenticated) {
+      return ProtectedFeatureView(
+        icon: Icons.confirmation_number,
+        title: "Your Tickets",
+        description:
+            "Sign in to access your tickets and event passes.",
+        benefits: const [
+          "View QR event passes",
+          "Transfer tickets",
+          "Purchase history",
+          "Receive event updates",
+        ],
+        onSignIn: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) =>
+                  const LoginScreen(),
+            ),
+          );
+        },
+        onCreateAccount: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) =>
+                  const RegisterScreen(),
+            ),
+          );
+        },
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -73,39 +122,29 @@ class _TicketsScreenState
           : events.isEmpty
               ? const Center(
                   child: Text(
-                    "No registrations yet",
+                    "You haven't acquired any tickets yet.",
                   ),
                 )
               : ListView.builder(
-                  itemCount:
-                      events.length,
+                  itemCount: events.length,
                   itemBuilder:
-                      (
-                    context,
-                    index,
-                  ) {
+                      (context, index) {
                     final event =
-                        events[
-                            index];
+                        events[index];
 
                     return Card(
                       margin:
-                          const EdgeInsets
-                              .all(
+                          const EdgeInsets.all(
                         12,
                       ),
-                      child:
-                          ListTile(
-                        title:
-                            Text(
+                      child: ListTile(
+                        title: Text(
                           event.title,
                         ),
-                        subtitle:
-                            Text(
+                        subtitle: Text(
                           event.venue,
                         ),
-                        trailing:
-                            const Icon(
+                        trailing: const Icon(
                           Icons
                               .confirmation_number,
                         ),
@@ -113,11 +152,9 @@ class _TicketsScreenState
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder:
-                                  (_) =>
-                                      EventDetailsScreen(
-                                event:
-                                    event,
+                              builder: (_) =>
+                                  EventDetailsScreen(
+                                event: event,
                               ),
                             ),
                           );

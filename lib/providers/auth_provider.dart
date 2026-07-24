@@ -1,3 +1,4 @@
+import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 
 import "../models/user.dart";
@@ -51,12 +52,24 @@ class AuthProvider extends ChangeNotifier {
         password: password,
       );
 
+      debugPrint("");
+      debugPrint(
+          "REGISTER RESULT:");
+      debugPrint(result.toString());
+
       if (result["success"] != true) {
+        debugPrint(
+          "REGISTER FAILED: ${result["message"]}",
+        );
         return false;
       }
 
       final token =
           result["token"];
+
+      debugPrint(
+          "TOKEN RECEIVED:");
+      debugPrint(token);
 
       _token = token;
 
@@ -69,13 +82,19 @@ class AuthProvider extends ChangeNotifier {
         token,
       );
 
+      debugPrint(
+          "USER AFTER REGISTER:");
+      debugPrint(_user.toString());
+
       notifyListeners();
 
-      return true;
-    } catch (e) {
+      return _user != null;
+    } catch (e, stack) {
       debugPrint(
-        "REGISTER ERROR: $e",
+        "REGISTER EXCEPTION:",
       );
+      debugPrint(e.toString());
+      debugPrint(stack.toString());
 
       return false;
     } finally {
@@ -98,12 +117,24 @@ class AuthProvider extends ChangeNotifier {
         password: password,
       );
 
+      debugPrint("");
+      debugPrint(
+          "LOGIN RESULT:");
+      debugPrint(result.toString());
+
       if (result["success"] != true) {
+        debugPrint(
+          "LOGIN FAILED: ${result["message"]}",
+        );
         return false;
       }
 
       final token =
           result["token"];
+
+      debugPrint(
+          "TOKEN RECEIVED:");
+      debugPrint(token);
 
       _token = token;
 
@@ -116,13 +147,19 @@ class AuthProvider extends ChangeNotifier {
         token,
       );
 
+      debugPrint(
+          "USER AFTER LOGIN:");
+      debugPrint(_user.toString());
+
       notifyListeners();
 
-      return true;
-    } catch (e) {
+      return _user != null;
+    } catch (e, stack) {
       debugPrint(
-        "LOGIN ERROR: $e",
+        "LOGIN EXCEPTION:",
       );
+      debugPrint(e.toString());
+      debugPrint(stack.toString());
 
       return false;
     } finally {
@@ -136,6 +173,10 @@ class AuthProvider extends ChangeNotifier {
       final savedToken =
           await Storage.getToken();
 
+      debugPrint(
+          "SAVED TOKEN:");
+      debugPrint(savedToken);
+
       if (savedToken == null) {
         return;
       }
@@ -145,6 +186,11 @@ class AuthProvider extends ChangeNotifier {
         savedToken,
       );
 
+      debugPrint(
+          "CURRENT USER:");
+      debugPrint(
+          currentUser.toString());
+
       if (currentUser == null) {
         await logout();
         return;
@@ -152,10 +198,11 @@ class AuthProvider extends ChangeNotifier {
 
       _token = savedToken;
       _user = currentUser;
-    } catch (e) {
+    } catch (e, stack) {
       debugPrint(
-        "LOAD USER ERROR: $e",
-      );
+          "LOAD USER ERROR:");
+      debugPrint(e.toString());
+      debugPrint(stack.toString());
     } finally {
       _initialized = true;
       notifyListeners();

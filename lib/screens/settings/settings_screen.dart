@@ -30,86 +30,360 @@ class _SettingsScreenState
   final SettingsService _service =
       SettingsService();
 
-  bool _loading = true;
-  bool _saving = false;
+  final TextEditingController
+      _bioController =
+      TextEditingController();
 
   UserSettings? _settings;
 
-  final TextEditingController _bioController =
-      TextEditingController();
+  bool _loading = true;
+  bool _saving = false;
+  bool _loggingOut = false;
 
   @override
   void initState() {
     super.initState();
 
-    _loadSettings();
+    /*
+    |--------------------------------------------------------------------------
+    | Load settings after first frame
+    |--------------------------------------------------------------------------
+    */
+
+    WidgetsBinding.instance
+        .addPostFrameCallback(
+      (_) {
+        _loadSettings();
+      },
+    );
   }
 
+  /*
+  |--------------------------------------------------------------------------
+  | Load Settings
+  |--------------------------------------------------------------------------
+  */
+
   Future<void> _loadSettings() async {
-    final settings =
-        await _service.getSettings();
+    if (!mounted) {
+      return;
+    }
 
-    if (!mounted) return;
+    final auth =
+        context.read<AuthProvider>();
 
-    if (settings != null) {
-      _bioController.text =
-          settings.bio ?? "";
+    /*
+    |--------------------------------------------------------------------------
+    | Do not request protected settings for guests
+    |--------------------------------------------------------------------------
+    */
+
+    if (!auth.isAuthenticated) {
+      setState(() {
+        _settings = null;
+        _loading = false;
+      });
+
+      return;
     }
 
     setState(() {
-      _settings = settings;
-      _loading = false;
+      _loading = true;
     });
+
+    try {
+      final settings =
+          await _service.getSettings();
+
+      if (!mounted) {
+        return;
+      }
+
+      if (settings != null) {
+        _bioController.text =
+            settings.bio ?? "";
+      }
+
+      setState(() {
+        _settings = settings;
+        _loading = false;
+      });
+    } catch (error, stackTrace) {
+      debugPrint(
+        "SETTINGS LOAD ERROR: $error",
+      );
+
+      debugPrint(
+        stackTrace.toString(),
+      );
+
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _settings = null;
+        _loading = false;
+      });
+    }
   }
 
+  /*
+  |--------------------------------------------------------------------------
+  | Save Settings
+  |--------------------------------------------------------------------------
+  */
+
   Future<void> _save() async {
-    if (_settings == null) return;
+    if (_settings == null ||
+        _saving) {
+      return;
+    }
 
     setState(() {
       _saving = true;
     });
 
-    final updated =
-        _settings!.copyWith(
-      bio: _bioController.text.trim(),
-    );
+    try {
+      final updated =
+          _settings!.copyWith(
+        bio:
+            _bioController.text.trim(),
+      );
 
-    final success =
-        await _service.updateSettings(
-      settings: updated,
-    );
+      final success =
+          await _service.updateSettings(
+        settings: updated,
+      );
 
-    if (!mounted) return;
-
-    setState(() {
-      _saving = false;
+      if (!mounted) {
+        return;
+      }
 
       if (success) {
-        _settings = updated;
+        setState(() {
+          _settings = updated;
+        });
       }
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+        SnackBar(
+          content: Text(
+            success
+                ? "Settings updated successfully."
+                : "Unable to update settings.",
+          ),
+        ),
+      );
+    } catch (error, stackTrace) {
+      debugPrint(
+        "SETTINGS SAVE ERROR: $error",
+      );
+
+      debugPrint(
+        stackTrace.toString(),
+      );
+
+      if (!mounted) {
+        return;
+      }
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+        const SnackBar(
+          content: Text(
+            "Unable to update settings.",
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _saving = false;
+        });
+      }
+    }
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Logout
+  |--------------------------------------------------------------------------
+  */
+
+  Future<void> _logout() async {
+    if (_loggingOut) {
+      return;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Confirmation
+    |--------------------------------------------------------------------------
+    */
+
+    final confirmed =
+        await showDialog<bool>(
+      context: context,
+      builder: (
+        dialogContext,
+      ) {
+        return AlertDialog(
+          title: const Text(
+            "Log out?",
+          ),
+          content: const Text(
+            "You will need to sign in again to access your account, tickets and personalized features.",
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(
+                  dialogContext,
+                ).pop(false);
+              },
+              child: const Text(
+                "Cancel",
+              ),
+            ),
+            FilledButton(
+              onPressed: () {
+                Navigator.of(
+                  dialogContext,
+                ).pop(true);
+              },
+              child: const Text(
+                "Log Out",
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true ||
+        !mounted) {
+      return;
+    }
+
+    setState(() {
+      _loggingOut = true;
     });
 
-    ScaffoldMessenger.of(context)
-        .showSnackBar(
-      SnackBar(
-        content: Text(
-          success
-              ? "Settings updated successfully."
-              : "Unable to update settings.",
+    try {
+      final auth =
+          context.read<AuthProvider>();
+
+      /*
+      |--------------------------------------------------------------------------
+      | Clear authenticated session
+      |--------------------------------------------------------------------------
+      */
+
+      await auth.logout();
+
+      if (!mounted) {
+        return;
+      }
+
+      /*
+      |--------------------------------------------------------------------------
+      | Remove authenticated navigation history
+      |--------------------------------------------------------------------------
+      |
+      | This prevents the user from pressing back
+      | and returning to authenticated screens.
+      |
+      */
+
+      Navigator.of(context)
+          .pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (_) =>
+              const LoginScreen(),
         ),
+        (route) => false,
+      );
+    } catch (error, stackTrace) {
+      debugPrint(
+        "LOGOUT ERROR: $error",
+      );
+
+      debugPrint(
+        stackTrace.toString(),
+      );
+
+      if (!mounted) {
+        return;
+      }
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+        const SnackBar(
+          content: Text(
+            "Unable to log out. Please try again.",
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _loggingOut = false;
+        });
+      }
+    }
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Authentication Navigation
+  |--------------------------------------------------------------------------
+  */
+
+  void _openLogin() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) =>
+            const LoginScreen(),
       ),
     );
   }
 
+  void _openRegister() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) =>
+            const RegisterScreen(),
+      ),
+    );
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Build
+  |--------------------------------------------------------------------------
+  */
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
     final auth =
         context.watch<AuthProvider>();
 
+    /*
+    |--------------------------------------------------------------------------
+    | Guest View
+    |--------------------------------------------------------------------------
+    */
+
     if (!auth.isAuthenticated) {
       return ProtectedFeatureView(
-        icon: Icons.person,
-        title: "Welcome to WOWYOU",
+        icon:
+            Icons.person_outline,
+        title:
+            "Welcome to WOWYOU",
         description:
             "Create an account to personalize your event experience.",
         benefits: const [
@@ -118,26 +392,18 @@ class _SettingsScreenState
           "Saved events",
           "Secure account",
         ],
-        onSignIn: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) =>
-                  const LoginScreen(),
-            ),
-          );
-        },
-        onCreateAccount: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) =>
-                  const RegisterScreen(),
-            ),
-          );
-        },
+        onSignIn:
+            _openLogin,
+        onCreateAccount:
+            _openRegister,
       );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Authenticated View
+    |--------------------------------------------------------------------------
+    */
 
     return Scaffold(
       appBar: AppBar(
@@ -145,162 +411,301 @@ class _SettingsScreenState
           "Settings",
         ),
       ),
-      body: _loading
-          ? const Center(
-              child:
-                  CircularProgressIndicator(),
-            )
-          : _settings == null
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment:
-                        MainAxisAlignment
-                            .center,
-                    children: [
-                      const Text(
-                        "Unable to load settings.",
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      FilledButton(
-                        onPressed:
-                            _loadSettings,
-                        child: const Text(
-                          "Retry",
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : RefreshIndicator(
-                  onRefresh:
-                      _loadSettings,
-                  child: ListView(
-                    physics:
-                        const AlwaysScrollableScrollPhysics(),
-                    padding:
-                        const EdgeInsets.all(
-                      20,
-                    ),
-                    children: [
-                      ProfileHeader(
-                        settings:
-                            _settings!,
-                      ),
-
-                      const SizedBox(
-                        height: 30,
-                      ),
-
-                      AccountSection(
-                        bioController:
-                            _bioController,
-                      ),
-
-                      const SizedBox(
-                        height: 20,
-                      ),
-
-                      NotificationSection(
-                        push: _settings!
-                            .pushNotifications,
-                        email: _settings!
-                            .emailNotifications,
-                        sms: _settings!
-                            .smsNotifications,
-                        onPushChanged:
-                            (value) {
-                          setState(() {
-                            _settings =
-                                _settings!
-                                    .copyWith(
-                              pushNotifications:
-                                  value,
-                            );
-                          });
-                        },
-                        onEmailChanged:
-                            (value) {
-                          setState(() {
-                            _settings =
-                                _settings!
-                                    .copyWith(
-                              emailNotifications:
-                                  value,
-                            );
-                          });
-                        },
-                        onSmsChanged:
-                            (value) {
-                          setState(() {
-                            _settings =
-                                _settings!
-                                    .copyWith(
-                              smsNotifications:
-                                  value,
-                            );
-                          });
-                        },
-                      ),
-
-                      const SizedBox(
-                        height: 20,
-                      ),
-
-                      const SecuritySection(),
-
-                      const SizedBox(
-                        height: 20,
-                      ),
-
-                      const AboutSection(),
-
-                      const SizedBox(
-                        height: 32,
-                      ),
-
-                      SizedBox(
-                        height: 52,
-                        child:
-                            FilledButton.icon(
-                          onPressed:
-                              _saving
-                                  ? null
-                                  : _save,
-                          icon: _saving
-                              ? const SizedBox(
-                                  width: 18,
-                                  height: 18,
-                                  child:
-                                      CircularProgressIndicator(
-                                    strokeWidth:
-                                        2,
-                                  ),
-                                )
-                              : const Icon(
-                                  Icons.save,
-                                ),
-                          label: Text(
-                            _saving
-                                ? "Saving..."
-                                : "Save Changes",
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(
-                        height: 24,
-                      ),
-                    ],
-                  ),
-                ),
+      body: _buildBody(),
     );
   }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Settings Body
+  |--------------------------------------------------------------------------
+  */
+
+  Widget _buildBody() {
+    /*
+    |--------------------------------------------------------------------------
+    | Loading
+    |--------------------------------------------------------------------------
+    */
+
+    if (_loading) {
+      return const Center(
+        child:
+            CircularProgressIndicator(),
+      );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Failed State
+    |--------------------------------------------------------------------------
+    */
+
+    if (_settings == null) {
+      return RefreshIndicator(
+        onRefresh:
+            _loadSettings,
+        child: ListView(
+          physics:
+              const AlwaysScrollableScrollPhysics(),
+          padding:
+              const EdgeInsets.all(
+            24,
+          ),
+          children: [
+            const SizedBox(
+              height: 120,
+            ),
+
+            const Icon(
+              Icons
+                  .error_outline_rounded,
+              size: 46,
+            ),
+
+            const SizedBox(
+              height: 18,
+            ),
+
+            const Center(
+              child: Text(
+                "Unable to load settings.",
+                textAlign:
+                    TextAlign.center,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight:
+                      FontWeight.w600,
+                ),
+              ),
+            ),
+
+            const SizedBox(
+              height: 8,
+            ),
+
+            const Center(
+              child: Text(
+                "Check your connection and try again.",
+                textAlign:
+                    TextAlign.center,
+              ),
+            ),
+
+            const SizedBox(
+              height: 24,
+            ),
+
+            Center(
+              child:
+                  FilledButton.icon(
+                onPressed:
+                    _loadSettings,
+                icon: const Icon(
+                  Icons.refresh,
+                ),
+                label:
+                    const Text(
+                  "Retry",
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Settings
+    |--------------------------------------------------------------------------
+    */
+
+    return RefreshIndicator(
+      onRefresh:
+          _loadSettings,
+      child: ListView(
+        physics:
+            const AlwaysScrollableScrollPhysics(),
+        padding:
+            const EdgeInsets.fromLTRB(
+          20,
+          20,
+          20,
+          40,
+        ),
+        children: [
+          /*
+          |--------------------------------------------------------------------------
+          | Profile
+          |--------------------------------------------------------------------------
+          */
+
+          ProfileHeader(
+            settings:
+                _settings!,
+          ),
+
+          const SizedBox(
+            height: 30,
+          ),
+
+          /*
+          |--------------------------------------------------------------------------
+          | Account
+          |--------------------------------------------------------------------------
+          */
+
+          AccountSection(
+            bioController:
+                _bioController,
+          ),
+
+          const SizedBox(
+            height: 20,
+          ),
+
+          /*
+          |--------------------------------------------------------------------------
+          | Notifications
+          |--------------------------------------------------------------------------
+          */
+
+          NotificationSection(
+            push:
+                _settings!
+                    .pushNotifications,
+            email:
+                _settings!
+                    .emailNotifications,
+            sms:
+                _settings!
+                    .smsNotifications,
+
+            onPushChanged:
+                (value) {
+              setState(() {
+                _settings =
+                    _settings!
+                        .copyWith(
+                  pushNotifications:
+                      value,
+                );
+              });
+            },
+
+            onEmailChanged:
+                (value) {
+              setState(() {
+                _settings =
+                    _settings!
+                        .copyWith(
+                  emailNotifications:
+                      value,
+                );
+              });
+            },
+
+            onSmsChanged:
+                (value) {
+              setState(() {
+                _settings =
+                    _settings!
+                        .copyWith(
+                  smsNotifications:
+                      value,
+                );
+              });
+            },
+          ),
+
+          const SizedBox(
+            height: 20,
+          ),
+
+          /*
+          |--------------------------------------------------------------------------
+          | Security
+          |--------------------------------------------------------------------------
+          */
+
+          SecuritySection(
+            onLogout:
+                _logout,
+            loggingOut:
+                _loggingOut,
+          ),
+
+          const SizedBox(
+            height: 20,
+          ),
+
+          /*
+          |--------------------------------------------------------------------------
+          | About
+          |--------------------------------------------------------------------------
+          */
+
+          const AboutSection(),
+
+          const SizedBox(
+            height: 32,
+          ),
+
+          /*
+          |--------------------------------------------------------------------------
+          | Save
+          |--------------------------------------------------------------------------
+          */
+
+          SizedBox(
+            height: 52,
+            child:
+                FilledButton.icon(
+              onPressed:
+                  _saving
+                      ? null
+                      : _save,
+              icon: _saving
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child:
+                          CircularProgressIndicator(
+                        strokeWidth:
+                            2,
+                      ),
+                    )
+                  : const Icon(
+                      Icons
+                          .save_outlined,
+                    ),
+              label: Text(
+                _saving
+                    ? "Saving..."
+                    : "Save Changes",
+              ),
+            ),
+          ),
+
+          const SizedBox(
+            height: 24,
+          ),
+        ],
+      ),
+    );
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Dispose
+  |--------------------------------------------------------------------------
+  */
 
   @override
   void dispose() {
     _bioController.dispose();
+
     super.dispose();
   }
 }

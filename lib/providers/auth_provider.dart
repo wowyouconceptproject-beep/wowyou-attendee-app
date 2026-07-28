@@ -1,5 +1,4 @@
 import "package:flutter/foundation.dart";
-import "package:flutter/material.dart";
 
 import "../models/user.dart";
 import "../services/auth_service.dart";
@@ -10,11 +9,9 @@ class AuthProvider extends ChangeNotifier {
       AuthService();
 
   User? _user;
-
   String? _token;
 
   bool _loading = false;
-
   bool _initialized = false;
 
   User? get user => _user;
@@ -34,6 +31,12 @@ class AuthProvider extends ChangeNotifier {
       "${_user?.firstName ?? ""} ${_user?.lastName ?? ""}"
           .trim();
 
+  /*
+  |--------------------------------------------------------------------------
+  | Register
+  |--------------------------------------------------------------------------
+  */
+
   Future<bool> register({
     required String firstName,
     required String lastName,
@@ -52,56 +55,80 @@ class AuthProvider extends ChangeNotifier {
         password: password,
       );
 
-      debugPrint("");
-      debugPrint(
-          "REGISTER RESULT:");
-      debugPrint(result.toString());
-
       if (result["success"] != true) {
         debugPrint(
           "REGISTER FAILED: ${result["message"]}",
         );
+
         return false;
       }
 
       final token =
           result["token"];
 
-      debugPrint(
-          "TOKEN RECEIVED:");
-      debugPrint(token);
+      if (token == null ||
+          token is! String ||
+          token.isEmpty) {
+        debugPrint(
+          "REGISTER FAILED: Token missing.",
+        );
 
-      _token = token;
+        return false;
+      }
+
+      /*
+      |--------------------------------------------------------------------------
+      | Persist Token
+      |--------------------------------------------------------------------------
+      */
 
       await Storage.saveToken(
         token,
       );
 
-      _user =
+      /*
+      |--------------------------------------------------------------------------
+      | Resolve Current User
+      |--------------------------------------------------------------------------
+      */
+
+      final currentUser =
           await _authService.getMe(
         token,
       );
 
-      debugPrint(
-          "USER AFTER REGISTER:");
-      debugPrint(_user.toString());
+      if (currentUser == null) {
+        await Storage.clearToken();
 
-      notifyListeners();
+        return false;
+      }
 
-      return _user != null;
-    } catch (e, stack) {
+      _token = token;
+      _user = currentUser;
+
+      return true;
+    } catch (error, stackTrace) {
       debugPrint(
-        "REGISTER EXCEPTION:",
+        "REGISTER ERROR: $error",
       );
-      debugPrint(e.toString());
-      debugPrint(stack.toString());
+
+      debugPrint(
+        stackTrace.toString(),
+      );
 
       return false;
     } finally {
       _loading = false;
+
       notifyListeners();
     }
   }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Login
+  |--------------------------------------------------------------------------
+  */
 
   Future<bool> login({
     required String email,
@@ -117,67 +144,101 @@ class AuthProvider extends ChangeNotifier {
         password: password,
       );
 
-      debugPrint("");
-      debugPrint(
-          "LOGIN RESULT:");
-      debugPrint(result.toString());
-
       if (result["success"] != true) {
         debugPrint(
           "LOGIN FAILED: ${result["message"]}",
         );
+
         return false;
       }
 
       final token =
           result["token"];
 
-      debugPrint(
-          "TOKEN RECEIVED:");
-      debugPrint(token);
+      if (token == null ||
+          token is! String ||
+          token.isEmpty) {
+        debugPrint(
+          "LOGIN FAILED: Token missing.",
+        );
 
-      _token = token;
+        return false;
+      }
+
+      /*
+      |--------------------------------------------------------------------------
+      | Persist Token
+      |--------------------------------------------------------------------------
+      */
 
       await Storage.saveToken(
         token,
       );
 
-      _user =
+      /*
+      |--------------------------------------------------------------------------
+      | Resolve Current User
+      |--------------------------------------------------------------------------
+      */
+
+      final currentUser =
           await _authService.getMe(
         token,
       );
 
-      debugPrint(
-          "USER AFTER LOGIN:");
-      debugPrint(_user.toString());
+      if (currentUser == null) {
+        await Storage.clearToken();
 
-      notifyListeners();
+        return false;
+      }
 
-      return _user != null;
-    } catch (e, stack) {
+      _token = token;
+      _user = currentUser;
+
+      return true;
+    } catch (error, stackTrace) {
       debugPrint(
-        "LOGIN EXCEPTION:",
+        "LOGIN ERROR: $error",
       );
-      debugPrint(e.toString());
-      debugPrint(stack.toString());
+
+      debugPrint(
+        stackTrace.toString(),
+      );
 
       return false;
     } finally {
       _loading = false;
+
       notifyListeners();
     }
   }
 
+  /*
+  |--------------------------------------------------------------------------
+  | Restore Session
+  |--------------------------------------------------------------------------
+  */
+
   Future<void> loadUser() async {
+    /*
+    |--------------------------------------------------------------------------
+    | Prevent duplicate initialization
+    |--------------------------------------------------------------------------
+    */
+
+    if (_initialized) {
+      return;
+    }
+
     try {
       final savedToken =
           await Storage.getToken();
 
-      debugPrint(
-          "SAVED TOKEN:");
-      debugPrint(savedToken);
+      if (savedToken == null ||
+          savedToken.isEmpty) {
+        _user = null;
+        _token = null;
 
-      if (savedToken == null) {
         return;
       }
 
@@ -186,35 +247,71 @@ class AuthProvider extends ChangeNotifier {
         savedToken,
       );
 
-      debugPrint(
-          "CURRENT USER:");
-      debugPrint(
-          currentUser.toString());
+      /*
+      |--------------------------------------------------------------------------
+      | Expired / Invalid Session
+      |--------------------------------------------------------------------------
+      */
 
       if (currentUser == null) {
-        await logout();
+        await Storage.clearToken();
+
+        _user = null;
+        _token = null;
+
         return;
       }
 
+      /*
+      |--------------------------------------------------------------------------
+      | Restore Session
+      |--------------------------------------------------------------------------
+      */
+
       _token = savedToken;
       _user = currentUser;
-    } catch (e, stack) {
+    } catch (error, stackTrace) {
       debugPrint(
-          "LOAD USER ERROR:");
-      debugPrint(e.toString());
-      debugPrint(stack.toString());
+        "LOAD USER ERROR: $error",
+      );
+
+      debugPrint(
+        stackTrace.toString(),
+      );
+
+      /*
+      |--------------------------------------------------------------------------
+      | Fail closed
+      |--------------------------------------------------------------------------
+      */
+
+      _user = null;
+      _token = null;
     } finally {
       _initialized = true;
+
       notifyListeners();
     }
   }
 
+  /*
+  |--------------------------------------------------------------------------
+  | Logout
+  |--------------------------------------------------------------------------
+  */
+
   Future<void> logout() async {
-    _user = null;
-    _token = null;
+    try {
+      await Storage.clearToken();
+    } catch (error) {
+      debugPrint(
+        "LOGOUT STORAGE ERROR: $error",
+      );
+    } finally {
+      _user = null;
+      _token = null;
 
-    await Storage.clearToken();
-
-    notifyListeners();
+      notifyListeners();
+    }
   }
 }

@@ -2,7 +2,6 @@ import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 
 import "../providers/auth_provider.dart";
-import "dashboard_screen.dart";
 import "register_screen.dart";
 
 class LoginScreen extends StatefulWidget {
@@ -26,38 +25,27 @@ class _LoginScreenState
   String? error;
 
   Future<void> login() async {
+  setState(() {
+    error = null;
+  });
+
+  final auth = context.read<AuthProvider>();
+
+  final success = await auth.login(
+    email: emailController.text.trim(),
+    password: passwordController.text,
+  );
+
+  if (!mounted) return;
+
+  if (success) {
+    Navigator.pop(context, true);
+  } else {
     setState(() {
-      error = null;
+      error = "Invalid email or password";
     });
-
-    final auth =
-        context.read<AuthProvider>();
-
-    final success =
-        await auth.login(
-      email:
-          emailController.text.trim(),
-      password:
-          passwordController.text,
-    );
-
-    if (!mounted) return;
-
-    if (success) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) =>
-              const DashboardScreen(),
-        ),
-      );
-    } else {
-      setState(() {
-        error =
-            "Invalid email or password";
-      });
-    }
   }
+}
 
   InputDecoration inputDecoration(
     String hint,

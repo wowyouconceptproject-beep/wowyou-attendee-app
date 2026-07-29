@@ -18,6 +18,12 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Clean Project
+         run: flutter clean
+
+       -name: Install Packages
+         run: flutter pub get
+
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -48,3 +54,5 @@ jobs:
         with:
           name: wowyou-attendee-release
           path: build/app/outputs/flutter-apk/app-release.apk
+
+      

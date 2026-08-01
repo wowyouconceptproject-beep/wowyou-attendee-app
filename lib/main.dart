@@ -22,210 +22,161 @@ void main() {
   );
 }
 
-class WowYouAttendeeApp
-    extends StatelessWidget {
+class WowYouAttendeeApp extends StatelessWidget {
   const WowYouAttendeeApp({
     super.key,
   });
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
-    const gold =
-        Color(0xFFD4AF37);
+  Widget build(BuildContext context) {
+    const wowBlue = Color(0xFF3E86A4);
 
     return MaterialApp(
-      debugShowCheckedModeBanner:
-          false,
+      debugShowCheckedModeBanner: false,
 
       title: "WowYou Attendee",
 
       theme: ThemeData(
         useMaterial3: true,
 
-        brightness:
-            Brightness.dark,
+        brightness: Brightness.dark,
 
-        scaffoldBackgroundColor:
-            const Color(
-          0xFF111111,
+        scaffoldBackgroundColor: const Color(
+          0xFF050505,
         ),
 
-        colorScheme:
-            ColorScheme.dark(
-          primary: gold,
-          secondary: gold,
-          surface:
-              const Color(
-            0xFF181818,
+        colorScheme: ColorScheme.dark(
+          primary: wowBlue,
+          secondary: wowBlue,
+          surface: const Color(
+            0xFF0B0B0B,
           ),
         ),
 
-        appBarTheme:
-            const AppBarTheme(
+        appBarTheme: const AppBarTheme(
           elevation: 0,
           centerTitle: false,
-          backgroundColor:
-              Color(
-            0xFF111111,
+          backgroundColor: Color(
+            0xFF050505,
           ),
-          foregroundColor:
-              Colors.white,
+          foregroundColor: Colors.white,
+          surfaceTintColor: Colors.transparent,
         ),
 
-        cardTheme:
-            CardThemeData(
+        cardTheme: CardThemeData(
           color: const Color(
-            0xFF1B1B1B,
+            0xFF121212,
           ),
           elevation: 0,
-          shape:
-              RoundedRectangleBorder(
-            borderRadius:
-                BorderRadius.circular(
-              20,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(
+              24,
             ),
           ),
         ),
 
-        elevatedButtonTheme:
-            ElevatedButtonThemeData(
-          style:
-              ElevatedButton.styleFrom(
-            backgroundColor:
-                gold,
-            foregroundColor:
-                Colors.black,
-            minimumSize:
-                const Size(
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: wowBlue,
+            foregroundColor: Colors.black,
+            minimumSize: const Size(
               double.infinity,
               56,
             ),
-            shape:
-                RoundedRectangleBorder(
-              borderRadius:
-                  BorderRadius.circular(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(
                 16,
               ),
             ),
-            textStyle:
-                const TextStyle(
-              fontWeight:
-                  FontWeight.bold,
+            textStyle: const TextStyle(
+              fontWeight: FontWeight.bold,
               fontSize: 16,
             ),
           ),
         ),
 
-        outlinedButtonTheme:
-            OutlinedButtonThemeData(
-          style:
-              OutlinedButton.styleFrom(
-            foregroundColor:
-                gold,
-            side:
-                const BorderSide(
-              color: gold,
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            foregroundColor: wowBlue,
+            side: const BorderSide(
+              color: wowBlue,
             ),
-            minimumSize:
-                const Size(
+            minimumSize: const Size(
               double.infinity,
               56,
             ),
-            shape:
-                RoundedRectangleBorder(
-              borderRadius:
-                  BorderRadius.circular(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(
                 16,
               ),
             ),
           ),
         ),
 
-        inputDecorationTheme:
-            InputDecorationTheme(
+        inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor:
-              const Color(
-            0xFF1B1B1B,
+          fillColor: const Color(
+            0xFF121212,
           ),
-          contentPadding:
-              const EdgeInsets.symmetric(
+          contentPadding: const EdgeInsets.symmetric(
             horizontal: 20,
             vertical: 18,
           ),
-          border:
-              OutlineInputBorder(
-            borderRadius:
-                BorderRadius.circular(
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(
               16,
             ),
-            borderSide:
-                BorderSide.none,
+            borderSide: BorderSide.none,
           ),
-          enabledBorder:
-              OutlineInputBorder(
-            borderRadius:
-                BorderRadius.circular(
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(
               16,
             ),
-            borderSide:
-                BorderSide.none,
+            borderSide: BorderSide.none,
           ),
-          focusedBorder:
-              OutlineInputBorder(
-            borderRadius:
-                BorderRadius.circular(
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(
               16,
             ),
-            borderSide:
-                const BorderSide(
-              color: gold,
+            borderSide: const BorderSide(
+              color: wowBlue,
             ),
           ),
         ),
 
         progressIndicatorTheme:
             const ProgressIndicatorThemeData(
-          color: gold,
+          color: wowBlue,
         ),
 
-        snackBarTheme:
-            SnackBarThemeData(
-          backgroundColor:
-              const Color(
-            0xFF1E1E1E,
+        snackBarTheme: SnackBarThemeData(
+          backgroundColor: const Color(
+            0xFF121212,
           ),
-          shape:
-              RoundedRectangleBorder(
-            borderRadius:
-                BorderRadius.circular(
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(
               14,
             ),
           ),
-          behavior:
-              SnackBarBehavior
-                  .floating,
         ),
       ),
 
-      home:
-          const SplashScreen(),
+      home: const SplashScreen(),
 
       routes: {
-  "/home": (_) =>
-      const MainNavigationScreen(),
+        "/home": (_) =>
+            const MainNavigationScreen(),
 
-  "/login": (_) =>
-      const LoginScreen(),
+        "/login": (_) =>
+            const LoginScreen(),
 
-  "/register": (_) =>
-      const RegisterScreen(),
+        "/register": (_) =>
+            const RegisterScreen(),
 
-  "/profile-onboarding": (_) =>
-      const AttendeeProfileScreen(),
-},
+        "/profile-onboarding": (_) =>
+            const AttendeeProfileScreen(),
+      },
     );
   }
 }

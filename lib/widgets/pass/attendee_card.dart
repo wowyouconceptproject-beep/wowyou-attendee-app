@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 
 import "../../models/purchased_ticket.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
 class AttendeeCard extends StatelessWidget {
   final PurchasedTicket ticket;
@@ -22,43 +23,55 @@ class AttendeeCard extends StatelessWidget {
         CircleAvatar(
           radius: 42,
           backgroundColor:
-              const Color(0xFFD4AF37),
+              AppColors.primary,
           backgroundImage:
               ticket.attendeeAvatar != null
                   ? NetworkImage(
                       ticket.attendeeAvatar!,
                     )
                   : null,
-          child: ticket.attendeeAvatar == null
-              ? const Icon(
-                  Icons.person,
-                  size: 40,
-                  color: Colors.black,
-                )
-              : null,
+          child:
+              ticket.attendeeAvatar == null
+                  ? const Icon(
+                      Icons.person,
+                      size: 40,
+                      color: Colors.white,
+                    )
+                  : null,
         ),
 
-        const SizedBox(height: 18),
+        const SizedBox(
+          height: 18,
+        ),
 
         Text(
           ticket.attendeeName,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            color: Colors.white,
+          textAlign:
+              TextAlign.center,
+          style:
+              const TextStyle(
+            color:
+                AppColors.text,
             fontSize: 28,
-            fontWeight: FontWeight.bold,
+            fontWeight:
+                FontWeight.bold,
           ),
         ),
 
         if (subtitle.isNotEmpty)
           Padding(
             padding:
-                const EdgeInsets.only(top: 6),
+                const EdgeInsets.only(
+              top: 6,
+            ),
             child: Text(
               subtitle,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Colors.white70,
+              textAlign:
+                  TextAlign.center,
+              style:
+                  const TextStyle(
+                color: AppColors
+                    .textSecondary,
               ),
             ),
           ),

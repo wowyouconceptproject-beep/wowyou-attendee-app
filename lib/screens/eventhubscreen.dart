@@ -3,6 +3,7 @@ import "package:flutter/material.dart";
 import "../models/purchased_ticket.dart";
 
 import "../services/socket_service.dart";
+import "../theme/app_colors.dart";
 import "../utils/storage.dart";
 
 import "../widgets/event_hub/agenda_card.dart";
@@ -61,7 +62,7 @@ class _EventHubScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor:
-          const Color(0xFF0B0B0B),
+          AppColors.background,
       body: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
@@ -86,6 +87,7 @@ class _EventHubScreenState
                   const Text(
                     "Welcome to Event Hub",
                     style: TextStyle(
+                      color: AppColors.text,
                       fontSize: 30,
                       fontWeight:
                           FontWeight.bold,
@@ -100,7 +102,7 @@ class _EventHubScreenState
                     "Everything you need for your event is organized in one place. Stay informed, discover opportunities and make valuable connections.",
                     style: TextStyle(
                       color:
-                          Colors.white70,
+                          AppColors.textSecondary,
                       height: 1.6,
                       fontSize: 15,
                     ),
@@ -113,6 +115,7 @@ class _EventHubScreenState
                   const Text(
                     "Announcements",
                     style: TextStyle(
+                      color: AppColors.text,
                       fontSize: 18,
                       fontWeight:
                           FontWeight.bold,
@@ -135,6 +138,7 @@ class _EventHubScreenState
                   const Text(
                     "Your Schedule",
                     style: TextStyle(
+                      color: AppColors.text,
                       fontSize: 18,
                       fontWeight:
                           FontWeight.bold,
@@ -157,6 +161,7 @@ class _EventHubScreenState
                   const Text(
                     "Activities",
                     style: TextStyle(
+                      color: AppColors.text,
                       fontSize: 18,
                       fontWeight:
                           FontWeight.bold,
@@ -179,6 +184,7 @@ class _EventHubScreenState
                   const Text(
                     "Venue Information",
                     style: TextStyle(
+                      color: AppColors.text,
                       fontSize: 18,
                       fontWeight:
                           FontWeight.bold,
@@ -201,6 +207,7 @@ class _EventHubScreenState
                   const Text(
                     "Networking",
                     style: TextStyle(
+                      color: AppColors.text,
                       fontSize: 18,
                       fontWeight:
                           FontWeight.bold,

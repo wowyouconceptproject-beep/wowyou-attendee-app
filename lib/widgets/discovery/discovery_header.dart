@@ -1,5 +1,7 @@
 import "package:flutter/material.dart";
 
+import "package:attendee_app/theme/app_colors.dart";
+
 class DiscoveryHeader extends StatelessWidget {
   const DiscoveryHeader({
     super.key,
@@ -35,7 +37,7 @@ class DiscoveryHeader extends StatelessWidget {
                             .textTheme
                             .bodyMedium
                             ?.copyWith(
-                              color: Colors.grey,
+                              color: AppColors.textSecondary,
                             ),
                       ),
 
@@ -68,15 +70,17 @@ class DiscoveryHeader extends StatelessWidget {
                     ),
                     gradient:
                         const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                       colors: [
-                        Color(0xFFD4AF37),
-                        Color(0xFFB8860B),
+                        AppColors.primaryLight,
+                        AppColors.primary,
                       ],
                     ),
                   ),
                   child: const Icon(
                     Icons.person,
-                    color: Colors.black,
+                    color: Colors.white,
                   ),
                 ),
               ],
@@ -108,7 +112,7 @@ class DiscoveryHeader extends StatelessWidget {
                   .textTheme
                   .bodyLarge
                   ?.copyWith(
-                    color: Colors.grey,
+                    color: AppColors.textSecondary,
                     height: 1.6,
                   ),
             ),

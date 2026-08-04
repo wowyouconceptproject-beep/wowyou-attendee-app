@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 
 import "../../models/event.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
 class EventHorizontalCard extends StatelessWidget {
   final Event event;
@@ -23,12 +24,12 @@ class EventHorizontalCard extends StatelessWidget {
           left: 24,
         ),
         decoration: BoxDecoration(
-          color: const Color(
-            0xFF161616,
-          ),
-          borderRadius:
-              BorderRadius.circular(
+          color: AppColors.card,
+          borderRadius: BorderRadius.circular(
             24,
+          ),
+          border: Border.all(
+            color: AppColors.border,
           ),
         ),
         clipBehavior: Clip.antiAlias,
@@ -48,29 +49,25 @@ class EventHorizontalCard extends StatelessWidget {
             ),
 
             Padding(
-              padding:
-                  const EdgeInsets.all(
+              padding: const EdgeInsets.all(
                 18,
               ),
               child: Column(
                 crossAxisAlignment:
-                    CrossAxisAlignment
-                        .start,
+                    CrossAxisAlignment.start,
                 children: [
                   Text(
                     event.title,
                     maxLines: 2,
                     overflow:
-                        TextOverflow
-                            .ellipsis,
+                        TextOverflow.ellipsis,
                     style:
                         const TextStyle(
                       fontSize: 18,
                       fontWeight:
-                          FontWeight
-                              .bold,
+                          FontWeight.bold,
                       color:
-                          Colors.white,
+                          AppColors.text,
                     ),
                   ),
 
@@ -82,9 +79,8 @@ class EventHorizontalCard extends StatelessWidget {
                     children: [
                       const Icon(
                         Icons.location_on,
-                        color: Color(
-                          0xFFD4AF37,
-                        ),
+                        color:
+                            AppColors.primary,
                         size: 16,
                       ),
 
@@ -100,8 +96,8 @@ class EventHorizontalCard extends StatelessWidget {
                                   .ellipsis,
                           style:
                               const TextStyle(
-                            color: Colors
-                                .grey,
+                            color: AppColors
+                                .textSecondary,
                           ),
                         ),
                       ),
@@ -116,7 +112,8 @@ class EventHorizontalCard extends StatelessWidget {
                     "${event.startDate.day}/${event.startDate.month}/${event.startDate.year}",
                     style:
                         const TextStyle(
-                      color: Colors.grey,
+                      color: AppColors
+                          .textSecondary,
                     ),
                   ),
 
@@ -129,9 +126,8 @@ class EventHorizontalCard extends StatelessWidget {
                       const Text(
                         "Explore",
                         style: TextStyle(
-                          color: Color(
-                            0xFFD4AF37,
-                          ),
+                          color:
+                              AppColors.primary,
                           fontWeight:
                               FontWeight
                                   .bold,
@@ -141,11 +137,9 @@ class EventHorizontalCard extends StatelessWidget {
                       const Spacer(),
 
                       const Icon(
-                        Icons
-                            .arrow_forward,
-                        color: Color(
-                          0xFFD4AF37,
-                        ),
+                        Icons.arrow_forward,
+                        color:
+                            AppColors.primary,
                       ),
                     ],
                   ),

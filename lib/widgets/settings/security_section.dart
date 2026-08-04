@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
 class SecuritySection extends StatelessWidget {
   final Future<void> Function() onLogout;
@@ -12,20 +13,11 @@ class SecuritySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme =
-        Theme.of(context);
-
     return Card(
-      clipBehavior:
-          Clip.antiAlias,
+      color: AppColors.card,
+      clipBehavior: Clip.antiAlias,
       child: Column(
         children: [
-          /*
-          |--------------------------------------------------------------------------
-          | Change Password
-          |--------------------------------------------------------------------------
-          */
-
           ListTile(
             contentPadding:
                 const EdgeInsets.symmetric(
@@ -35,11 +27,9 @@ class SecuritySection extends StatelessWidget {
             leading: Container(
               width: 42,
               height: 42,
-              decoration:
-                  BoxDecoration(
-                color: theme
-                    .colorScheme
-                    .surfaceContainerHighest,
+              decoration: BoxDecoration(
+                color: AppColors.primary
+                    .withValues(alpha: 0.15),
                 borderRadius:
                     BorderRadius.circular(
                   12,
@@ -48,6 +38,7 @@ class SecuritySection extends StatelessWidget {
               child: const Icon(
                 Icons.lock_outline,
                 size: 21,
+                color: AppColors.primary,
               ),
             ),
             title: const Text(
@@ -59,16 +50,15 @@ class SecuritySection extends StatelessWidget {
             ),
             subtitle: const Text(
               "Update your account password",
+              style: TextStyle(
+                color:
+                    AppColors.textSecondary,
+              ),
             ),
-
-            /*
-            |--------------------------------------------------------------------------
-            | Deliberately disabled until password flow exists
-            |--------------------------------------------------------------------------
-            */
-
             trailing: const Icon(
               Icons.chevron_right,
+              color:
+                  AppColors.textSecondary,
             ),
             onTap: () {
               ScaffoldMessenger.of(
@@ -85,17 +75,11 @@ class SecuritySection extends StatelessWidget {
 
           const Divider(
             height: 1,
+            color: AppColors.border,
           ),
 
-          /*
-          |--------------------------------------------------------------------------
-          | Logout
-          |--------------------------------------------------------------------------
-          */
-
           ListTile(
-            enabled:
-                !loggingOut,
+            enabled: !loggingOut,
             contentPadding:
                 const EdgeInsets.symmetric(
               horizontal: 18,
@@ -104,63 +88,59 @@ class SecuritySection extends StatelessWidget {
             leading: Container(
               width: 42,
               height: 42,
-              decoration:
-                  BoxDecoration(
-                color: theme
-                    .colorScheme
-                    .errorContainer,
+              decoration: BoxDecoration(
+                color: AppColors.error
+                    .withValues(alpha: 0.15),
                 borderRadius:
                     BorderRadius.circular(
                   12,
                 ),
               ),
               child: loggingOut
-                  ? Padding(
+                  ? const Padding(
                       padding:
-                          const EdgeInsets.all(
+                          EdgeInsets.all(
                         11,
                       ),
                       child:
                           CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: theme
-                            .colorScheme
-                            .onErrorContainer,
+                        color:
+                            AppColors.error,
                       ),
                     )
-                  : Icon(
+                  : const Icon(
                       Icons.logout,
                       size: 21,
-                      color: theme
-                          .colorScheme
-                          .onErrorContainer,
+                      color:
+                          AppColors.error,
                     ),
             ),
             title: Text(
               loggingOut
                   ? "Logging out..."
                   : "Logout",
-              style: TextStyle(
+              style: const TextStyle(
                 fontWeight:
                     FontWeight.w600,
-                color: theme
-                    .colorScheme
-                    .error,
+                color:
+                    AppColors.error,
               ),
             ),
             subtitle: const Text(
               "Sign out of your WOWYOU account",
+              style: TextStyle(
+                color:
+                    AppColors.textSecondary,
+              ),
             ),
-            trailing:
-                loggingOut
-                    ? null
-                    : Icon(
-                        Icons
-                            .chevron_right,
-                        color: theme
-                            .colorScheme
-                            .error,
-                      ),
+            trailing: loggingOut
+                ? null
+                : const Icon(
+                    Icons.chevron_right,
+                    color:
+                        AppColors.error,
+                  ),
             onTap: loggingOut
                 ? null
                 : () async {

@@ -1,5 +1,7 @@
 import "package:flutter/material.dart";
 
+import "package:attendee_app/theme/app_colors.dart";
+
 class RegisterButton
     extends StatelessWidget {
   final bool loading;
@@ -16,7 +18,9 @@ class RegisterButton
   Widget build(BuildContext context) {
     return Padding(
       padding:
-          const EdgeInsets.all(24),
+          const EdgeInsets.all(
+        24,
+      ),
       child: SizedBox(
         width: double.infinity,
         height: 60,
@@ -28,11 +32,9 @@ class RegisterButton
           style:
               ElevatedButton.styleFrom(
             backgroundColor:
-                const Color(
-              0xFFD4AF37,
-            ),
+                AppColors.primary,
             foregroundColor:
-                Colors.black,
+                Colors.white,
             shape:
                 RoundedRectangleBorder(
               borderRadius:
@@ -42,7 +44,16 @@ class RegisterButton
             ),
           ),
           child: loading
-              ? const CircularProgressIndicator()
+              ? const SizedBox(
+                  width: 22,
+                  height: 22,
+                  child:
+                      CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color:
+                        AppColors.primary,
+                  ),
+                )
               : const Text(
                   "Get Ticket",
                   style: TextStyle(

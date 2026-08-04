@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 
 import "../../models/purchased_ticket.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
 class MyEventCard extends StatelessWidget {
   final PurchasedTicket ticket;
@@ -23,17 +24,23 @@ class MyEventCard extends StatelessWidget {
         bottom: 20,
       ),
       decoration: BoxDecoration(
-        color: const Color(0xFF181818),
-        borderRadius: BorderRadius.circular(28),
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(
+          28,
+        ),
+        border: Border.all(
+          color: AppColors.border,
+        ),
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment:
+            CrossAxisAlignment.start,
         children: [
           AspectRatio(
             aspectRatio: 16 / 9,
             child: Image.network(
-  ticket.coverImage ?? "",
+              ticket.coverImage ?? "",
               fit: BoxFit.cover,
               errorBuilder: (
                 context,
@@ -41,11 +48,13 @@ class MyEventCard extends StatelessWidget {
                 stackTrace,
               ) {
                 return Container(
-                  color: const Color(0xFF101010),
+                  color: AppColors.surface,
                   child: const Center(
                     child: Icon(
                       Icons.image,
-                      color: Colors.grey,
+                      color:
+                          AppColors
+                              .textSecondary,
                       size: 60,
                     ),
                   ),
@@ -55,52 +64,75 @@ class MyEventCard extends StatelessWidget {
           ),
 
           Padding(
-            padding: const EdgeInsets.all(22),
+            padding:
+                const EdgeInsets.all(
+              22,
+            ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment:
+                  CrossAxisAlignment
+                      .start,
               children: [
                 Text(
                   ticket.eventTitle,
-                  style: const TextStyle(
+                  style:
+                      const TextStyle(
+                    color:
+                        AppColors.text,
                     fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                    fontWeight:
+                        FontWeight.bold,
                   ),
                 ),
 
-                const SizedBox(height: 18),
+                const SizedBox(
+                  height: 18,
+                ),
 
                 Row(
                   children: [
                     const Icon(
                       Icons.location_on,
                       size: 18,
-                      color: Color(0xFFD4AF37),
+                      color:
+                          AppColors
+                              .primary,
                     ),
 
-                    const SizedBox(width: 8),
+                    const SizedBox(
+                      width: 8,
+                    ),
 
                     Expanded(
                       child: Text(
                         ticket.venue,
-                        style: const TextStyle(
-                          color: Colors.grey,
+                        style:
+                            const TextStyle(
+                          color: AppColors
+                              .textSecondary,
                         ),
                       ),
                     ),
                   ],
                 ),
 
-                const SizedBox(height: 10),
+                const SizedBox(
+                  height: 10,
+                ),
 
                 Row(
                   children: [
                     const Icon(
                       Icons.calendar_today,
                       size: 18,
-                      color: Color(0xFFD4AF37),
+                      color:
+                          AppColors
+                              .primary,
                     ),
 
-                    const SizedBox(width: 8),
+                    const SizedBox(
+                      width: 8,
+                    ),
 
                     Expanded(
                       child: Text(
@@ -109,32 +141,54 @@ class MyEventCard extends StatelessWidget {
                         ).format(
                           ticket.startDate,
                         ),
-                        style: const TextStyle(
-                          color: Colors.grey,
+                        style:
+                            const TextStyle(
+                          color: AppColors
+                              .textSecondary,
                         ),
                       ),
                     ),
                   ],
                 ),
 
-                const SizedBox(height: 24),
+                const SizedBox(
+                  height: 24,
+                ),
 
                 SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: onOpen,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFD4AF37),
-                      foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(
+                  width:
+                      double.infinity,
+                  child:
+                      ElevatedButton(
+                    onPressed:
+                        onOpen,
+                    style:
+                        ElevatedButton.styleFrom(
+                      backgroundColor:
+                          AppColors
+                              .primary,
+                      foregroundColor:
+                          Colors.white,
+                      padding:
+                          const EdgeInsets.symmetric(
                         vertical: 16,
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18),
+                      shape:
+                          RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(
+                          18,
+                        ),
                       ),
                     ),
-                    child: const Text(
+                    child:
+                        const Text(
                       "Open Event Hub",
+                      style:
+                          TextStyle(
+                        fontWeight:
+                            FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),

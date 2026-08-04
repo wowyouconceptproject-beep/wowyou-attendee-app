@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 
 import "../../models/purchased_ticket.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
 class EventBanner extends StatelessWidget {
   final PurchasedTicket ticket;
@@ -19,7 +20,7 @@ class EventBanner extends StatelessWidget {
           height: 320,
           width: double.infinity,
           child: Image.network(
-  ticket.coverImage ?? "",
+            ticket.coverImage ?? "",
             fit: BoxFit.cover,
             errorBuilder: (
               context,
@@ -27,11 +28,11 @@ class EventBanner extends StatelessWidget {
               stackTrace,
             ) {
               return Container(
-                color: const Color(0xFF181818),
+                color: AppColors.card,
                 child: const Center(
                   child: Icon(
                     Icons.image,
-                    color: Colors.grey,
+                    color: AppColors.textSecondary,
                     size: 80,
                   ),
                 ),
@@ -56,21 +57,33 @@ class EventBanner extends StatelessWidget {
 
         SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(
+              24,
+            ),
             child: Row(
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.black45,
-                    borderRadius: BorderRadius.circular(16),
+                    color: AppColors.surface.withValues(
+                      alpha: 0.8,
+                    ),
+                    borderRadius:
+                        BorderRadius.circular(
+                      16,
+                    ),
+                    border: Border.all(
+                      color: AppColors.border,
+                    ),
                   ),
                   child: IconButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigator.pop(
+                        context,
+                      );
                     },
                     icon: const Icon(
                       Icons.arrow_back,
-                      color: Colors.white,
+                      color: AppColors.text,
                     ),
                   ),
                 ),
@@ -84,51 +97,65 @@ class EventBanner extends StatelessWidget {
           right: 24,
           bottom: 24,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment:
+                CrossAxisAlignment.start,
             children: [
               Text(
                 ticket.eventTitle,
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: AppColors.text,
                   fontSize: 30,
-                  fontWeight: FontWeight.w900,
+                  fontWeight:
+                      FontWeight.w900,
                 ),
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(
+                height: 16,
+              ),
 
               Row(
                 children: [
                   const Icon(
                     Icons.location_on,
-                    color: Color(0xFFD4AF37),
+                    color:
+                        AppColors.primary,
                     size: 20,
                   ),
 
-                  const SizedBox(width: 8),
+                  const SizedBox(
+                    width: 8,
+                  ),
 
                   Expanded(
                     child: Text(
                       ticket.venue,
-                      style: const TextStyle(
-                        color: Colors.white70,
+                      style:
+                          const TextStyle(
+                        color: AppColors
+                            .textSecondary,
                       ),
                     ),
                   ),
                 ],
               ),
 
-              const SizedBox(height: 8),
+              const SizedBox(
+                height: 8,
+              ),
 
               Row(
                 children: [
                   const Icon(
                     Icons.calendar_today,
-                    color: Color(0xFFD4AF37),
+                    color:
+                        AppColors.primary,
                     size: 20,
                   ),
 
-                  const SizedBox(width: 8),
+                  const SizedBox(
+                    width: 8,
+                  ),
 
                   Expanded(
                     child: Text(
@@ -137,8 +164,10 @@ class EventBanner extends StatelessWidget {
                       ).format(
                         ticket.startDate,
                       ),
-                      style: const TextStyle(
-                        color: Colors.white70,
+                      style:
+                          const TextStyle(
+                        color: AppColors
+                            .textSecondary,
                       ),
                     ),
                   ),

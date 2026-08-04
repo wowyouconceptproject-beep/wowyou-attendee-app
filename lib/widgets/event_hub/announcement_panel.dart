@@ -4,6 +4,7 @@ import "../../models/announcement.dart";
 import "../../models/purchased_ticket.dart";
 import "../../services/announcement_service.dart";
 import "../../services/socket_service.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
 class AnnouncementPanel extends StatefulWidget {
   final PurchasedTicket ticket;
@@ -139,13 +140,13 @@ class _AnnouncementPanelState
       padding:
           const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color:
-            const Color(
-          0xFF181818,
-        ),
+        color: AppColors.card,
         borderRadius:
             BorderRadius.circular(
           24,
+        ),
+        border: Border.all(
+          color: AppColors.border,
         ),
       ),
       child: Column(
@@ -156,14 +157,15 @@ class _AnnouncementPanelState
             children: [
               Icon(
                 Icons.campaign,
-                color: Color(
-                  0xFFD4AF37,
-                ),
+                color:
+                    AppColors.primary,
               ),
               SizedBox(width: 12),
               Text(
                 "Announcements",
                 style: TextStyle(
+                  color:
+                      AppColors.text,
                   fontSize: 20,
                   fontWeight:
                       FontWeight.bold,
@@ -191,8 +193,8 @@ class _AnnouncementPanelState
               child: Text(
                 "No announcements yet.",
                 style: TextStyle(
-                  color:
-                      Colors.grey,
+                  color: AppColors
+                      .textSecondary,
                 ),
               ),
             )
@@ -238,13 +240,13 @@ class _AnnouncementItem
       padding:
           const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color:
-            const Color(
-          0xFF242424,
-        ),
+        color: AppColors.surface,
         borderRadius:
             BorderRadius.circular(
           16,
+        ),
+        border: Border.all(
+          color: AppColors.border,
         ),
       ),
       child: Column(
@@ -258,6 +260,8 @@ class _AnnouncementItem
                   announcement.title,
                   style:
                       const TextStyle(
+                    color:
+                        AppColors.text,
                     fontSize: 16,
                     fontWeight:
                         FontWeight.bold,
@@ -269,9 +273,8 @@ class _AnnouncementItem
                   .isPinned)
                 const Icon(
                   Icons.push_pin,
-                  color: Color(
-                    0xFFD4AF37,
-                  ),
+                  color:
+                      AppColors.primary,
                   size: 18,
                 ),
             ],
@@ -285,7 +288,8 @@ class _AnnouncementItem
             announcement.message,
             style:
                 const TextStyle(
-              color: Colors.grey,
+              color: AppColors
+                  .textSecondary,
               height: 1.5,
             ),
           ),
@@ -303,9 +307,8 @@ class _AnnouncementItem
                     "Organizer",
                 style:
                     const TextStyle(
-                  color: Color(
-                    0xFFD4AF37,
-                  ),
+                  color:
+                      AppColors.primary,
                   fontWeight:
                       FontWeight.w600,
                 ),
@@ -317,8 +320,8 @@ class _AnnouncementItem
                 announcement.type,
                 style:
                     const TextStyle(
-                  color:
-                      Colors.grey,
+                  color: AppColors
+                      .textSecondary,
                   fontSize: 12,
                 ),
               ),

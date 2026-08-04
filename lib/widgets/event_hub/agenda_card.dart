@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 
 import "../../models/purchased_ticket.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
 class AgendaCard extends StatelessWidget {
   final PurchasedTicket ticket;
@@ -31,9 +32,8 @@ class AgendaCard extends StatelessWidget {
               vertical: 10,
             ),
             decoration: BoxDecoration(
-              color: const Color(
-                0xFFD4AF37,
-              ).withValues(alpha: .15),
+              color: AppColors.primary
+                  .withValues(alpha: .15),
               borderRadius:
                   BorderRadius.circular(
                 14,
@@ -43,9 +43,8 @@ class AgendaCard extends StatelessWidget {
               time,
               textAlign: TextAlign.center,
               style: const TextStyle(
-                color: Color(
-                  0xFFD4AF37,
-                ),
+                color:
+                    AppColors.primary,
                 fontWeight:
                     FontWeight.bold,
               ),
@@ -66,6 +65,8 @@ class AgendaCard extends StatelessWidget {
                   title,
                   style:
                       const TextStyle(
+                    color:
+                        AppColors.text,
                     fontSize: 16,
                     fontWeight:
                         FontWeight.bold,
@@ -81,8 +82,8 @@ class AgendaCard extends StatelessWidget {
                     const Icon(
                       Icons.location_on,
                       size: 15,
-                      color:
-                          Colors.grey,
+                      color: AppColors
+                          .textSecondary,
                     ),
 
                     const SizedBox(
@@ -93,8 +94,8 @@ class AgendaCard extends StatelessWidget {
                       location,
                       style:
                           const TextStyle(
-                        color:
-                            Colors.grey,
+                        color: AppColors
+                            .textSecondary,
                       ),
                     ),
                   ],
@@ -118,13 +119,14 @@ class AgendaCard extends StatelessWidget {
         22,
       ),
       decoration: BoxDecoration(
-        color:
-            const Color(
-          0xFF181818,
-        ),
+        color: AppColors.card,
         borderRadius:
             BorderRadius.circular(
           24,
+        ),
+        border: Border.all(
+          color:
+              AppColors.border,
         ),
       ),
       child: Column(
@@ -137,9 +139,7 @@ class AgendaCard extends StatelessWidget {
               Icon(
                 Icons.schedule,
                 color:
-                    Color(
-                  0xFFD4AF37,
-                ),
+                    AppColors.primary,
               ),
 
               SizedBox(
@@ -149,6 +149,8 @@ class AgendaCard extends StatelessWidget {
               Text(
                 "Agenda",
                 style: TextStyle(
+                  color:
+                      AppColors.text,
                   fontSize: 20,
                   fontWeight:
                       FontWeight.bold,
@@ -167,8 +169,10 @@ class AgendaCard extends StatelessWidget {
             ).format(
               ticket.startDate,
             ),
-            style: const TextStyle(
-              color: Colors.grey,
+            style:
+                const TextStyle(
+              color: AppColors
+                  .textSecondary,
             ),
           ),
 
@@ -218,14 +222,11 @@ class AgendaCard extends StatelessWidget {
               style:
                   OutlinedButton.styleFrom(
                 foregroundColor:
-                    const Color(
-                  0xFFD4AF37,
-                ),
+                    AppColors.primary,
                 side:
                     const BorderSide(
-                  color: Color(
-                    0xFFD4AF37,
-                  ),
+                  color: AppColors
+                      .primary,
                 ),
                 padding:
                     const EdgeInsets.symmetric(

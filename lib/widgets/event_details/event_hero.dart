@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 
 import "../../models/event.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
 class EventHero extends StatelessWidget {
   final Event event;
@@ -50,32 +51,35 @@ class EventHero extends StatelessWidget {
               Text(
                 event.title,
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: AppColors.text,
                   fontSize: 32,
                   fontWeight:
                       FontWeight.w900,
                 ),
               ),
 
-              const SizedBox(height: 10),
+              const SizedBox(
+                height: 10,
+              ),
 
               Row(
                 children: [
                   const Icon(
                     Icons.location_on,
-                    color: Color(
-                      0xFFD4AF37,
-                    ),
+                    color:
+                        AppColors.primary,
                   ),
 
-                  const SizedBox(width: 6),
+                  const SizedBox(
+                    width: 6,
+                  ),
 
                   Expanded(
                     child: Text(
                       event.venue,
-                      style: const TextStyle(
-                        color:
-                            Colors.white70,
+                      style:
+                          const TextStyle(
+                        color: Colors.white70,
                       ),
                     ),
                   ),
@@ -83,7 +87,7 @@ class EventHero extends StatelessWidget {
               ),
             ],
           ),
-        )
+        ),
       ],
     );
   }

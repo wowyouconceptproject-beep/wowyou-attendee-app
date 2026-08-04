@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
 class StatusBadge extends StatelessWidget {
   final bool checkedIn;
@@ -11,11 +12,11 @@ class StatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final backgroundColor = checkedIn
-        ? Colors.green.shade700
-        : const Color(0xFFD4AF37);
+        ? AppColors.success
+        : AppColors.primary;
 
     final foregroundColor =
-        checkedIn ? Colors.white : Colors.black;
+        checkedIn ? Colors.white : Colors.white;
 
     final label = checkedIn
         ? "CHECKED IN"
@@ -28,7 +29,9 @@ class StatusBadge extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(
+          30,
+        ),
       ),
       child: Text(
         label,

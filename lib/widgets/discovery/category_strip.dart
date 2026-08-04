@@ -1,5 +1,7 @@
 import "package:flutter/material.dart";
 
+import "package:attendee_app/theme/app_colors.dart";
+
 class CategoryStrip extends StatefulWidget {
   final List<String> categories;
 
@@ -68,22 +70,16 @@ class _CategoryStripState
               ),
               decoration: BoxDecoration(
                 color: active
-                    ? const Color(
-                        0xFFD4AF37,
-                      )
-                    : const Color(
-                        0xFF1A1A1A,
-                      ),
+                    ? AppColors.primary
+                    : AppColors.card,
                 borderRadius:
                     BorderRadius.circular(
                   50,
                 ),
                 border: Border.all(
                   color: active
-                      ? const Color(
-                          0xFFD4AF37,
-                        )
-                      : Colors.white10,
+                      ? AppColors.primary
+                      : AppColors.border,
                 ),
               ),
               child: Center(
@@ -91,8 +87,8 @@ class _CategoryStripState
                   category,
                   style: TextStyle(
                     color: active
-                        ? Colors.black
-                        : Colors.white,
+                        ? Colors.white
+                        : AppColors.text,
                     fontWeight:
                         FontWeight.bold,
                   ),

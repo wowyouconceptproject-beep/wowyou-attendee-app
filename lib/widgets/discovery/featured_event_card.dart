@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 
 import "../../models/event.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
 class FeaturedEventCard extends StatelessWidget {
   final Event event;
@@ -23,8 +24,7 @@ class FeaturedEventCard extends StatelessWidget {
         ),
         height: 260,
         decoration: BoxDecoration(
-          borderRadius:
-              BorderRadius.circular(
+          borderRadius: BorderRadius.circular(
             30,
           ),
           image: DecorationImage(
@@ -38,12 +38,10 @@ class FeaturedEventCard extends StatelessWidget {
         ),
         child: Container(
           decoration: BoxDecoration(
-            borderRadius:
-                BorderRadius.circular(
+            borderRadius: BorderRadius.circular(
               30,
             ),
-            gradient:
-                const LinearGradient(
+            gradient: const LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
@@ -52,8 +50,7 @@ class FeaturedEventCard extends StatelessWidget {
               ],
             ),
           ),
-          padding:
-              const EdgeInsets.all(
+          padding: const EdgeInsets.all(
             24,
           ),
           child: Column(
@@ -68,12 +65,8 @@ class FeaturedEventCard extends StatelessWidget {
                   horizontal: 14,
                   vertical: 6,
                 ),
-                decoration:
-                    BoxDecoration(
-                  color:
-                      const Color(
-                    0xFFD4AF37,
-                  ),
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
                   borderRadius:
                       BorderRadius.circular(
                     50,
@@ -82,12 +75,10 @@ class FeaturedEventCard extends StatelessWidget {
                 child: const Text(
                   "FEATURED",
                   style: TextStyle(
-                    color:
-                        Colors.black,
+                    color: Colors.white,
                     fontWeight:
                         FontWeight.bold,
-                    letterSpacing:
-                        1.4,
+                    letterSpacing: 1.4,
                   ),
                 ),
               ),
@@ -120,9 +111,7 @@ class FeaturedEventCard extends StatelessWidget {
                     Icons.location_on,
                     size: 18,
                     color:
-                        Color(
-                      0xFFD4AF37,
-                    ),
+                        AppColors.primary,
                   ),
 
                   const SizedBox(
@@ -156,11 +145,9 @@ class FeaturedEventCard extends StatelessWidget {
                     style:
                         ElevatedButton.styleFrom(
                       backgroundColor:
-                          const Color(
-                        0xFFD4AF37,
-                      ),
+                          AppColors.primary,
                       foregroundColor:
-                          Colors.black,
+                          Colors.white,
                       shape:
                           RoundedRectangleBorder(
                         borderRadius:
@@ -170,10 +157,8 @@ class FeaturedEventCard extends StatelessWidget {
                       ),
                       padding:
                           const EdgeInsets.symmetric(
-                        horizontal:
-                            28,
-                        vertical:
-                            14,
+                        horizontal: 28,
+                        vertical: 14,
                       ),
                     ),
                     child: const Text(

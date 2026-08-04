@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 
 import "../../models/user_settings.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
 class ProfileHeader extends StatelessWidget {
   final UserSettings settings;
@@ -16,29 +17,52 @@ class ProfileHeader extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: 46,
-          backgroundImage: settings.avatar != null
-              ? NetworkImage(settings.avatar!)
-              : null,
-          child: settings.avatar == null
-              ? const Icon(
-                  Icons.person,
-                  size: 46,
-                )
-              : null,
+          backgroundColor: AppColors.primary,
+          backgroundImage:
+              settings.avatar != null
+                  ? NetworkImage(
+                      settings.avatar!,
+                    )
+                  : null,
+          child:
+              settings.avatar == null
+                  ? const Icon(
+                      Icons.person,
+                      size: 46,
+                      color: Colors.white,
+                    )
+                  : null,
         ),
-        const SizedBox(height: 16),
+
+        const SizedBox(
+          height: 16,
+        ),
+
         Text(
           settings.fullName,
           style: Theme.of(context)
               .textTheme
-              .titleLarge,
+              .titleLarge
+              ?.copyWith(
+                color: AppColors.text,
+                fontWeight:
+                    FontWeight.bold,
+              ),
         ),
-        const SizedBox(height: 4),
+
+        const SizedBox(
+          height: 4,
+        ),
+
         Text(
           settings.email,
           style: Theme.of(context)
               .textTheme
-              .bodyMedium,
+              .bodyMedium
+              ?.copyWith(
+                color: AppColors
+                    .textSecondary,
+              ),
         ),
       ],
     );

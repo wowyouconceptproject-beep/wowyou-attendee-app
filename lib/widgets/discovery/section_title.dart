@@ -1,5 +1,7 @@
 import "package:flutter/material.dart";
 
+import "package:attendee_app/theme/app_colors.dart";
+
 class SectionTitle extends StatelessWidget {
   final String title;
 
@@ -14,8 +16,7 @@ class SectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding:
-          const EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
         horizontal: 24,
       ),
       child: Column(
@@ -25,6 +26,7 @@ class SectionTitle extends StatelessWidget {
           Text(
             title,
             style: const TextStyle(
+              color: AppColors.text,
               fontSize: 22,
               fontWeight:
                   FontWeight.bold,
@@ -39,7 +41,8 @@ class SectionTitle extends StatelessWidget {
             Text(
               subtitle!,
               style: const TextStyle(
-                color: Colors.grey,
+                color:
+                    AppColors.textSecondary,
               ),
             ),
           ],

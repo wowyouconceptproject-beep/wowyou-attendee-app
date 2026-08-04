@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
-class EmptyEvents
-    extends StatelessWidget {
+class EmptyEvents extends StatelessWidget {
   final VoidCallback onDiscover;
 
   const EmptyEvents({
@@ -23,11 +23,24 @@ class EmptyEvents
           mainAxisAlignment:
               MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.event,
-              size: 90,
-              color: Color(
-                0xFFD4AF37,
+            Container(
+              width: 110,
+              height: 110,
+              decoration: BoxDecoration(
+                color: AppColors.primary
+                    .withValues(
+                  alpha: 0.12,
+                ),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: AppColors.border,
+                ),
+              ),
+              child: const Icon(
+                Icons.event,
+                size: 56,
+                color:
+                    AppColors.primary,
               ),
             ),
 
@@ -38,6 +51,7 @@ class EmptyEvents
             const Text(
               "No Events Yet",
               style: TextStyle(
+                color: AppColors.text,
                 fontSize: 28,
                 fontWeight:
                     FontWeight.bold,
@@ -53,7 +67,9 @@ class EmptyEvents
               textAlign:
                   TextAlign.center,
               style: TextStyle(
-                color: Colors.grey,
+                color: AppColors
+                    .textSecondary,
+                height: 1.6,
               ),
             ),
 
@@ -61,20 +77,36 @@ class EmptyEvents
               height: 30,
             ),
 
-            ElevatedButton(
-              onPressed:
-                  onDiscover,
-              style:
-                  ElevatedButton.styleFrom(
-                backgroundColor:
-                    const Color(
-                  0xFFD4AF37,
+            SizedBox(
+              width: 220,
+              child: ElevatedButton(
+                onPressed:
+                    onDiscover,
+                style:
+                    ElevatedButton.styleFrom(
+                  backgroundColor:
+                      AppColors.primary,
+                  foregroundColor:
+                      Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(
+                    vertical: 16,
+                  ),
+                  shape:
+                      RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(
+                      16,
+                    ),
+                  ),
                 ),
-                foregroundColor:
-                    Colors.black,
-              ),
-              child: const Text(
-                "Discover Events",
+                child: const Text(
+                  "Discover Events",
+                  style: TextStyle(
+                    fontWeight:
+                        FontWeight.bold,
+                  ),
+                ),
               ),
             ),
           ],

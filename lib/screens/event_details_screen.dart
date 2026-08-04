@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:url_launcher/url_launcher.dart";
+import "../theme/app_colors.dart";
 
 import "../models/event.dart";
 import "../providers/auth_provider.dart";
@@ -447,236 +448,210 @@ class _EventDetailsScreenState
   |--------------------------------------------------------------------------
   */
 
-  @override
-  Widget build(
-    BuildContext context,
-  ) {
-    return Scaffold(
+ @override
+Widget build(
+  BuildContext context,
+) {
+  return Scaffold(
+    backgroundColor:
+        AppColors.background,
+    body: RefreshIndicator(
+      color: AppColors.primary,
       backgroundColor:
-          const Color(
-        0xFF0B0B0B,
-      ),
-      body:
-          RefreshIndicator(
-        onRefresh:
-            _loadEvent,
-        child:
-            CustomScrollView(
-          physics:
-              const AlwaysScrollableScrollPhysics(),
-          slivers: [
-            /*
-            |--------------------------------------------------------------------------
-            | Event
-            |--------------------------------------------------------------------------
-            */
+          AppColors.card,
+      onRefresh:
+          _loadEvent,
+      child:
+          CustomScrollView(
+        physics:
+            const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          /*
+          |--------------------------------------------------------------------------
+          | Event
+          |--------------------------------------------------------------------------
+          */
 
-            SliverToBoxAdapter(
+          SliverToBoxAdapter(
+            child:
+                EventHero(
+              event:
+                  event,
+            ),
+          ),
+
+          if (loadingEvent)
+            const SliverToBoxAdapter(
               child:
-                  EventHero(
-                event:
-                    event,
-              ),
+                  LinearProgressIndicator(),
             ),
 
-            if (loadingEvent)
-              const SliverToBoxAdapter(
+          const SliverToBoxAdapter(
+            child:
+                SizedBox(
+              height:
+                  28,
+            ),
+          ),
+
+          SliverToBoxAdapter(
+            child:
+                EventInfoCard(
+              event:
+                  event,
+            ),
+          ),
+
+          const SliverToBoxAdapter(
+            child:
+                SizedBox(
+              height:
+                  32,
+            ),
+          ),
+
+          SliverToBoxAdapter(
+            child:
+                EventAbout(
+              description:
+                  event
+                      .description,
+            ),
+          ),
+
+          const SliverToBoxAdapter(
+            child:
+                SizedBox(
+              height:
+                  32,
+            ),
+          ),
+
+          /*
+          |--------------------------------------------------------------------------
+          | Loading Error
+          |--------------------------------------------------------------------------
+          */
+
+          if (loadError !=
+              null)
+            SliverToBoxAdapter(
+              child:
+                  Padding(
+                padding:
+                    const EdgeInsets.symmetric(
+                  horizontal:
+                      24,
+                ),
                 child:
-                    LinearProgressIndicator(),
-              ),
-
-            const SliverToBoxAdapter(
-              child:
-                  SizedBox(
-                height:
-                    28,
-              ),
-            ),
-
-            SliverToBoxAdapter(
-              child:
-                  EventInfoCard(
-                event:
-                    event,
-              ),
-            ),
-
-            const SliverToBoxAdapter(
-              child:
-                  SizedBox(
-                height:
-                    32,
-              ),
-            ),
-
-            SliverToBoxAdapter(
-              child:
-                  EventAbout(
-                description:
-                    event
-                        .description,
-              ),
-            ),
-
-            const SliverToBoxAdapter(
-              child:
-                  SizedBox(
-                height:
-                    32,
-              ),
-            ),
-
-            /*
-            |--------------------------------------------------------------------------
-            | Loading Error
-            |--------------------------------------------------------------------------
-            */
-
-            if (loadError !=
-                null)
-              SliverToBoxAdapter(
-                child:
-                    Padding(
+                    Container(
                   padding:
-                      const EdgeInsets.symmetric(
-                    horizontal:
-                        24,
+                      const EdgeInsets.all(
+                    18,
                   ),
-                  child:
-                      Container(
-                    padding:
-                        const EdgeInsets.all(
+                  decoration:
+                      BoxDecoration(
+                    color:
+                        AppColors.card,
+                    borderRadius:
+                        BorderRadius.circular(
                       18,
                     ),
-                    decoration:
-                        BoxDecoration(
+                    border: Border.all(
                       color:
-                          const Color(
-                        0xFF181818,
-                      ),
-                      borderRadius:
-                          BorderRadius.circular(
-                        18,
-                      ),
+                          AppColors.border,
                     ),
-                    child:
-                        Column(
-                      children: [
-                        Text(
-                          loadError!,
-                          textAlign:
-                              TextAlign.center,
-                          style:
-                              const TextStyle(
-                            color:
-                                Colors.grey,
-                          ),
+                  ),
+                  child:
+                      Column(
+                    children: [
+                      Text(
+                        loadError!,
+                        textAlign:
+                            TextAlign.center,
+                        style:
+                            const TextStyle(
+                          color:
+                              AppColors.textSecondary,
                         ),
+                      ),
 
-                        const SizedBox(
-                          height:
-                              12,
-                        ),
+                      const SizedBox(
+                        height:
+                            12,
+                      ),
 
-                        TextButton(
-                          onPressed:
-                              _loadEvent,
-                          child:
-                              const Text(
-                            "Retry",
-                          ),
+                      TextButton(
+                        onPressed:
+                            _loadEvent,
+                        child:
+                            const Text(
+                          "Retry",
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
+            ),
 
-            /*
-            |--------------------------------------------------------------------------
-            | Tickets
-            |--------------------------------------------------------------------------
-            */
+          /*
+          |--------------------------------------------------------------------------
+          | Tickets
+          |--------------------------------------------------------------------------
+          */
 
-            if (!loadingEvent &&
-                loadError ==
-                    null)
-              SliverToBoxAdapter(
-                child:
-                    TicketCard(
-                  tickets:
-                      event
-                          .tickets,
-                  currency:
-                      event
-                          .currency,
-                  selectedTicket:
-                      selectedTicket,
-                  quantity:
-                      quantity,
-                  onTicketSelected:
-                      (
-                    ticket,
-                  ) {
-                    setState(() {
-                      selectedTicket =
-                          ticket;
-
-                      quantity =
-                          1;
-                    });
-                  },
-                  onQuantityChanged:
-                      (
-                    value,
-                  ) {
-                    setState(() {
-                      quantity =
-                          value;
-                    });
-                  },
-                ),
-              ),
-
-            const SliverToBoxAdapter(
-              child:
-                  SizedBox(
-                height:
-                    36,
+                    if (!loadingEvent && loadError == null)
+            SliverToBoxAdapter(
+              child: TicketCard(
+                tickets: event.tickets,
+                currency: event.currency,
+                selectedTicket: selectedTicket,
+                quantity: quantity,
+                onTicketSelected: (ticket) {
+                  setState(() {
+                    selectedTicket = ticket;
+                    quantity = 1;
+                  });
+                },
+                onQuantityChanged: (value) {
+                  setState(() {
+                    quantity = value;
+                  });
+                },
               ),
             ),
 
-            /*
-            |--------------------------------------------------------------------------
-            | Checkout
-            |--------------------------------------------------------------------------
-            */
+          const SliverToBoxAdapter(
+            child: SizedBox(
+              height: 36,
+            ),
+          ),
 
-            if (!loadingEvent &&
-                loadError ==
-                    null &&
-                selectedTicket !=
-                    null)
-              SliverToBoxAdapter(
-                child:
-                    RegisterButton(
-                  loading:
-                      purchasing,
-                  onPressed:
-                      _purchaseTicket,
-                ),
-              ),
+          /*
+          |--------------------------------------------------------------------------
+          | Checkout
+          |--------------------------------------------------------------------------
+          */
 
-            const SliverToBoxAdapter(
-              child:
-                  SizedBox(
-                height:
-                    40,
+          if (!loadingEvent &&
+              loadError == null &&
+              selectedTicket != null)
+            SliverToBoxAdapter(
+              child: RegisterButton(
+                loading: purchasing,
+                onPressed: _purchaseTicket,
               ),
             ),
-          ],
-        ),
+
+          const SliverToBoxAdapter(
+            child: SizedBox(
+              height: 40,
+            ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
 }

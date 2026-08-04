@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
 import "../../models/match_card.dart";
 import "../../services/networking_service.dart";
@@ -46,7 +47,8 @@ class _NetworkingScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor:
-          const Color(0xFF101010),
+          AppColors.background,
+
       appBar: AppBar(
         backgroundColor:
             Colors.transparent,
@@ -55,6 +57,7 @@ class _NetworkingScreenState
           "AI Networking",
         ),
       ),
+
       body: FutureBuilder<List<MatchCard>>(
         future: _future,
         builder: (
@@ -67,7 +70,7 @@ class _NetworkingScreenState
               child:
                   CircularProgressIndicator(
                 color:
-                    Color(0xFFD4AF37),
+                    AppColors.primary,
               ),
             );
           }
@@ -87,20 +90,24 @@ class _NetworkingScreenState
                     const Icon(
                       Icons.error_outline,
                       color:
-                          Colors.redAccent,
+                          AppColors.error,
                       size: 70,
                     ),
+
                     const SizedBox(
                       height: 20,
                     ),
+
                     const Text(
                       "Unable to load networking recommendations.",
                       textAlign:
                           TextAlign.center,
                     ),
+
                     const SizedBox(
                       height: 20,
                     ),
+
                     ElevatedButton(
                       onPressed: () {
                         setState(() {
@@ -129,6 +136,9 @@ class _NetworkingScreenState
                       .score;
 
           return RefreshIndicator(
+            color: AppColors.primary,
+            backgroundColor:
+                AppColors.card,
             onRefresh: _refresh,
             child: ListView(
               padding:
@@ -153,7 +163,7 @@ class _NetworkingScreenState
                   "AI recommends attendees you should meet based on profession, industry, skills and networking goals.",
                   style: TextStyle(
                     color:
-                        Colors.grey,
+                        AppColors.textSecondary,
                     height: 1.6,
                   ),
                 ),
@@ -185,11 +195,13 @@ class _NetworkingScreenState
                           Icons.groups,
                           size: 90,
                           color:
-                              Colors.grey,
+                              AppColors.textSecondary,
                         ),
+
                         SizedBox(
                           height: 20,
                         ),
+
                         Text(
                           "No networking recommendations available yet.",
                           textAlign:
@@ -197,8 +209,8 @@ class _NetworkingScreenState
                                   .center,
                           style:
                               TextStyle(
-                            color: Colors
-                                .grey,
+                            color:
+                                AppColors.textSecondary,
                           ),
                         ),
                       ],

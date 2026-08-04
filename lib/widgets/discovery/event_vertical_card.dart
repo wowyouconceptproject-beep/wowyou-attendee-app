@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 
 import "../../models/event.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
 class EventVerticalCard
     extends StatelessWidget {
@@ -25,12 +26,13 @@ class EventVerticalCard
           vertical: 10,
         ),
         decoration: BoxDecoration(
-          color: const Color(
-            0xFF161616,
-          ),
+          color: AppColors.card,
           borderRadius:
               BorderRadius.circular(
             28,
+          ),
+          border: Border.all(
+            color: AppColors.border,
           ),
         ),
         clipBehavior: Clip.antiAlias,
@@ -62,7 +64,8 @@ class EventVerticalCard
                     event.title,
                     style:
                         const TextStyle(
-                      color: Colors.white,
+                      color:
+                          AppColors.text,
                       fontSize: 22,
                       fontWeight:
                           FontWeight
@@ -78,9 +81,8 @@ class EventVerticalCard
                     children: [
                       const Icon(
                         Icons.location_on,
-                        color: Color(
-                          0xFFD4AF37,
-                        ),
+                        color:
+                            AppColors.primary,
                         size: 18,
                       ),
 
@@ -94,7 +96,8 @@ class EventVerticalCard
                           style:
                               const TextStyle(
                             color:
-                                Colors.grey,
+                                AppColors
+                                    .textSecondary,
                           ),
                         ),
                       ),
@@ -109,7 +112,9 @@ class EventVerticalCard
                     "${event.startDate.day}/${event.startDate.month}/${event.startDate.year}",
                     style:
                         const TextStyle(
-                      color: Colors.grey,
+                      color:
+                          AppColors
+                              .textSecondary,
                     ),
                   ),
 
@@ -127,11 +132,9 @@ class EventVerticalCard
                       style:
                           ElevatedButton.styleFrom(
                         backgroundColor:
-                            const Color(
-                          0xFFD4AF37,
-                        ),
+                            AppColors.primary,
                         foregroundColor:
-                            Colors.black,
+                            Colors.white,
                         padding:
                             const EdgeInsets.symmetric(
                           vertical:

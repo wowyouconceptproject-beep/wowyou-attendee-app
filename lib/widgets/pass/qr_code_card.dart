@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:qr_flutter/qr_flutter.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
 class QrCodeCard extends StatelessWidget {
   final bool loading;
@@ -14,27 +15,42 @@ class QrCodeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 250),
+      duration: const Duration(
+        milliseconds: 250,
+      ),
       child: loading
           ? const Padding(
-              padding: EdgeInsets.all(40),
-              child: CircularProgressIndicator(
-                color: Color(0xFFD4AF37),
+              padding: EdgeInsets.all(
+                40,
+              ),
+              child:
+                  CircularProgressIndicator(
+                color:
+                    AppColors.primary,
               ),
             )
           : Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
+              padding:
+                  const EdgeInsets.all(
+                20,
+              ),
+              decoration:
+                  BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
+                borderRadius:
+                    BorderRadius.circular(
+                  24,
+                ),
                 border: Border.all(
-                  color: const Color(0xFFD4AF37),
+                  color:
+                      AppColors.primary,
                   width: 3,
                 ),
               ),
               child: QrImageView(
                 data: qrToken,
-                version: QrVersions.auto,
+                version:
+                    QrVersions.auto,
                 size: 280,
               ),
             ),

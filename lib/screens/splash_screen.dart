@@ -2,6 +2,7 @@ import "dart:async";
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
 import "../providers/auth_provider.dart";
 import "../services/attendee_profile_service.dart";
@@ -75,12 +76,6 @@ class _SplashScreenState
 
     if (!mounted) return;
 
-    /*
-    |--------------------------------------------------------------------------
-    | Guest User
-    |--------------------------------------------------------------------------
-    */
-
     if (!auth.isAuthenticated) {
       Navigator.pushReplacement(
         context,
@@ -92,12 +87,6 @@ class _SplashScreenState
 
       return;
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Logged In
-    |--------------------------------------------------------------------------
-    */
 
     if (mounted) {
       setState(() {
@@ -143,7 +132,7 @@ class _SplashScreenState
   ) {
     return Scaffold(
       backgroundColor:
-          const Color(0xFF050505),
+          AppColors.background,
       body: SafeArea(
         child: Padding(
           padding:
@@ -170,7 +159,7 @@ class _SplashScreenState
                             RadialGradient(
                           colors: [
                             Color(
-                              0x33D4AF37,
+                              0x333E86A4,
                             ),
                             Colors
                                 .transparent,
@@ -189,9 +178,8 @@ class _SplashScreenState
               const Text(
                 "WOWYOU",
                 style: TextStyle(
-                  color: Color(
-                    0xFFD4AF37,
-                  ),
+                  color:
+                      AppColors.primary,
                   fontSize: 42,
                   fontWeight:
                       FontWeight.w900,
@@ -226,7 +214,8 @@ class _SplashScreenState
                 textAlign:
                     TextAlign.center,
                 style: TextStyle(
-                  color: Colors.white,
+                  color:
+                      AppColors.text,
                   fontSize: 24,
                   height: 1.35,
                   fontWeight:
@@ -245,14 +234,10 @@ class _SplashScreenState
                     const LinearProgressIndicator(
                   minHeight: 4,
                   backgroundColor:
-                      Color(
-                    0x22FFFFFF,
-                  ),
+                      AppColors.border,
                   valueColor:
                       AlwaysStoppedAnimation(
-                    Color(
-                      0xFFD4AF37,
-                    ),
+                    AppColors.primary,
                   ),
                 ),
               ),
@@ -273,8 +258,8 @@ class _SplashScreenState
                   ),
                   style:
                       const TextStyle(
-                    color:
-                        Colors.white70,
+                    color: AppColors
+                        .textSecondary,
                     fontSize: 14,
                     letterSpacing: 0.5,
                   ),

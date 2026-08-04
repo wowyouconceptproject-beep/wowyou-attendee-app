@@ -1,9 +1,9 @@
 import "package:flutter/material.dart";
 
 import "../../models/purchased_ticket.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
-class VenueCard
-    extends StatelessWidget {
+class VenueCard extends StatelessWidget {
   final PurchasedTicket ticket;
 
   const VenueCard({
@@ -12,19 +12,23 @@ class VenueCard
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
     return Container(
       width: double.infinity,
       padding:
-          const EdgeInsets.all(22),
+          const EdgeInsets.all(
+        22,
+      ),
       decoration: BoxDecoration(
-        color:
-            const Color(
-          0xFF181818,
-        ),
+        color: AppColors.card,
         borderRadius:
             BorderRadius.circular(
           24,
+        ),
+        border: Border.all(
+          color: AppColors.border,
         ),
       ),
       child: Column(
@@ -36,14 +40,16 @@ class VenueCard
               Icon(
                 Icons.map,
                 color:
-                    Color(
-                  0xFFD4AF37,
-                ),
+                    AppColors.primary,
               ),
-              SizedBox(width: 12),
+              SizedBox(
+                width: 12,
+              ),
               Text(
                 "Venue",
                 style: TextStyle(
+                  color:
+                      AppColors.text,
                   fontSize: 20,
                   fontWeight:
                       FontWeight.bold,
@@ -60,8 +66,9 @@ class VenueCard
             ticket.venue,
             style:
                 const TextStyle(
-              color:
-                  Colors.grey,
+              color: AppColors
+                  .textSecondary,
+              height: 1.5,
             ),
           ),
         ],

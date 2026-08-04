@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
 class NotificationSection extends StatelessWidget {
   final bool push;
@@ -26,35 +27,79 @@ class NotificationSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: AppColors.card,
       child: Padding(
-        padding:
-            const EdgeInsets.symmetric(
+        padding: const EdgeInsets.symmetric(
           vertical: 8,
         ),
-        child: Column(
-          children: [
-            SwitchListTile(
-              value: push,
-              title: const Text(
-                "Push Notifications",
+        child: Theme(
+          data: Theme.of(context).copyWith(
+            switchTheme: SwitchThemeData(
+              thumbColor:
+                  WidgetStateProperty.resolveWith(
+                (states) => states.contains(
+                  WidgetState.selected,
+                )
+                    ? AppColors.primary
+                    : Colors.grey,
               ),
-              onChanged: onPushChanged,
-            ),
-            SwitchListTile(
-              value: email,
-              title: const Text(
-                "Email Notifications",
+              trackColor:
+                  WidgetStateProperty.resolveWith(
+                (states) => states.contains(
+                  WidgetState.selected,
+                )
+                    ? AppColors.primary
+                        .withValues(alpha: 0.35)
+                    : Colors.white12,
               ),
-              onChanged: onEmailChanged,
             ),
-            SwitchListTile(
-              value: sms,
-              title: const Text(
-                "SMS Notifications",
+          ),
+          child: Column(
+            children: [
+              SwitchListTile(
+                activeColor:
+                    AppColors.primary,
+                value: push,
+                title: const Text(
+                  "Push Notifications",
+                ),
+                onChanged:
+                    onPushChanged,
               ),
-              onChanged: onSmsChanged,
-            ),
-          ],
+
+              const Divider(
+                height: 1,
+                color: AppColors.border,
+              ),
+
+              SwitchListTile(
+                activeColor:
+                    AppColors.primary,
+                value: email,
+                title: const Text(
+                  "Email Notifications",
+                ),
+                onChanged:
+                    onEmailChanged,
+              ),
+
+              const Divider(
+                height: 1,
+                color: AppColors.border,
+              ),
+
+              SwitchListTile(
+                activeColor:
+                    AppColors.primary,
+                value: sms,
+                title: const Text(
+                  "SMS Notifications",
+                ),
+                onChanged:
+                    onSmsChanged,
+              ),
+            ],
+          ),
         ),
       ),
     );

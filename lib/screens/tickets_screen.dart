@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
 import "../models/purchased_ticket.dart";
 import "../providers/auth_provider.dart";
@@ -59,119 +60,119 @@ class _TicketsScreenState
   }
 
   /*
-  |--------------------------------------------------------------------------
-  | Load Tickets
-  |--------------------------------------------------------------------------
-  */
+|--------------------------------------------------------------------------
+| Load Tickets
+|--------------------------------------------------------------------------
+*/
 
-  Future<void> loadTickets() async {
+Future<void> loadTickets() async {
+  if (!mounted) return;
+
+  final auth =
+      context.read<AuthProvider>();
+
+  if (!auth.isAuthenticated) {
+    setState(() {
+      tickets = [];
+      loading = false;
+      error = null;
+    });
+
+    return;
+  }
+
+  setState(() {
+    loading = true;
+    error = null;
+  });
+
+  try {
+    final result =
+        await _purchaseService
+            .getMyTickets();
+
     if (!mounted) return;
 
-    final auth =
-        context.read<AuthProvider>();
+    setState(() {
+      tickets = result;
+      loading = false;
+    });
+  } catch (e) {
+    if (!mounted) return;
 
-    if (!auth.isAuthenticated) {
+    setState(() {
+      loading = false;
+
+      error =
+          "Unable to load your tickets.";
+    });
+  }
+}
+
+/*
+|--------------------------------------------------------------------------
+| Authentication Change
+|--------------------------------------------------------------------------
+|
+| IndexedStack keeps this screen alive.
+|
+| Therefore initState() does not run again after login/logout.
+| We detect the authentication transition here.
+|
+*/
+
+void _handleAuthChange(
+  bool isAuthenticated,
+) {
+  if (_wasAuthenticated ==
+      isAuthenticated) {
+    return;
+  }
+
+  _wasAuthenticated =
+      isAuthenticated;
+
+  WidgetsBinding.instance
+      .addPostFrameCallback((_) {
+    if (!mounted) return;
+
+    if (isAuthenticated) {
+      loadTickets();
+    } else {
       setState(() {
         tickets = [];
         loading = false;
         error = null;
       });
-
-      return;
     }
+  });
+}
 
-    setState(() {
-      loading = true;
-      error = null;
-    });
+ /*
+|--------------------------------------------------------------------------
+| Open Ticket / Event Hub
+|--------------------------------------------------------------------------
+*/
 
-    try {
-      final result =
-          await _purchaseService
-              .getMyTickets();
-
-      if (!mounted) return;
-
-      setState(() {
-        tickets = result;
-        loading = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
-
-      setState(() {
-        loading = false;
-
-        error =
-            "Unable to load your tickets.";
-      });
-    }
-  }
-
-  /*
-  |--------------------------------------------------------------------------
-  | Authentication Change
-  |--------------------------------------------------------------------------
-  |
-  | IndexedStack keeps this screen alive.
-  |
-  | Therefore initState() does not run again after login/logout.
-  | We detect the authentication transition here.
-  |
-  */
-
-  void _handleAuthChange(
-    bool isAuthenticated,
-  ) {
-    if (_wasAuthenticated ==
-        isAuthenticated) {
-      return;
-    }
-
-    _wasAuthenticated =
-        isAuthenticated;
-
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) {
-      if (!mounted) return;
-
-      if (isAuthenticated) {
-        loadTickets();
-      } else {
-        setState(() {
-          tickets = [];
-          loading = false;
-          error = null;
-        });
-      }
-    });
-  }
-
-  /*
-  |--------------------------------------------------------------------------
-  | Open Ticket / Event Hub
-  |--------------------------------------------------------------------------
-  */
-
-  void _openTicket(
-    PurchasedTicket ticket,
-  ) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) =>
-            EventHubScreen(
-          ticket: ticket,
-        ),
+void _openTicket(
+  PurchasedTicket ticket,
+) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) =>
+          EventHubScreen(
+        ticket: ticket,
       ),
-    );
-  }
+    ),
+  );
+}
 
-  /*
-  |--------------------------------------------------------------------------
-  | Build
-  |--------------------------------------------------------------------------
-  */
+/*
+|--------------------------------------------------------------------------
+| Build
+|--------------------------------------------------------------------------
+*/
 
 @override
 Widget build(BuildContext context) {
@@ -221,7 +222,7 @@ Widget build(BuildContext context) {
   }
 
   return Scaffold(
-    backgroundColor: const Color(0xFF0B0B0B),
+    backgroundColor: AppColors.background,
     appBar: AppBar(
       title: const Text("My Tickets"),
     ),
@@ -229,189 +230,195 @@ Widget build(BuildContext context) {
   );
 }
 
-  /*
-  |--------------------------------------------------------------------------
-  | Body
-  |--------------------------------------------------------------------------
-  */
+ /*
+|--------------------------------------------------------------------------
+| Body
+|--------------------------------------------------------------------------
+*/
 
-  Widget _buildBody() {
-    if (loading) {
-      return const Center(
-        child:
-            CircularProgressIndicator(),
-      );
-    }
+Widget _buildBody() {
+  if (loading) {
+    return const Center(
+      child:
+          CircularProgressIndicator(
+        color: AppColors.primary,
+      ),
+    );
+  }
 
-    if (error != null) {
-      return RefreshIndicator(
-        onRefresh:
-            loadTickets,
-        child: ListView(
-          physics:
-              const AlwaysScrollableScrollPhysics(),
-          children: [
-            SizedBox(
-              height:
-                  MediaQuery.sizeOf(
-                        context,
-                      ).height *
-                      .25,
+  if (error != null) {
+    return RefreshIndicator(
+      color: AppColors.primary,
+      backgroundColor: AppColors.card,
+      onRefresh:
+          loadTickets,
+      child: ListView(
+        physics:
+            const AlwaysScrollableScrollPhysics(),
+        children: [
+          SizedBox(
+            height:
+                MediaQuery.sizeOf(
+                      context,
+                    ).height *
+                    .25,
+          ),
+
+          const Icon(
+            Icons
+                .error_outline_rounded,
+            size: 52,
+            color:
+                AppColors.textSecondary,
+          ),
+
+          const SizedBox(
+            height: 18,
+          ),
+
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(
+              horizontal: 32,
             ),
-
-            const Icon(
-              Icons
-                  .error_outline_rounded,
-              size: 52,
-              color:
-                  Colors.grey,
-            ),
-
-            const SizedBox(
-              height: 18,
-            ),
-
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(
-                horizontal: 32,
+            child: Text(
+              error!,
+              textAlign:
+                  TextAlign.center,
+              style:
+                  const TextStyle(
+                color:
+                    AppColors.textSecondary,
+                fontSize:
+                    16,
               ),
-              child: Text(
-                error!,
-                textAlign:
-                    TextAlign.center,
-                style:
-                    const TextStyle(
-                  color:
-                      Colors.grey,
-                  fontSize:
-                      16,
-                ),
-              ),
             ),
+          ),
 
-            const SizedBox(
-              height: 20,
-            ),
+          const SizedBox(
+            height: 20,
+          ),
 
-            Center(
+          Center(
+            child:
+                FilledButton(
+              onPressed:
+                  loadTickets,
               child:
-                  FilledButton(
-                onPressed:
-                    loadTickets,
-                child:
-                    const Text(
-                  "Try Again",
-                ),
+                  const Text(
+                "Try Again",
               ),
             ),
-          ],
-        ),
-      );
-    }
+          ),
+        ],
+      ),
+    );
+  }
 
-    if (tickets.isEmpty) {
-      return RefreshIndicator(
-        onRefresh:
-            loadTickets,
-        child: ListView(
-          physics:
-              const AlwaysScrollableScrollPhysics(),
-          children: [
-            SizedBox(
-              height:
-                  MediaQuery.sizeOf(
-                        context,
-                      ).height *
-                      .22,
+  if (tickets.isEmpty) {
+    return RefreshIndicator(
+      color: AppColors.primary,
+      backgroundColor: AppColors.card,
+      onRefresh:
+          loadTickets,
+      child: ListView(
+        physics:
+            const AlwaysScrollableScrollPhysics(),
+        children: [
+          SizedBox(
+            height:
+                MediaQuery.sizeOf(
+                      context,
+                    ).height *
+                    .22,
+          ),
+
+          const Icon(
+            Icons
+                .confirmation_number_outlined,
+            size: 64,
+            color:
+                AppColors.primary,
+          ),
+
+          const SizedBox(
+            height: 22,
+          ),
+
+          const Text(
+            "No tickets yet",
+            textAlign:
+                TextAlign.center,
+            style:
+                TextStyle(
+              fontSize: 24,
+              fontWeight:
+                  FontWeight.bold,
             ),
+          ),
 
-            const Icon(
-              Icons
-                  .confirmation_number_outlined,
-              size: 64,
-              color:
-                  Color(
-                0xFFD4AF37,
-              ),
+          const SizedBox(
+            height: 10,
+          ),
+
+          const Padding(
+            padding:
+                EdgeInsets.symmetric(
+              horizontal: 40,
             ),
-
-            const SizedBox(
-              height: 22,
-            ),
-
-            const Text(
-              "No tickets yet",
+            child: Text(
+              "Tickets you've successfully acquired will appear here.",
               textAlign:
                   TextAlign.center,
               style:
                   TextStyle(
-                fontSize: 24,
-                fontWeight:
-                    FontWeight.bold,
+                color:
+                    AppColors.textSecondary,
+                height: 1.5,
               ),
             ),
-
-            const SizedBox(
-              height: 10,
-            ),
-
-            const Padding(
-              padding:
-                  EdgeInsets.symmetric(
-                horizontal: 40,
-              ),
-              child: Text(
-                "Tickets you've successfully acquired will appear here.",
-                textAlign:
-                    TextAlign.center,
-                style:
-                    TextStyle(
-                  color:
-                      Colors.grey,
-                  height: 1.5,
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return RefreshIndicator(
-      onRefresh:
-          loadTickets,
-      child: ListView.builder(
-        physics:
-            const AlwaysScrollableScrollPhysics(),
-        padding:
-            const EdgeInsets.fromLTRB(
-          20,
-          20,
-          20,
-          40,
-        ),
-        itemCount:
-            tickets.length,
-        itemBuilder:
-            (
-          context,
-          index,
-        ) {
-          final ticket =
-              tickets[index];
-
-          return _TicketCard(
-            ticket: ticket,
-            onTap: () =>
-                _openTicket(
-              ticket,
-            ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
+
+  return RefreshIndicator(
+    color: AppColors.primary,
+    backgroundColor: AppColors.card,
+    onRefresh:
+        loadTickets,
+    child: ListView.builder(
+      physics:
+          const AlwaysScrollableScrollPhysics(),
+      padding:
+          const EdgeInsets.fromLTRB(
+        20,
+        20,
+        20,
+        40,
+      ),
+      itemCount:
+          tickets.length,
+      itemBuilder:
+          (
+        context,
+        index,
+      ) {
+        final ticket =
+            tickets[index];
+
+        return _TicketCard(
+          ticket: ticket,
+          onTap: () =>
+              _openTicket(
+            ticket,
+          ),
+        );
+      },
+    ),
+  );
+}
 }
 
 /*
@@ -451,10 +458,7 @@ class _TicketCard
     );
 
     return Card(
-      color:
-          const Color(
-        0xFF181818,
-      ),
+      color: AppColors.card,
       margin:
           const EdgeInsets.only(
         bottom: 18,
@@ -469,8 +473,7 @@ class _TicketCard
         ),
       ),
       child: InkWell(
-        onTap:
-            onTap,
+        onTap: onTap,
         child: Column(
           crossAxisAlignment:
               CrossAxisAlignment.start,
@@ -554,11 +557,9 @@ class _TicketCard
                         decoration:
                             BoxDecoration(
                           color:
-                              const Color(
-                            0xFFD4AF37,
-                          ).withValues(
-                            alpha:
-                                .12,
+                              AppColors.primary
+                                  .withValues(
+                            alpha: .12,
                           ),
                           borderRadius:
                               BorderRadius.circular(
@@ -571,9 +572,7 @@ class _TicketCard
                           style:
                               TextStyle(
                             color:
-                                Color(
-                              0xFFD4AF37,
-                            ),
+                                AppColors.primary,
                             fontSize:
                                 11,
                             fontWeight:
@@ -588,14 +587,16 @@ class _TicketCard
                     height: 8,
                   ),
 
+                  const SizedBox(
+                    height: 8,
+                  ),
+
                   Text(
                     ticket.ticketName,
                     style:
                         const TextStyle(
                       color:
-                          Color(
-                        0xFFD4AF37,
-                      ),
+                          AppColors.primary,
                       fontWeight:
                           FontWeight.w600,
                     ),
@@ -643,9 +644,7 @@ class _TicketCard
 
                   const Divider(
                     color:
-                        Color(
-                      0xFF2A2A2A,
-                    ),
+                        AppColors.border,
                   ),
 
                   const SizedBox(
@@ -665,7 +664,7 @@ class _TicketCard
                             style:
                                 TextStyle(
                               color:
-                                  Colors.grey,
+                                  AppColors.textSecondary,
                               fontSize:
                                   12,
                             ),
@@ -698,10 +697,8 @@ class _TicketCard
                                 TextStyle(
                               color:
                                   ticket.checkedIn
-                                      ? Colors.greenAccent
-                                      : const Color(
-                                          0xFFD4AF37,
-                                        ),
+                                      ? AppColors.success
+                                      : AppColors.primary,
                               fontWeight:
                                   FontWeight.w600,
                             ),
@@ -715,9 +712,7 @@ class _TicketCard
                             Icons
                                 .chevron_right,
                             color:
-                                Color(
-                              0xFFD4AF37,
-                            ),
+                                AppColors.primary,
                           ),
                         ],
                       ),
@@ -732,94 +727,91 @@ class _TicketCard
     );
   }
 
-  /*
-  |--------------------------------------------------------------------------
-  | Placeholder
-  |--------------------------------------------------------------------------
-  */
+ /*
+|--------------------------------------------------------------------------
+| Placeholder
+|--------------------------------------------------------------------------
+*/
 
-  static Widget
-      _imagePlaceholder() {
-    return Container(
-      width:
-          double.infinity,
-      height: 170,
-      color:
-          const Color(
-        0xFF202020,
-      ),
+Widget _imagePlaceholder() {
+  return Container(
+    width:
+        double.infinity,
+    height: 170,
+    color:
+        AppColors.surface,
+    child:
+        const Center(
       child:
-          const Center(
-        child:
-            Icon(
-          Icons.event,
-          size: 52,
-          color:
-              Colors.grey,
-        ),
+          Icon(
+        Icons.event,
+        size: 52,
+        color:
+            AppColors.textSecondary,
       ),
-    );
+    ),
+  );
+}
+
+/*
+|--------------------------------------------------------------------------
+| Date
+|--------------------------------------------------------------------------
+*/
+
+String _formatDate(
+  DateTime date,
+) {
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  final local =
+      date.toLocal();
+
+  return "${months[local.month - 1]} ${local.day}, ${local.year}";
+}
+
+/*
+|--------------------------------------------------------------------------
+| Amount
+|--------------------------------------------------------------------------
+*/
+
+String _formatAmount(
+  double amount,
+  String currency,
+) {
+  if (amount <= 0) {
+    return "Free";
   }
 
-  /*
-  |--------------------------------------------------------------------------
-  | Date
-  |--------------------------------------------------------------------------
-  */
+  final value =
+      amount ==
+              amount
+                  .truncateToDouble()
+          ? amount
+              .toStringAsFixed(
+                0,
+              )
+          : amount
+              .toStringAsFixed(
+                2,
+              );
 
-  static String _formatDate(
-    DateTime date,
-  ) {
-    const months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
-
-    final local =
-        date.toLocal();
-
-    return "${months[local.month - 1]} ${local.day}, ${local.year}";
-  }
-
-  /*
-  |--------------------------------------------------------------------------
-  | Amount
-  |--------------------------------------------------------------------------
-  */
-
-  static String _formatAmount(
-    double amount,
-    String currency,
-  ) {
-    if (amount <= 0) {
-      return "Free";
-    }
-
-    final value =
-        amount ==
-                amount
-                    .truncateToDouble()
-            ? amount
-                .toStringAsFixed(
-                  0,
-                )
-            : amount
-                .toStringAsFixed(
-                  2,
-                );
-
-    return "$currency $value";
-  }
+  return "$currency $value";
+}
 }
 
 /*
@@ -849,7 +841,7 @@ class _TicketInfoRow
           icon,
           size: 18,
           color:
-              Colors.grey,
+              AppColors.textSecondary,
         ),
 
         const SizedBox(
@@ -863,7 +855,7 @@ class _TicketInfoRow
             style:
                 const TextStyle(
               color:
-                  Colors.grey,
+                  AppColors.textSecondary,
             ),
           ),
         ),

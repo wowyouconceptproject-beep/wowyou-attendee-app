@@ -4,6 +4,7 @@ import "../../models/activity.dart";
 import "../../models/purchased_ticket.dart";
 import "../../services/activity_service.dart";
 import "../../services/socket_service.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
 class ActivityPanel extends StatefulWidget {
   final PurchasedTicket ticket;
@@ -116,12 +117,10 @@ class _ActivityPanelState
         return Colors.deepPurple;
 
       case "VENDOR_CHECK_IN":
-        return const Color(
-          0xFFD4AF37,
-        );
+        return AppColors.primary;
 
       default:
-        return Colors.grey;
+  return AppColors.textSecondary;
     }
   }
 
@@ -214,10 +213,7 @@ class _ActivityPanelState
                             .actorName!,
                         style:
                             const TextStyle(
-                          color:
-                              Color(
-                            0xFFD4AF37,
-                          ),
+                          color: AppColors.primary,
                           fontSize: 12,
                         ),
                       ),
@@ -230,8 +226,7 @@ class _ActivityPanelState
                             .ticketTypeName!,
                         style:
                             const TextStyle(
-                          color:
-                              Colors.grey,
+                          color: AppColors.textSecondary,
                           fontSize: 12,
                         ),
                       ),
@@ -244,8 +239,7 @@ class _ActivityPanelState
                             .station!,
                         style:
                             const TextStyle(
-                          color:
-                              Colors.grey,
+                          color: AppColors.textSecondary,
                           fontSize: 12,
                         ),
                       ),
@@ -278,10 +272,10 @@ class _ActivityPanelState
         22,
       ),
       decoration: BoxDecoration(
-        color:
-            const Color(
-          0xFF181818,
-        ),
+        color: AppColors.card,
+        border: Border.all(
+  color: AppColors.border,
+),
         borderRadius:
             BorderRadius.circular(
           24,
@@ -296,10 +290,7 @@ class _ActivityPanelState
             children: [
               Icon(
                 Icons.timeline,
-                color:
-                    Color(
-                  0xFFD4AF37,
-                ),
+                color: AppColors.primary,
               ),
 
               SizedBox(
@@ -324,7 +315,7 @@ class _ActivityPanelState
           const Text(
             "Live activity happening across your event.",
             style: TextStyle(
-              color: Colors.grey,
+              color: AppColors.textSecondary,
               height: 1.5,
             ),
           ),
@@ -338,22 +329,19 @@ class _ActivityPanelState
               child:
                   CircularProgressIndicator(),
             )
-          else if (_activities
-              .isEmpty)
-            const Padding(
-              padding:
-                  EdgeInsets.symmetric(
-                vertical: 20,
-              ),
-              child: Text(
-                "No activity yet.",
-                style: TextStyle(
-                  color:
-                      Colors.grey,
-                ),
-              ),
-            )
-          else
+          else if (_activities.isEmpty)
+  const Padding(
+    padding: EdgeInsets.symmetric(
+      vertical: 20,
+    ),
+    child: Text(
+      "No activity yet.",
+      style: TextStyle(
+        color: AppColors.textSecondary,
+      ),
+    ),
+  )
+else
             Column(
               children:
                   _activities

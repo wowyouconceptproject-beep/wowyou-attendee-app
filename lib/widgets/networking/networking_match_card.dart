@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 
 import "../../models/match_card.dart";
 import "../../screens/attendee_details_screen.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
 class NetworkingMatchCard extends StatelessWidget {
   final MatchCard match;
@@ -13,108 +14,171 @@ class NetworkingMatchCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final initials = match.firstName.isNotEmpty
-        ? match.firstName[0].toUpperCase()
-        : "?";
+    final initials =
+        match.firstName.isNotEmpty
+            ? match.firstName[0]
+                .toUpperCase()
+            : "?";
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 18),
+      margin:
+          const EdgeInsets.only(
+        bottom: 18,
+      ),
       decoration: BoxDecoration(
-        color: const Color(0xFF181818),
-        borderRadius: BorderRadius.circular(24),
+        color: AppColors.card,
+        borderRadius:
+            BorderRadius.circular(
+          24,
+        ),
+        border: Border.all(
+          color: AppColors.border,
+        ),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(22),
+        padding:
+            const EdgeInsets.all(
+          22,
+        ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment:
+              CrossAxisAlignment
+                  .start,
           children: [
             Row(
               children: [
                 CircleAvatar(
                   radius: 30,
-                  backgroundColor: const Color(0xFFD4AF37),
-                  backgroundImage: match.avatar != null &&
-                          match.avatar!.isNotEmpty
-                      ? NetworkImage(match.avatar!)
-                      : null,
-                  child: match.avatar == null ||
-                          match.avatar!.isEmpty
-                      ? Text(
-                          initials,
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 22,
-                          ),
-                        )
-                      : null,
+                  backgroundColor:
+                      AppColors.primary,
+                  backgroundImage:
+                      match.avatar !=
+                                  null &&
+                              match.avatar!
+                                  .isNotEmpty
+                          ? NetworkImage(
+                              match.avatar!,
+                            )
+                          : null,
+                  child:
+                      match.avatar ==
+                                  null ||
+                              match.avatar!
+                                  .isEmpty
+                          ? Text(
+                              initials,
+                              style:
+                                  const TextStyle(
+                                color:
+                                    Colors.white,
+                                fontWeight:
+                                    FontWeight.bold,
+                                fontSize:
+                                    22,
+                              ),
+                            )
+                          : null,
                 ),
-                const SizedBox(width: 16),
+
+                const SizedBox(
+                  width: 16,
+                ),
+
                 Expanded(
                   child: Column(
                     crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                        CrossAxisAlignment
+                            .start,
                     children: [
                       Text(
                         match.fullName,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
+                        style:
+                            const TextStyle(
+                          color:
+                              AppColors.text,
+                          fontWeight:
+                              FontWeight.bold,
+                          fontSize:
+                              20,
                         ),
                       ),
-                      if (match.profession != null &&
-                          match.profession!.isNotEmpty)
+
+                      if (match.profession !=
+                              null &&
+                          match.profession!
+                              .isNotEmpty)
                         Padding(
                           padding:
-                              const EdgeInsets.only(top: 4),
+                              const EdgeInsets.only(
+                            top: 4,
+                          ),
                           child: Text(
-                            match.profession!,
-                            style: const TextStyle(
-                              color: Colors.white70,
+                            match
+                                .profession!,
+                            style:
+                                const TextStyle(
+                              color: AppColors
+                                  .textSecondary,
                             ),
                           ),
                         ),
-                      if (match.company != null &&
-                          match.company!.isNotEmpty)
+
+                      if (match.company !=
+                              null &&
+                          match.company!
+                              .isNotEmpty)
                         Padding(
                           padding:
-                              const EdgeInsets.only(top: 2),
+                              const EdgeInsets.only(
+                            top: 2,
+                          ),
                           child: Text(
                             match.company!,
-                            style: const TextStyle(
-                              color: Colors.grey,
+                            style:
+                                const TextStyle(
+                              color: AppColors
+                                  .textSecondary,
                             ),
                           ),
                         ),
                     ],
                   ),
                 ),
+
                 Container(
                   padding:
                       const EdgeInsets.symmetric(
                     horizontal: 14,
                     vertical: 10,
                   ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFD4AF37),
+                  decoration:
+                      BoxDecoration(
+                    color:
+                        AppColors.primary,
                     borderRadius:
-                        BorderRadius.circular(14),
+                        BorderRadius.circular(
+                      14,
+                    ),
                   ),
                   child: Column(
                     children: [
                       const Text(
                         "MATCH",
-                        style: TextStyle(
+                        style:
+                            TextStyle(
                           fontSize: 10,
                           fontWeight:
                               FontWeight.bold,
-                          color: Colors.black54,
+                          color: Colors
+                              .white70,
                         ),
                       ),
                       Text(
                         "${match.score}%",
-                        style: const TextStyle(
-                          color: Colors.black,
+                        style:
+                            const TextStyle(
+                          color:
+                              Colors.white,
                           fontWeight:
                               FontWeight.bold,
                           fontSize: 18,
@@ -126,44 +190,76 @@ class NetworkingMatchCard extends StatelessWidget {
               ],
             ),
 
-            if (match.explanation != null &&
-                match.explanation!.isNotEmpty) ...[
-              const SizedBox(height: 20),
+            if (match.explanation !=
+                    null &&
+                match.explanation!
+                    .isNotEmpty) ...[
+              const SizedBox(
+                height: 20,
+              ),
+
               Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF222222),
+                width:
+                    double.infinity,
+                padding:
+                    const EdgeInsets.all(
+                  18,
+                ),
+                decoration:
+                    BoxDecoration(
+                  color:
+                      AppColors.surface,
                   borderRadius:
-                      BorderRadius.circular(16),
+                      BorderRadius.circular(
+                    16,
+                  ),
+                  border: Border.all(
+                    color:
+                        AppColors.border,
+                  ),
                 ),
                 child: Column(
                   crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                      CrossAxisAlignment
+                          .start,
                   children: [
                     const Row(
                       children: [
                         Icon(
-                          Icons.auto_awesome,
-                          color: Color(0xFFD4AF37),
+                          Icons
+                              .auto_awesome,
+                          color:
+                              AppColors.primary,
                           size: 18,
                         ),
-                        SizedBox(width: 8),
+                        SizedBox(
+                          width: 8,
+                        ),
                         Text(
                           "AI Insight",
-                          style: TextStyle(
+                          style:
+                              TextStyle(
+                            color:
+                                AppColors.text,
                             fontWeight:
                                 FontWeight.bold,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+
+                    SizedBox(
+                      height: 12,
+                    ),
+
                     Text(
-                      match.explanation!,
-                      style: const TextStyle(
+                      match
+                          .explanation!,
+                      style:
+                          const TextStyle(
                         height: 1.6,
-                        color: Colors.white70,
+                        color: AppColors
+                            .textSecondary,
                       ),
                     ),
                   ],
@@ -171,24 +267,38 @@ class NetworkingMatchCard extends StatelessWidget {
               ),
             ],
 
-            if (match.reasons.isNotEmpty) ...[
-              const SizedBox(height: 20),
+            if (match.reasons
+                .isNotEmpty) ...[
+              const SizedBox(
+                height: 20,
+              ),
+
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: match.reasons
+                children: match
+                    .reasons
                     .map(
-                      (reason) => Chip(
+                      (reason) =>
+                          Chip(
                         backgroundColor:
-                            const Color(
-                                0xFF2A2A2A),
-                        side: BorderSide.none,
+                            AppColors
+                                .surface,
+                        side:
+                            const BorderSide(
+                          color:
+                              AppColors
+                                  .border,
+                        ),
                         label: Text(
                           reason.message,
                           style:
                               const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
+                            color:
+                                AppColors
+                                    .text,
+                            fontSize:
+                                12,
                           ),
                         ),
                       ),
@@ -197,21 +307,27 @@ class NetworkingMatchCard extends StatelessWidget {
               ),
             ],
 
-            const SizedBox(height: 24),
+            const SizedBox(
+              height: 24,
+            ),
 
             SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
+              width:
+                  double.infinity,
+              child:
+                  ElevatedButton.icon(
                 onPressed: () {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => AttendeeDetailsScreen(
-        attendee: match,
-      ),
-    ),
-  );
-},
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          AttendeeDetailsScreen(
+                        attendee:
+                            match,
+                      ),
+                    ),
+                  );
+                },
                 icon: const Icon(
                   Icons.person_outline,
                 ),
@@ -221,9 +337,9 @@ class NetworkingMatchCard extends StatelessWidget {
                 style:
                     ElevatedButton.styleFrom(
                   backgroundColor:
-                      const Color(0xFFD4AF37),
+                      AppColors.primary,
                   foregroundColor:
-                      Colors.black,
+                      Colors.white,
                   elevation: 0,
                   padding:
                       const EdgeInsets.symmetric(

@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
 class NetworkingSummaryCard extends StatelessWidget {
   final int totalMatches;
@@ -17,9 +18,14 @@ class NetworkingSummaryCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color: const Color(0xFF181818),
+        color: AppColors.card,
         borderRadius:
-            BorderRadius.circular(22),
+            BorderRadius.circular(
+          22,
+        ),
+        border: Border.all(
+          color: AppColors.border,
+        ),
       ),
       child: Row(
         children: [
@@ -27,8 +33,7 @@ class NetworkingSummaryCard extends StatelessWidget {
             width: 64,
             height: 64,
             decoration: BoxDecoration(
-              color:
-                  const Color(0xFFD4AF37),
+              color: AppColors.primary,
               borderRadius:
                   BorderRadius.circular(
                 18,
@@ -36,12 +41,14 @@ class NetworkingSummaryCard extends StatelessWidget {
             ),
             child: const Icon(
               Icons.auto_awesome,
-              color: Colors.black,
+              color: Colors.white,
               size: 34,
             ),
           ),
 
-          const SizedBox(width: 20),
+          const SizedBox(
+            width: 20,
+          ),
 
           Expanded(
             child: Column(
@@ -51,18 +58,22 @@ class NetworkingSummaryCard extends StatelessWidget {
                 const Text(
                   "AI Networking",
                   style: TextStyle(
+                    color: AppColors.text,
                     fontSize: 20,
                     fontWeight:
                         FontWeight.bold,
                   ),
                 ),
 
-                const SizedBox(height: 6),
+                const SizedBox(
+                  height: 6,
+                ),
 
                 Text(
                   "$totalMatches attendees recommended",
                   style: const TextStyle(
-                    color: Colors.grey,
+                    color: AppColors
+                        .textSecondary,
                   ),
                 ),
               ],
@@ -76,7 +87,8 @@ class NetworkingSummaryCard extends StatelessWidget {
               const Text(
                 "Highest",
                 style: TextStyle(
-                  color: Colors.grey,
+                  color: AppColors
+                      .textSecondary,
                 ),
               ),
 
@@ -84,7 +96,7 @@ class NetworkingSummaryCard extends StatelessWidget {
                 "$highestScore%",
                 style: const TextStyle(
                   color:
-                      Color(0xFFD4AF37),
+                      AppColors.primary,
                   fontWeight:
                       FontWeight.bold,
                   fontSize: 28,

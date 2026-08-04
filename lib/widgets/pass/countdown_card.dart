@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
 class CountdownCard extends StatelessWidget {
   final int secondsRemaining;
@@ -15,18 +16,23 @@ class CountdownCard extends StatelessWidget {
         const Text(
           "Refreshing Secure Pass",
           style: TextStyle(
-            color: Colors.white70,
+            color:
+                AppColors.textSecondary,
           ),
         ),
 
-        const SizedBox(height: 8),
+        const SizedBox(
+          height: 8,
+        ),
 
         Text(
           "${secondsRemaining}s",
           style: const TextStyle(
-            color: Color(0xFFD4AF37),
+            color:
+                AppColors.primary,
             fontSize: 34,
-            fontWeight: FontWeight.bold,
+            fontWeight:
+                FontWeight.bold,
           ),
         ),
       ],

@@ -5,6 +5,7 @@ import "../services/event_service.dart";
 
 import "event_details_screen.dart";
 
+import "../theme/app_colors.dart";
 
 import "../widgets/discovery/discovery_header.dart";
 import "../widgets/discovery/featured_event_card.dart";
@@ -68,6 +69,8 @@ class _HomeScreenState
   ) {
     if (loading) {
       return const Scaffold(
+        backgroundColor:
+            AppColors.background,
         body: Center(
           child:
               CircularProgressIndicator(),
@@ -76,19 +79,24 @@ class _HomeScreenState
     }
 
     return Scaffold(
+      backgroundColor:
+          AppColors.background,
       body: RefreshIndicator(
+        color: AppColors.primary,
+        backgroundColor:
+            AppColors.card,
         onRefresh: loadEvents,
         child: CustomScrollView(
           slivers: [
             const SliverToBoxAdapter(
-  child: DiscoveryHeader(),
-),
+              child: DiscoveryHeader(),
+            ),
 
-const SliverToBoxAdapter(
-  child: SizedBox(
-    height: 28,
-  ),
-),
+            const SliverToBoxAdapter(
+              child: SizedBox(
+                height: 28,
+              ),
+            ),
 
             if (events.isNotEmpty)
               SliverToBoxAdapter(

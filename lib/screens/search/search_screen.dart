@@ -6,6 +6,7 @@ import "../../models/event.dart";
 import "../../services/search_service.dart";
 
 import "../event_details_screen.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({
@@ -251,371 +252,367 @@ class _SearchScreenState
         _controller.text.trim();
 
     return Scaffold(
-      backgroundColor:
-          const Color(
-        0xFF0B0B0B,
+      backgroundColor: AppColors.background,
+
+  /*
+|--------------------------------------------------------------------------
+| Search Header
+|--------------------------------------------------------------------------
+*/
+
+appBar: AppBar(
+  backgroundColor: AppColors.background,
+  elevation: 0,
+  titleSpacing: 0,
+  title: Container(
+    height: 48,
+    margin: const EdgeInsets.only(
+      right: 16,
+    ),
+    decoration: BoxDecoration(
+      color: AppColors.card,
+      borderRadius:
+          BorderRadius.circular(
+        16,
       ),
-
-      /*
-      |--------------------------------------------------------------------------
-      | Search Header
-      |--------------------------------------------------------------------------
-      */
-
-      appBar: AppBar(
-        backgroundColor:
-            const Color(
-          0xFF0B0B0B,
+      border: Border.all(
+        color: AppColors.border,
+      ),
+    ),
+    child: TextField(
+      controller:
+          _controller,
+      autofocus: true,
+      style:
+          const TextStyle(
+        color: AppColors.text,
+        fontSize: 15,
+      ),
+      cursorColor:
+          AppColors.primary,
+      textInputAction:
+          TextInputAction.search,
+      onChanged:
+          _onSearchChanged,
+      onSubmitted:
+          _submitSearch,
+      decoration:
+          InputDecoration(
+        border:
+            InputBorder.none,
+        hintText:
+            "Search events, venues...",
+        hintStyle:
+            const TextStyle(
+          color:
+              AppColors.textSecondary,
         ),
-        elevation: 0,
-        titleSpacing: 0,
-        title: Container(
-          height: 48,
-          margin:
-              const EdgeInsets.only(
-            right: 16,
-          ),
-          decoration:
-              BoxDecoration(
-            color: const Color(
-              0xFF181818,
+        prefixIcon:
+            const Icon(
+          Icons.search,
+          color:
+              AppColors.textSecondary,
+        ),
+        suffixIcon:
+            query.isNotEmpty
+                ? IconButton(
+                    onPressed:
+                        _clearSearch,
+                    icon:
+                        const Icon(
+                      Icons.close,
+                      color:
+                          AppColors.textSecondary,
+                    ),
+                  )
+                : null,
+      ),
+    ),
+  ),
+),
+
+/*
+|--------------------------------------------------------------------------
+| Body
+|--------------------------------------------------------------------------
+*/
+
+body: _buildBody(),
+);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Body State
+|--------------------------------------------------------------------------
+*/
+
+Widget _buildBody() {
+  final query =
+      _controller.text.trim();
+
+  /*
+  |--------------------------------------------------------------------------
+  | Empty Search
+  |--------------------------------------------------------------------------
+  */
+
+  if (query.isEmpty) {
+    return const Center(
+      child: Padding(
+        padding:
+            EdgeInsets.all(
+          32,
+        ),
+        child: Column(
+          mainAxisSize:
+              MainAxisSize.min,
+          children: [
+            Icon(
+              Icons
+                  .search_rounded,
+              size: 52,
+              color:
+                  AppColors.textSecondary,
             ),
-            borderRadius:
-                BorderRadius.circular(
-              16,
+            SizedBox(
+              height: 18,
             ),
-            border: Border.all(
-              color: Colors.white
-                  .withValues(
-                alpha: 0.06,
-              ),
-            ),
-          ),
-          child: TextField(
-            controller:
-                _controller,
-            autofocus: true,
-            style:
-                const TextStyle(
-              color: Colors.white,
-              fontSize: 15,
-            ),
-            cursorColor:
-                Colors.white,
-            textInputAction:
-                TextInputAction
-                    .search,
-            onChanged:
-                _onSearchChanged,
-            onSubmitted:
-                _submitSearch,
-            decoration:
-                InputDecoration(
-              border:
-                  InputBorder.none,
-              hintText:
-                  "Search events, venues...",
-              hintStyle:
-                  const TextStyle(
+            Text(
+              "Discover something",
+              style:
+                  TextStyle(
                 color:
-                    Colors.grey,
+                    AppColors.text,
+                fontSize: 20,
+                fontWeight:
+                    FontWeight
+                        .w700,
               ),
-              prefixIcon:
-                  const Icon(
-                Icons.search,
-                color:
-                    Colors.grey,
-              ),
-              suffixIcon:
-                  query.isNotEmpty
-                      ? IconButton(
-                          onPressed:
-                              _clearSearch,
-                          icon:
-                              const Icon(
-                            Icons
-                                .close,
-                            color:
-                                Colors.grey,
-                          ),
-                        )
-                      : null,
             ),
-          ),
+            SizedBox(
+              height: 8,
+            ),
+            Text(
+              "Search for events, venues and experiences.",
+              textAlign:
+                  TextAlign
+                      .center,
+              style:
+                  TextStyle(
+                color:
+                    AppColors.textSecondary,
+                fontSize: 15,
+              ),
+            ),
+          ],
         ),
       ),
-
-      /*
-      |--------------------------------------------------------------------------
-      | Body
-      |--------------------------------------------------------------------------
-      */
-
-      body: _buildBody(),
     );
   }
 
   /*
   |--------------------------------------------------------------------------
-  | Body State
+  | Loading
   |--------------------------------------------------------------------------
   */
 
-  Widget _buildBody() {
-    final query =
-        _controller.text.trim();
-
-    /*
-    |--------------------------------------------------------------------------
-    | Empty Search
-    |--------------------------------------------------------------------------
-    */
-
-    if (query.isEmpty) {
-      return const Center(
-        child: Padding(
-          padding:
-              EdgeInsets.all(
-            32,
-          ),
-          child: Column(
-            mainAxisSize:
-                MainAxisSize.min,
-            children: [
-              Icon(
-                Icons
-                    .search_rounded,
-                size: 52,
-                color:
-                    Colors.grey,
-              ),
-              SizedBox(
-                height: 18,
-              ),
-              Text(
-                "Discover something",
-                style:
-                    TextStyle(
-                  color:
-                      Colors.white,
-                  fontSize: 20,
-                  fontWeight:
-                      FontWeight
-                          .w700,
-                ),
-              ),
-              SizedBox(
-                height: 8,
-              ),
-              Text(
-                "Search for events, venues and experiences.",
-                textAlign:
-                    TextAlign
-                        .center,
-                style:
-                    TextStyle(
-                  color:
-                      Colors.grey,
-                  fontSize: 15,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Loading
-    |--------------------------------------------------------------------------
-    */
-
-    if (_loading) {
-      return const Center(
-        child:
-            CircularProgressIndicator(),
-      );
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Error
-    |--------------------------------------------------------------------------
-    */
-
-    if (_error.isNotEmpty) {
-      return Center(
-        child: Padding(
-          padding:
-              const EdgeInsets.all(
-            32,
-          ),
-          child: Column(
-            mainAxisSize:
-                MainAxisSize.min,
-            children: [
-              const Icon(
-                Icons
-                    .error_outline_rounded,
-                size: 44,
-                color:
-                    Colors.grey,
-              ),
-              const SizedBox(
-                height: 16,
-              ),
-              Text(
-                _error,
-                textAlign:
-                    TextAlign.center,
-                style:
-                    const TextStyle(
-                  color:
-                      Colors.white,
-                  fontSize: 16,
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              FilledButton.icon(
-                onPressed: () {
-                  _search(
-                    _controller
-                        .text,
-                  );
-                },
-                icon:
-                    const Icon(
-                  Icons.refresh,
-                ),
-                label:
-                    const Text(
-                  "Try Again",
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | No Results
-    |--------------------------------------------------------------------------
-    */
-
-    if (_results.isEmpty) {
-      return Center(
-        child: Padding(
-          padding:
-              const EdgeInsets.all(
-            32,
-          ),
-          child: Column(
-            mainAxisSize:
-                MainAxisSize.min,
-            children: [
-              const Icon(
-                Icons
-                    .event_busy_outlined,
-                size: 48,
-                color:
-                    Colors.grey,
-              ),
-              const SizedBox(
-                height: 16,
-              ),
-              const Text(
-                "No events found",
-                style:
-                    TextStyle(
-                  color:
-                      Colors.white,
-                  fontSize: 18,
-                  fontWeight:
-                      FontWeight
-                          .w600,
-                ),
-              ),
-              const SizedBox(
-                height: 8,
-              ),
-              Text(
-                'We couldn\'t find anything for "$_activeQuery".',
-                textAlign:
-                    TextAlign.center,
-                style:
-                    const TextStyle(
-                  color:
-                      Colors.grey,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Results
-    |--------------------------------------------------------------------------
-    */
-
-    return ListView(
-      keyboardDismissBehavior:
-          ScrollViewKeyboardDismissBehavior
-              .onDrag,
-      padding:
-          const EdgeInsets.fromLTRB(
-        20,
-        20,
-        20,
-        40,
+  if (_loading) {
+    return const Center(
+      child:
+          CircularProgressIndicator(
+        color:
+            AppColors.primary,
       ),
-      children: [
-        /*
-        |--------------------------------------------------------------------------
-        | Result Count
-        |--------------------------------------------------------------------------
-        */
+    );
+  }
 
-        Padding(
-          padding:
-              const EdgeInsets.only(
-            bottom: 16,
+  /*
+|--------------------------------------------------------------------------
+| Error
+|--------------------------------------------------------------------------
+*/
+
+if (_error.isNotEmpty) {
+  return Center(
+    child: Padding(
+      padding:
+          const EdgeInsets.all(
+        32,
+      ),
+      child: Column(
+        mainAxisSize:
+            MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons
+                .error_outline_rounded,
+            size: 44,
+            color:
+                AppColors.textSecondary,
           ),
-          child: Text(
-            "${_results.length} "
-            "${_results.length == 1 ? "event" : "events"} found",
+
+          const SizedBox(
+            height: 16,
+          ),
+
+          Text(
+            _error,
+            textAlign:
+                TextAlign.center,
             style:
                 const TextStyle(
               color:
-                  Colors.grey,
-              fontSize: 14,
+                  AppColors.text,
+              fontSize: 16,
             ),
           ),
-        ),
 
-        /*
-        |--------------------------------------------------------------------------
-        | Event Results
-        |--------------------------------------------------------------------------
-        */
+          const SizedBox(
+            height: 20,
+          ),
 
-        ..._results.map(
-          (event) =>
-              _EventSearchCard(
-            event: event,
-            onTap: () =>
-                _openEvent(
-              event,
+          FilledButton.icon(
+            onPressed: () {
+              _search(
+                _controller
+                    .text,
+              );
+            },
+            icon:
+                const Icon(
+              Icons.refresh,
+            ),
+            label:
+                const Text(
+              "Try Again",
             ),
           ),
-        ),
+        ],
+      ),
+    ),
+  );
+}
+
+/*
+|--------------------------------------------------------------------------
+| No Results
+|--------------------------------------------------------------------------
+*/
+
+if (_results.isEmpty) {
+  return Center(
+    child: Padding(
+      padding:
+          const EdgeInsets.all(
+        32,
+      ),
+      child: Column(
+        mainAxisSize:
+            MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons
+                .event_busy_outlined,
+            size: 48,
+            color:
+                AppColors.textSecondary,
+          ),
+
+          const SizedBox(
+            height: 16,
+          ),
+
+          const Text(
+            "No events found",
+            style:
+                TextStyle(
+              color:
+                  AppColors.text,
+              fontSize: 18,
+              fontWeight:
+                  FontWeight
+                      .w600,
+            ),
+          ),
+
+          const SizedBox(
+            height: 8,
+          ),
+
+          Text(
+            'We couldn\'t find anything for "$_activeQuery".',
+            textAlign:
+                TextAlign.center,
+            style:
+                const TextStyle(
+              color:
+                  AppColors.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+/*
+|--------------------------------------------------------------------------
+| Results
+|--------------------------------------------------------------------------
+*/
+
+return ListView(
+  keyboardDismissBehavior:
+      ScrollViewKeyboardDismissBehavior
+          .onDrag,
+  padding:
+      const EdgeInsets.fromLTRB(
+    20,
+    20,
+    20,
+    40,
+  ),
+  children: [
+      /*
+|--------------------------------------------------------------------------
+| Result Count
+|--------------------------------------------------------------------------
+*/
+
+Padding(
+  padding:
+      const EdgeInsets.only(
+    bottom: 16,
+  ),
+  child: Text(
+    "${_results.length} "
+    "${_results.length == 1 ? "event" : "events"} found",
+    style:
+        const TextStyle(
+      color:
+          AppColors.textSecondary,
+      fontSize: 14,
+    ),
+  ),
+),
+
+/*
+|--------------------------------------------------------------------------
+| Event Results
+|--------------------------------------------------------------------------
+*/
+
+..._results.map(
+  (event) =>
+      _EventSearchCard(
+    event: event,
+    onTap: () =>
+        _openEvent(
+      event,
+    ),
+  ),
+),
       ],
     );
   }
@@ -650,9 +647,7 @@ class _EventSearchCard
             .isNotEmpty;
 
     return Card(
-      color: const Color(
-        0xFF181818,
-      ),
+      color: AppColors.card,
       elevation: 0,
       margin:
           const EdgeInsets.only(
@@ -665,10 +660,7 @@ class _EventSearchCard
           18,
         ),
         side: BorderSide(
-          color: Colors.white
-              .withValues(
-            alpha: 0.06,
-          ),
+          color: AppColors.border,
         ),
       ),
       clipBehavior:
@@ -740,7 +732,7 @@ class _EventSearchCard
                       style:
                           const TextStyle(
                         color:
-                            Colors.white,
+                            AppColors.text,
                         fontSize: 16,
                         fontWeight:
                             FontWeight
@@ -759,11 +751,13 @@ class _EventSearchCard
                               .location_on_outlined,
                           size: 16,
                           color:
-                              Colors.grey,
+                              AppColors.textSecondary,
                         ),
+
                         const SizedBox(
                           width: 5,
                         ),
+
                         Expanded(
                           child: Text(
                             event
@@ -775,7 +769,7 @@ class _EventSearchCard
                             style:
                                 const TextStyle(
                               color:
-                                  Colors.grey,
+                                  AppColors.textSecondary,
                               fontSize:
                                   13,
                             ),
@@ -795,7 +789,7 @@ class _EventSearchCard
                 Icons
                     .chevron_right_rounded,
                 color:
-                    Colors.grey,
+                    AppColors.primary,
               ),
             ],
           ),
@@ -820,16 +814,14 @@ class _EventImagePlaceholder
     BuildContext context,
   ) {
     return Container(
-      color: const Color(
-        0xFF242424,
-      ),
+      color: AppColors.surface,
       alignment:
           Alignment.center,
       child: const Icon(
         Icons
             .event_outlined,
         color:
-            Colors.grey,
+            AppColors.textSecondary,
         size: 28,
       ),
     );

@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
 import "../mixins/refresh_timer_mixin.dart";
 import "../mixins/wakelock_mixin.dart";
@@ -58,49 +59,51 @@ class _QrPassScreenState
   }
 
   Future<void> _initialize() async {
-  await enableWakeLock();
+    await enableWakeLock();
 
-  await _loadSecurePass();
+    await _loadSecurePass();
 
-  startRefreshTimer();
-}
-
-Future<void> _loadSecurePass() async {
-  if (mounted) {
-    setState(() {
-      _loading = true;
-    });
+    startRefreshTimer();
   }
 
-  try {
-    final token = await _passService.securePass(
-      ticket.id,
-    );
+  Future<void> _loadSecurePass() async {
+    if (mounted) {
+      setState(() {
+        _loading = true;
+      });
+    }
 
-    if (!mounted) return;
+    try {
+      final token =
+          await _passService.securePass(
+        ticket.id,
+      );
 
-    setState(() {
-      _qrToken = token;
-      secondsRemaining =
-          refreshDuration.inSeconds;
-      _loading = false;
-    });
-  } catch (e) {
-    if (!mounted) return;
+      if (!mounted) return;
 
-    setState(() {
-      _loading = false;
-    });
+      setState(() {
+        _qrToken = token;
+        secondsRemaining =
+            refreshDuration.inSeconds;
+        _loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          e.toString(),
+      setState(() {
+        _loading = false;
+      });
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+        SnackBar(
+          content: Text(
+            e.toString(),
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
-}
 
   Widget _buildFooter() {
     return const Column(
@@ -109,16 +112,21 @@ Future<void> _loadSecurePass() async {
           "Present this QR code only to an official WowYou event scanner.\nYour secure QR refreshes automatically every 60 seconds.",
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: Colors.white54,
+            color:
+                AppColors.textSecondary,
             height: 1.5,
           ),
         ),
-        SizedBox(height: 40),
+
+        SizedBox(
+          height: 40,
+        ),
+
         Text(
           "Powered by WowYou Event Technology",
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: Colors.white24,
+            color: AppColors.border,
             fontSize: 12,
             letterSpacing: 1,
           ),
@@ -132,11 +140,14 @@ Future<void> _loadSecurePass() async {
     BuildContext context,
   ) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor:
+          AppColors.background,
 
       appBar: AppBar(
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
+        backgroundColor:
+            AppColors.background,
+        foregroundColor:
+            AppColors.text,
         elevation: 0,
         title: const Text(
           "Secure Event Pass",
@@ -154,9 +165,8 @@ Future<void> _loadSecurePass() async {
               const Text(
                 "EVENT PASS",
                 style: TextStyle(
-                  color: Color(
-                    0xFFD4AF37,
-                  ),
+                  color:
+                      AppColors.primary,
                   fontWeight:
                       FontWeight.bold,
                   letterSpacing: 3,
@@ -202,8 +212,9 @@ Future<void> _loadSecurePass() async {
               ),
 
               CountdownCard(
-  secondsRemaining: secondsRemaining,
-),
+                secondsRemaining:
+                    secondsRemaining,
+              ),
 
               const SizedBox(
                 height: 30,

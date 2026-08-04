@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
 class AccountSection extends StatelessWidget {
   final TextEditingController bioController;
@@ -11,9 +12,11 @@ class AccountSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: AppColors.card,
       child: Padding(
-        padding:
-            const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(
+          16,
+        ),
         child: Column(
           crossAxisAlignment:
               CrossAxisAlignment.start,
@@ -22,17 +25,51 @@ class AccountSection extends StatelessWidget {
               "Profile",
               style: Theme.of(context)
                   .textTheme
-                  .titleMedium,
+                  .titleMedium
+                  ?.copyWith(
+                    color:
+                        AppColors.text,
+                    fontWeight:
+                        FontWeight.bold,
+                  ),
             ),
-            const SizedBox(height: 16),
+
+            const SizedBox(
+              height: 16,
+            ),
+
             TextField(
               controller: bioController,
               maxLines: 4,
               decoration:
                   const InputDecoration(
                 labelText: "Bio",
+                labelStyle: TextStyle(
+                  color: AppColors
+                      .textSecondary,
+                ),
+                filled: true,
+                fillColor:
+                    AppColors.card,
                 border:
                     OutlineInputBorder(),
+                enabledBorder:
+                    OutlineInputBorder(
+                  borderSide:
+                      BorderSide(
+                    color: AppColors
+                        .border,
+                  ),
+                ),
+                focusedBorder:
+                    OutlineInputBorder(
+                  borderSide:
+                      BorderSide(
+                    color: AppColors
+                        .primary,
+                    width: 2,
+                  ),
+                ),
               ),
             ),
           ],

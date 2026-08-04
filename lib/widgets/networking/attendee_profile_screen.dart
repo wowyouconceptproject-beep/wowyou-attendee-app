@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 
 import "../../models/match_card.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
 class AttendeeProfileScreen extends StatelessWidget {
   final MatchCard attendee;
@@ -18,59 +19,80 @@ class AttendeeProfileScreen extends StatelessWidget {
             : "?";
 
     return Scaffold(
-      backgroundColor: const Color(0xFF101010),
+      backgroundColor:
+          AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor:
+            Colors.transparent,
         elevation: 0,
-        title: const Text("Attendee Profile"),
+        title: const Text(
+          "Attendee Profile",
+        ),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(24),
+        padding:
+            const EdgeInsets.all(
+          24,
+        ),
         children: [
           Center(
             child: CircleAvatar(
               radius: 55,
               backgroundColor:
-                  const Color(0xFFD4AF37),
+                  AppColors.primary,
               backgroundImage:
                   attendee.avatar != null &&
-                          attendee.avatar!.isNotEmpty
+                          attendee.avatar!
+                              .isNotEmpty
                       ? NetworkImage(
-                          attendee.avatar!,
+                          attendee
+                              .avatar!,
                         )
                       : null,
               child:
-                  attendee.avatar == null ||
-                          attendee.avatar!.isEmpty
+                  attendee.avatar ==
+                              null ||
+                          attendee
+                              .avatar!
+                              .isEmpty
                       ? Text(
                           initials,
                           style:
                               const TextStyle(
                             color:
-                                Colors.black,
+                                Colors.white,
                             fontWeight:
-                                FontWeight.bold,
-                            fontSize: 34,
+                                FontWeight
+                                    .bold,
+                            fontSize:
+                                34,
                           ),
                         )
                       : null,
             ),
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(
+            height: 24,
+          ),
 
           Center(
             child: Text(
               attendee.fullName,
-              style: const TextStyle(
+              style:
+                  const TextStyle(
+                color:
+                    AppColors.text,
                 fontSize: 28,
                 fontWeight:
-                    FontWeight.bold,
+                    FontWeight
+                        .bold,
               ),
             ),
           ),
 
-          if (attendee.profession != null)
+          if (attendee.profession !=
+              null)
             Center(
               child: Padding(
                 padding:
@@ -78,18 +100,20 @@ class AttendeeProfileScreen extends StatelessWidget {
                   top: 8,
                 ),
                 child: Text(
-                  attendee.profession!,
+                  attendee
+                      .profession!,
                   style:
                       const TextStyle(
-                    color:
-                        Colors.white70,
+                    color: AppColors
+                        .textSecondary,
                     fontSize: 18,
                   ),
                 ),
               ),
             ),
 
-          if (attendee.company != null)
+          if (attendee.company !=
+              null)
             Center(
               child: Padding(
                 padding:
@@ -100,45 +124,64 @@ class AttendeeProfileScreen extends StatelessWidget {
                   attendee.company!,
                   style:
                       const TextStyle(
-                    color:
-                        Colors.grey,
+                    color: AppColors
+                        .textSecondary,
                   ),
                 ),
               ),
             ),
 
-          const SizedBox(height: 32),
+          const SizedBox(
+            height: 32,
+          ),
 
           Container(
             padding:
-                const EdgeInsets.all(20),
-            decoration: BoxDecoration(
+                const EdgeInsets.all(
+              20,
+            ),
+            decoration:
+                BoxDecoration(
               color:
-                  const Color(0xFF181818),
+                  AppColors.card,
               borderRadius:
                   BorderRadius.circular(
                 20,
               ),
+              border: Border.all(
+                color:
+                    AppColors.border,
+              ),
             ),
             child: Column(
               crossAxisAlignment:
-                  CrossAxisAlignment.start,
+                  CrossAxisAlignment
+                      .start,
               children: [
                 const Row(
                   children: [
                     Icon(
-                      Icons.auto_awesome,
-                      color: Color(
-                        0xFFD4AF37,
-                      ),
+                      Icons
+                          .auto_awesome,
+                      color:
+                          AppColors
+                              .primary,
                     ),
-                    SizedBox(width: 10),
+                    SizedBox(
+                      width: 10,
+                    ),
                     Text(
                       "AI Insight",
-                      style: TextStyle(
+                      style:
+                          TextStyle(
+                        color:
+                            AppColors
+                                .text,
                         fontWeight:
-                            FontWeight.bold,
-                        fontSize: 18,
+                            FontWeight
+                                .bold,
+                        fontSize:
+                            18,
                       ),
                     ),
                   ],
@@ -152,15 +195,16 @@ class AttendeeProfileScreen extends StatelessWidget {
                   style:
                       const TextStyle(
                     height: 1.7,
-                    color:
-                        Colors.white70,
+                    color: AppColors
+                        .textSecondary,
                   ),
                 ),
               ],
             ),
           ),
 
-          if (attendee.reasons
+          if (attendee
+              .reasons
               .isNotEmpty) ...[
             const SizedBox(
               height: 24,
@@ -168,9 +212,12 @@ class AttendeeProfileScreen extends StatelessWidget {
             const Text(
               "Why You're a Match",
               style: TextStyle(
+                color:
+                    AppColors.text,
                 fontSize: 20,
                 fontWeight:
-                    FontWeight.bold,
+                    FontWeight
+                        .bold,
               ),
             ),
             const SizedBox(
@@ -185,11 +232,21 @@ class AttendeeProfileScreen extends StatelessWidget {
                         (reason) =>
                             Chip(
                           backgroundColor:
-                              const Color(
-                            0xFF2A2A2A,
+                              AppColors
+                                  .surface,
+                          side:
+                              const BorderSide(
+                            color:
+                                AppColors.border,
                           ),
                           label: Text(
-                            reason.message,
+                            reason
+                                .message,
+                            style:
+                                const TextStyle(
+                              color:
+                                  AppColors.text,
+                            ),
                           ),
                         ),
                       )
@@ -197,11 +254,15 @@ class AttendeeProfileScreen extends StatelessWidget {
             ),
           ],
 
-          const SizedBox(height: 40),
+          const SizedBox(
+            height: 40,
+          ),
 
           SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
+            width:
+                double.infinity,
+            child:
+                ElevatedButton.icon(
               onPressed: () {
                 ScaffoldMessenger.of(
                   context,
@@ -214,7 +275,8 @@ class AttendeeProfileScreen extends StatelessWidget {
                 );
               },
               icon: const Icon(
-                Icons.chat_bubble,
+                Icons
+                    .chat_bubble,
               ),
               label: const Text(
                 "Message Attendee",
@@ -222,11 +284,9 @@ class AttendeeProfileScreen extends StatelessWidget {
               style:
                   ElevatedButton.styleFrom(
                 backgroundColor:
-                    const Color(
-                  0xFFD4AF37,
-                ),
+                    AppColors.primary,
                 foregroundColor:
-                    Colors.black,
+                    Colors.white,
                 padding:
                     const EdgeInsets.symmetric(
                   vertical: 18,

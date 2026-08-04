@@ -1,7 +1,8 @@
 import "package:flutter/material.dart";
 
-class EventAbout
-    extends StatelessWidget {
+import "package:attendee_app/theme/app_colors.dart";
+
+class EventAbout extends StatelessWidget {
   final String description;
 
   const EventAbout({
@@ -23,18 +24,22 @@ class EventAbout
           const Text(
             "About Event",
             style: TextStyle(
+              color: AppColors.text,
               fontSize: 24,
               fontWeight:
                   FontWeight.bold,
             ),
           ),
 
-          const SizedBox(height: 14),
+          const SizedBox(
+            height: 14,
+          ),
 
           Text(
             description,
             style: const TextStyle(
-              color: Colors.grey,
+              color:
+                  AppColors.textSecondary,
               height: 1.7,
             ),
           ),

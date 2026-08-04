@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 
 import "../../models/event.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
 class TicketCard
     extends StatelessWidget {
@@ -52,10 +53,7 @@ class TicketCard
         22,
       ),
       decoration: BoxDecoration(
-        color:
-            const Color(
-          0xFF181818,
-        ),
+        color: AppColors.card,
         borderRadius:
             BorderRadius.circular(
           24,
@@ -76,10 +74,7 @@ class TicketCard
               Icon(
                 Icons
                     .confirmation_number_outlined,
-                color:
-                    Color(
-                  0xFFD4AF37,
-                ),
+                color: AppColors.primary,
                 size: 36,
               ),
 
@@ -224,10 +219,7 @@ class TicketCard
             ),
 
             const Divider(
-              color:
-                  Color(
-                0xFF2C2C2C,
-              ),
+              color: AppColors.border,
             ),
 
             const SizedBox(
@@ -392,10 +384,7 @@ class TicketCard
                           )}",
                     style:
                         const TextStyle(
-                      color:
-                          Color(
-                        0xFFD4AF37,
-                      ),
+                      color: AppColors.primary,
                       fontSize:
                           20,
                       fontWeight:
@@ -481,15 +470,11 @@ class _TicketOption
               BoxDecoration(
             color:
                 selected
-                    ? const Color(
-                        0xFFD4AF37,
-                      ).withValues(
+                    ? AppColors.primary.withValues(
                         alpha:
                             0.08,
                       )
-                    : const Color(
-                        0xFF202020,
-                      ),
+                    : AppColors.card,
             borderRadius:
                 BorderRadius
                     .circular(
@@ -499,12 +484,8 @@ class _TicketOption
                 Border.all(
               color:
                   selected
-                      ? const Color(
-                          0xFFD4AF37,
-                        )
-                      : const Color(
-                          0xFF2D2D2D,
-                        ),
+                      ? AppColors.primary
+                      : AppColors.border,
             ),
           ),
           child: Row(
@@ -522,9 +503,7 @@ class _TicketOption
                     width: 2,
                     color:
                         selected
-                            ? const Color(
-                                0xFFD4AF37,
-                              )
+    ? AppColors.primary
                             : Colors
                                 .grey,
                   ),
@@ -536,10 +515,7 @@ class _TicketOption
                                 CircleAvatar(
                               radius:
                                   5,
-                              backgroundColor:
-                                  Color(
-                                0xFFD4AF37,
-                              ),
+                             backgroundColor: AppColors.primary,
                             ),
                           )
                         : null,
@@ -630,9 +606,7 @@ class _TicketOption
                       ticket.soldOut
                           ? Colors
                               .grey
-                          : const Color(
-                              0xFFD4AF37,
-                            ),
+                          : AppColors.primary,
                   fontSize:
                       17,
                   fontWeight:
@@ -682,19 +656,11 @@ class _QuantityButton
           Icon(
         icon,
       ),
-      style:
-          IconButton.styleFrom(
-        backgroundColor:
-            const Color(
-          0xFF242424,
-        ),
-        foregroundColor:
-            const Color(
-          0xFFD4AF37,
-        ),
-        disabledForegroundColor:
-            Colors.grey,
-      ),
+     style: IconButton.styleFrom(
+  backgroundColor: AppColors.primary,
+  foregroundColor: Colors.white,
+  disabledForegroundColor: AppColors.textSecondary,
+),
     );
   }
 }

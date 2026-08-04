@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
 class RefreshButton extends StatelessWidget {
   final bool loading;
@@ -16,20 +17,21 @@ class RefreshButton extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       child: OutlinedButton.icon(
-        onPressed: loading
-            ? null
-            : onPressed,
+        onPressed:
+            loading ? null : onPressed,
         icon: const Icon(
           Icons.refresh,
         ),
         label: const Text(
           "Refresh Pass",
         ),
-        style: OutlinedButton.styleFrom(
+        style:
+            OutlinedButton.styleFrom(
           foregroundColor:
-              const Color(0xFFD4AF37),
+              AppColors.primary,
           side: const BorderSide(
-            color: Color(0xFFD4AF37),
+            color:
+                AppColors.primary,
           ),
           padding:
               const EdgeInsets.symmetric(
@@ -38,7 +40,9 @@ class RefreshButton extends StatelessWidget {
           shape:
               RoundedRectangleBorder(
             borderRadius:
-                BorderRadius.circular(16),
+                BorderRadius.circular(
+              16,
+            ),
           ),
         ),
       ),

@@ -3,6 +3,7 @@ import "package:provider/provider.dart";
 
 import "../providers/auth_provider.dart";
 import "register_screen.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({
@@ -47,55 +48,46 @@ class _LoginScreenState
   }
 }
 
-  InputDecoration inputDecoration(
-    String hint,
-    IconData icon,
-  ) {
-    return InputDecoration(
-      hintText: hint,
+ InputDecoration inputDecoration(
+  String hint,
+  IconData icon,
+) {
+  return InputDecoration(
+    hintText: hint,
 
-      prefixIcon: Icon(icon),
+    prefixIcon: Icon(
+      icon,
+      color: AppColors.primary,
+    ),
 
-      filled: true,
+    filled: true,
 
-      fillColor:
-          const Color(0xFF1B1B1B),
+    fillColor: AppColors.card,
 
-      border:
-          OutlineInputBorder(
-        borderRadius:
-            BorderRadius.circular(
-          16,
-        ),
-        borderSide:
-            BorderSide.none,
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(
+        16,
       ),
+      borderSide: BorderSide.none,
+    ),
 
-      enabledBorder:
-          OutlineInputBorder(
-        borderRadius:
-            BorderRadius.circular(
-          16,
-        ),
-        borderSide:
-            BorderSide.none,
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(
+        16,
       ),
+      borderSide: BorderSide.none,
+    ),
 
-      focusedBorder:
-          OutlineInputBorder(
-        borderRadius:
-            BorderRadius.circular(
-          16,
-        ),
-        borderSide:
-            const BorderSide(
-          color: Color(
-            0xFFD4AF37,
-          ),
-        ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(
+        16,
       ),
-    );
-  }
+      borderSide: const BorderSide(
+        color: AppColors.primary,
+      ),
+    ),
+  );
+}
 
   @override
   Widget build(
@@ -211,7 +203,9 @@ class _LoginScreenState
                         14,
                       ),
                      decoration: BoxDecoration(
-  color: Colors.red.withValues(alpha: 0.08),
+  color: AppColors.error.withValues(
+  alpha: 0.08,
+),
   borderRadius: BorderRadius.circular(
     14,
   ),
@@ -220,8 +214,7 @@ class _LoginScreenState
                         error!,
                         style:
                             const TextStyle(
-                          color:
-                              Colors.red,
+                          color: AppColors.error,
                         ),
                       ),
                     ),
@@ -235,9 +228,7 @@ class _LoginScreenState
                       style:
                           ElevatedButton.styleFrom(
                         backgroundColor:
-                            const Color(
-                          0xFFD4AF37,
-                        ),
+    AppColors.primary,
                         foregroundColor:
                             Colors.black,
                         shape:
@@ -260,10 +251,10 @@ class _LoginScreenState
                                   height:
                                       22,
                                   child:
-                                      CircularProgressIndicator(
-                                    strokeWidth:
-                                        2,
-                                  ),
+                                     CircularProgressIndicator(
+  strokeWidth: 2,
+  color: AppColors.primary,
+),
                                 )
                               : const Text(
                                   "Sign In",

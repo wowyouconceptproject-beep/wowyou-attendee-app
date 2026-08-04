@@ -3,6 +3,7 @@ import "package:provider/provider.dart";
 
 import "../providers/auth_provider.dart";
 import "attendee_profile_screen.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({
@@ -72,54 +73,45 @@ class _RegisterScreenState
   }
 
   InputDecoration inputDecoration(
-    String hint,
-    IconData icon,
-  ) {
-    return InputDecoration(
-      hintText: hint,
+  String hint,
+  IconData icon,
+) {
+  return InputDecoration(
+    hintText: hint,
 
-      prefixIcon: Icon(icon),
+    prefixIcon: Icon(
+      icon,
+      color: AppColors.primary,
+    ),
 
-      filled: true,
+    filled: true,
 
-      fillColor:
-          const Color(0xFF1B1B1B),
+    fillColor: AppColors.card,
 
-      border:
-          OutlineInputBorder(
-        borderRadius:
-            BorderRadius.circular(
-          16,
-        ),
-        borderSide:
-            BorderSide.none,
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(
+        16,
       ),
+      borderSide: BorderSide.none,
+    ),
 
-      enabledBorder:
-          OutlineInputBorder(
-        borderRadius:
-            BorderRadius.circular(
-          16,
-        ),
-        borderSide:
-            BorderSide.none,
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(
+        16,
       ),
+      borderSide: BorderSide.none,
+    ),
 
-      focusedBorder:
-          OutlineInputBorder(
-        borderRadius:
-            BorderRadius.circular(
-          16,
-        ),
-        borderSide:
-            const BorderSide(
-          color: Color(
-            0xFFD4AF37,
-          ),
-        ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(
+        16,
       ),
-    );
-  }
+      borderSide: const BorderSide(
+        color: AppColors.primary,
+      ),
+    ),
+  );
+}
 
   @override
   void dispose() {
@@ -255,7 +247,9 @@ class _RegisterScreenState
                         14,
                       ),
                       decoration: BoxDecoration(
-  color: Colors.red.withValues(alpha: 0.08),
+  color: AppColors.error.withValues(
+  alpha: 0.08,
+),
   borderRadius: BorderRadius.circular(
     14,
   ),
@@ -264,8 +258,7 @@ class _RegisterScreenState
                         error!,
                         style:
                             const TextStyle(
-                          color:
-                              Colors.red,
+                          color: AppColors.error,
                         ),
                       ),
                     ),
@@ -278,10 +271,7 @@ class _RegisterScreenState
                         ElevatedButton(
                       style:
                           ElevatedButton.styleFrom(
-                        backgroundColor:
-                            const Color(
-                          0xFFD4AF37,
-                        ),
+                        backgroundColor: AppColors.primary,
                         foregroundColor:
                             Colors.black,
                         shape:
@@ -303,9 +293,9 @@ class _RegisterScreenState
                                   height: 22,
                                   child:
                                       CircularProgressIndicator(
-                                    strokeWidth:
-                                        2,
-                                  ),
+  strokeWidth: 2,
+  color: AppColors.primary,
+),
                                 )
                               : const Text(
                                   "Create Account",

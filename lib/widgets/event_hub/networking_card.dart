@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 
 import "../../models/purchased_ticket.dart";
 import "../../screens/networking/networking_screen.dart";
+import "package:attendee_app/theme/app_colors.dart";
 
 class NetworkingCard extends StatelessWidget {
   final PurchasedTicket ticket;
@@ -17,14 +18,15 @@ class NetworkingCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: const Color(0xFF181818),
+        color: AppColors.card,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: const Color(0xFFD4AF37).withValues(alpha: 0.15),
+          color: AppColors.border,
         ),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment:
+            CrossAxisAlignment.start,
         children: [
           /// Header
           Row(
@@ -33,12 +35,15 @@ class NetworkingCard extends StatelessWidget {
                 width: 56,
                 height: 56,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFD4AF37),
-                  borderRadius: BorderRadius.circular(16),
+                  color: AppColors.primary,
+                  borderRadius:
+                      BorderRadius.circular(
+                    16,
+                  ),
                 ),
                 child: const Icon(
                   Icons.auto_awesome,
-                  color: Colors.black,
+                  color: Colors.white,
                   size: 28,
                 ),
               ),
@@ -53,6 +58,8 @@ class NetworkingCard extends StatelessWidget {
                     Text(
                       "AI Networking",
                       style: TextStyle(
+                        color:
+                            AppColors.text,
                         fontSize: 22,
                         fontWeight:
                             FontWeight.bold,
@@ -62,7 +69,8 @@ class NetworkingCard extends StatelessWidget {
                     Text(
                       "Meet the right people at this event",
                       style: TextStyle(
-                        color: Colors.grey,
+                        color: AppColors
+                            .textSecondary,
                       ),
                     ),
                   ],
@@ -76,7 +84,8 @@ class NetworkingCard extends StatelessWidget {
           const Text(
             "Our AI analyzes attendee profiles and recommends the most valuable people for you to connect with based on your profession, industry, interests and networking goals.",
             style: TextStyle(
-              color: Colors.white70,
+              color:
+                  AppColors.textSecondary,
               height: 1.7,
             ),
           ),
@@ -85,26 +94,40 @@ class NetworkingCard extends StatelessWidget {
 
           /// Features
           Container(
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              color: const Color(0xFF222222),
-              borderRadius: BorderRadius.circular(18),
+            padding: const EdgeInsets.all(
+              18,
             ),
-            child: Column(
-              children: const [
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius:
+                  BorderRadius.circular(
+                18,
+              ),
+              border: Border.all(
+                color: AppColors.border,
+              ),
+            ),
+            child: const Column(
+              children: [
                 _FeatureRow(
-                  icon: Icons.groups_rounded,
-                  title: "Smart AI Matches",
+                  icon:
+                      Icons.groups_rounded,
+                  title:
+                      "Smart AI Matches",
                 ),
                 SizedBox(height: 14),
                 _FeatureRow(
-                  icon: Icons.psychology_alt,
-                  title: "Personalized Recommendations",
+                  icon: Icons
+                      .psychology_alt,
+                  title:
+                      "Personalized Recommendations",
                 ),
                 SizedBox(height: 14),
                 _FeatureRow(
-                  icon: Icons.handshake,
-                  title: "Build Valuable Connections",
+                  icon:
+                      Icons.handshake,
+                  title:
+                      "Build Valuable Connections",
                 ),
               ],
             ),
@@ -115,14 +138,16 @@ class NetworkingCard extends StatelessWidget {
           /// CTA
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton.icon(
+            child:
+                ElevatedButton.icon(
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) =>
                         NetworkingScreen(
-                      eventId: ticket.eventId,
+                      eventId:
+                          ticket.eventId,
                     ),
                   ),
                 );
@@ -136,9 +161,9 @@ class NetworkingCard extends StatelessWidget {
               style:
                   ElevatedButton.styleFrom(
                 backgroundColor:
-                    const Color(0xFFD4AF37),
+                    AppColors.primary,
                 foregroundColor:
-                    Colors.black,
+                    Colors.white,
                 elevation: 0,
                 padding:
                     const EdgeInsets.symmetric(
@@ -170,21 +195,28 @@ class _FeatureRow extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
     return Row(
       children: [
         Container(
           width: 42,
           height: 42,
           decoration: BoxDecoration(
-            color: const Color(0xFFD4AF37)
-                .withValues(alpha: 0.15),
+            color: AppColors.primary
+                .withValues(
+              alpha: 0.15,
+            ),
             borderRadius:
-                BorderRadius.circular(12),
+                BorderRadius.circular(
+              12,
+            ),
           ),
           child: Icon(
             icon,
-            color: const Color(0xFFD4AF37),
+            color:
+                AppColors.primary,
             size: 20,
           ),
         ),
@@ -193,7 +225,10 @@ class _FeatureRow extends StatelessWidget {
           child: Text(
             title,
             style: const TextStyle(
-              fontWeight: FontWeight.w600,
+              color:
+                  AppColors.text,
+              fontWeight:
+                  FontWeight.w600,
             ),
           ),
         ),

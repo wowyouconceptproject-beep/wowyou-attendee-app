@@ -25,6 +25,7 @@ dependencies:
 
   # QR Event Pass
   qr_flutter: ^4.1.0
+  nfc_manager: ^3.5.0
 
   # Keep QR Screen Awake
   wakelock_plus: ^1.2.8

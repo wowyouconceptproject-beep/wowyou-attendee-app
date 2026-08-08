@@ -1,6 +1,8 @@
 class PurchasedTicket {
   final String id;
 
+  final String status;
+
   final int quantity;
 
   final double amount;
@@ -57,8 +59,21 @@ class PurchasedTicket {
 
   final String? jobTitle;
 
+  /*
+  |--------------------------------------------------------------------------
+  | Issued Passes
+  |--------------------------------------------------------------------------
+  */
+
+  final int totalPasses;
+
+  final int activePasses;
+
+  final bool hasPass;
+
   PurchasedTicket({
     required this.id,
+    required this.status,
     required this.quantity,
     required this.amount,
     required this.checkedIn,
@@ -81,6 +96,10 @@ class PurchasedTicket {
     this.profession,
     this.company,
     this.jobTitle,
+
+    required this.totalPasses,
+    required this.activePasses,
+    required this.hasPass,
   });
 
   factory PurchasedTicket.fromJson(
@@ -96,10 +115,31 @@ class PurchasedTicket {
         json["user"] ?? {};
 
     final profile =
-        user["attendeeProfile"] ?? {};
+        user["attendeeProfile"] ??
+            {};
+
+    final passes =
+        (json["passes"] as List?)
+                ?.cast<
+                    Map<String,
+                        dynamic>>() ??
+            const [];
+
+    final active =
+        passes.where(
+      (pass) =>
+          pass["isActive"] ==
+              true &&
+          pass["isRevoked"] !=
+              true,
+    );
 
     return PurchasedTicket(
       id: json["id"],
+
+      status:
+          json["status"] ??
+              "PENDING",
 
       quantity:
           json["quantity"],
@@ -116,9 +156,16 @@ class PurchasedTicket {
           json["checkedInAt"] !=
                   null
               ? DateTime.parse(
-                  json["checkedInAt"],
+                  json[
+                      "checkedInAt"],
                 )
               : null,
+
+      /*
+      |--------------------------------------------------------------------------
+      | Event
+      |--------------------------------------------------------------------------
+      */
 
       eventId:
           event["id"],
@@ -138,7 +185,8 @@ class PurchasedTicket {
           event["endDate"] !=
                   null
               ? DateTime.parse(
-                  event["endDate"],
+                  event[
+                      "endDate"],
                 )
               : null,
 
@@ -146,10 +194,17 @@ class PurchasedTicket {
           event["coverImage"],
 
       featuredImage:
-          event["featuredImage"],
+          event[
+              "featuredImage"],
 
       currency:
           event["currency"],
+
+      /*
+      |--------------------------------------------------------------------------
+      | Ticket
+      |--------------------------------------------------------------------------
+      */
 
       ticketId:
           ticket["id"],
@@ -157,8 +212,15 @@ class PurchasedTicket {
       ticketName:
           ticket["name"],
 
+      /*
+      |--------------------------------------------------------------------------
+      | Attendee
+      |--------------------------------------------------------------------------
+      */
+
       attendeeName:
-          "${user["firstName"]} ${user["lastName"]}",
+          "${user["firstName"] ?? ""} ${user["lastName"] ?? ""}"
+              .trim(),
 
       attendeeAvatar:
           profile["avatar"],
@@ -171,6 +233,39 @@ class PurchasedTicket {
 
       jobTitle:
           profile["jobTitle"],
+
+      /*
+      |--------------------------------------------------------------------------
+      | Passes
+      |--------------------------------------------------------------------------
+      */
+
+      totalPasses:
+          passes.length,
+
+      activePasses:
+          active.length,
+
+      hasPass:
+          passes.isNotEmpty,
     );
   }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Helpers
+  |--------------------------------------------------------------------------
+  */
+
+  bool get paid =>
+      status == "PAID";
+
+  bool get pending =>
+      status == "PENDING";
+
+  bool get cancelled =>
+      status == "CANCELLED";
+
+  bool get completed =>
+      checkedIn;
 }

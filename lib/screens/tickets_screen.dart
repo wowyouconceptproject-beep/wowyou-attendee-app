@@ -1,16 +1,16 @@
-import "package:flutter/material.dart";
-import "package:provider/provider.dart";
-import "package:attendee_app/theme/app_colors.dart";
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:attendee_app/theme/app_colors.dart';
 
-import "../models/purchased_ticket.dart";
-import "../providers/auth_provider.dart";
-import "../services/purchase_service.dart";
+import '../models/purchased_ticket.dart';
+import '../providers/auth_provider.dart';
+import '../services/purchase_service.dart';
 
-import "../widgets/auth/protected_feature_view.dart";
+import '../widgets/auth/protected_feature_view.dart';
 
-import "eventhubscreen.dart";
-import "login_screen.dart";
-import "register_screen.dart";
+import 'eventhubscreen.dart';
+import 'login_screen.dart';
+import 'register_screen.dart';
 
 class TicketsScreen extends StatefulWidget {
   const TicketsScreen({
@@ -18,14 +18,11 @@ class TicketsScreen extends StatefulWidget {
   });
 
   @override
-  State<TicketsScreen> createState() =>
-      _TicketsScreenState();
+  State<TicketsScreen> createState() => _TicketsScreenState();
 }
 
-class _TicketsScreenState
-    extends State<TicketsScreen> {
-  final PurchaseService _purchaseService =
-      PurchaseService();
+class _TicketsScreenState extends State<TicketsScreen> {
+  final PurchaseService _purchaseService = PurchaseService();
 
   List<PurchasedTicket> tickets = [];
 
@@ -39,15 +36,12 @@ class _TicketsScreenState
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
 
-      final auth =
-          context.read<AuthProvider>();
+      final auth = context.read<AuthProvider>();
 
-      _wasAuthenticated =
-          auth.isAuthenticated;
+      _wasAuthenticated = auth.isAuthenticated;
 
       if (auth.isAuthenticated) {
         loadTickets();
@@ -59,376 +53,279 @@ class _TicketsScreenState
     });
   }
 
-  /*
-|--------------------------------------------------------------------------
-| Load Tickets
-|--------------------------------------------------------------------------
-*/
+  // ---------------------------------------------------------------------------
+  // Load Tickets
+  // ---------------------------------------------------------------------------
 
-Future<void> loadTickets() async {
-  if (!mounted) return;
-
-  final auth =
-      context.read<AuthProvider>();
-
-  if (!auth.isAuthenticated) {
-    setState(() {
-      tickets = [];
-      loading = false;
-      error = null;
-    });
-
-    return;
-  }
-
-  setState(() {
-    loading = true;
-    error = null;
-  });
-
-  try {
-    final result =
-        await _purchaseService
-            .getMyTickets();
-
+  Future<void> loadTickets() async {
     if (!mounted) return;
 
-    setState(() {
-      tickets = result;
-      loading = false;
-    });
-  } catch (e) {
-    if (!mounted) return;
+    final auth = context.read<AuthProvider>();
 
-    setState(() {
-      loading = false;
-
-      error =
-          "Unable to load your tickets.";
-    });
-  }
-}
-
-/*
-|--------------------------------------------------------------------------
-| Authentication Change
-|--------------------------------------------------------------------------
-|
-| IndexedStack keeps this screen alive.
-|
-| Therefore initState() does not run again after login/logout.
-| We detect the authentication transition here.
-|
-*/
-
-void _handleAuthChange(
-  bool isAuthenticated,
-) {
-  if (_wasAuthenticated ==
-      isAuthenticated) {
-    return;
-  }
-
-  _wasAuthenticated =
-      isAuthenticated;
-
-  WidgetsBinding.instance
-      .addPostFrameCallback((_) {
-    if (!mounted) return;
-
-    if (isAuthenticated) {
-      loadTickets();
-    } else {
+    if (!auth.isAuthenticated) {
       setState(() {
         tickets = [];
         loading = false;
         error = null;
       });
+
+      return;
     }
-  });
-}
 
- /*
-|--------------------------------------------------------------------------
-| Open Ticket / Event Hub
-|--------------------------------------------------------------------------
-*/
+    setState(() {
+      loading = true;
+      error = null;
+    });
 
-void _openTicket(
-  PurchasedTicket ticket,
-) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) =>
-          EventHubScreen(
-        ticket: ticket,
-      ),
-    ),
-  );
-}
+    try {
+      final result = await _purchaseService.getMyTickets();
 
-/*
-|--------------------------------------------------------------------------
-| Build
-|--------------------------------------------------------------------------
-*/
+      if (!mounted) return;
 
-@override
-Widget build(BuildContext context) {
-  final auth = context.watch<AuthProvider>();
+      setState(() {
+        tickets = result;
+        loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
 
-  _handleAuthChange(
-    auth.isAuthenticated,
-  );
-
-  if (!auth.isAuthenticated) {
-    return ProtectedFeatureView(
-      icon: Icons.confirmation_number,
-      title: "Your Tickets",
-      description:
-          "Sign in to access your tickets and event passes.",
-      benefits: const [
-        "View QR event passes",
-        "Access your Event Hub",
-        "View purchase history",
-        "Receive event updates",
-      ],
-      onSignIn: () async {
-        await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const LoginScreen(),
-          ),
-        );
-
-        if (!mounted) return;
-
-        await loadTickets();
-      },
-      onCreateAccount: () async {
-        await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const RegisterScreen(),
-          ),
-        );
-
-        if (!mounted) return;
-
-        await loadTickets();
-      },
-    );
+      setState(() {
+        loading = false;
+        error = 'Unable to load your tickets.';
+      });
+    }
   }
 
-  return Scaffold(
-    backgroundColor: AppColors.background,
-    appBar: AppBar(
-      title: const Text("My Tickets"),
-    ),
-    body: _buildBody(),
-  );
-}
+  // ---------------------------------------------------------------------------
+  // Authentication Change
+  // ---------------------------------------------------------------------------
 
- /*
-|--------------------------------------------------------------------------
-| Body
-|--------------------------------------------------------------------------
-*/
+  void _handleAuthChange(bool isAuthenticated) {
+    if (_wasAuthenticated == isAuthenticated) {
+      return;
+    }
 
-Widget _buildBody() {
-  if (loading) {
-    return const Center(
-      child:
-          CircularProgressIndicator(
-        color: AppColors.primary,
-      ),
-    );
+    _wasAuthenticated = isAuthenticated;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
+      if (isAuthenticated) {
+        loadTickets();
+      } else {
+        setState(() {
+          tickets = [];
+          loading = false;
+          error = null;
+        });
+      }
+    });
   }
 
-  if (error != null) {
-    return RefreshIndicator(
-      color: AppColors.primary,
-      backgroundColor: AppColors.card,
-      onRefresh:
-          loadTickets,
-      child: ListView(
-        physics:
-            const AlwaysScrollableScrollPhysics(),
-        children: [
-          SizedBox(
-            height:
-                MediaQuery.sizeOf(
-                      context,
-                    ).height *
-                    .25,
-          ),
+  // ---------------------------------------------------------------------------
+  // Open Ticket / Event Hub
+  // ---------------------------------------------------------------------------
 
-          const Icon(
-            Icons
-                .error_outline_rounded,
-            size: 52,
-            color:
-                AppColors.textSecondary,
-          ),
-
-          const SizedBox(
-            height: 18,
-          ),
-
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(
-              horizontal: 32,
-            ),
-            child: Text(
-              error!,
-              textAlign:
-                  TextAlign.center,
-              style:
-                  const TextStyle(
-                color:
-                    AppColors.textSecondary,
-                fontSize:
-                    16,
-              ),
-            ),
-          ),
-
-          const SizedBox(
-            height: 20,
-          ),
-
-          Center(
-            child:
-                FilledButton(
-              onPressed:
-                  loadTickets,
-              child:
-                  const Text(
-                "Try Again",
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  if (tickets.isEmpty) {
-    return RefreshIndicator(
-      color: AppColors.primary,
-      backgroundColor: AppColors.card,
-      onRefresh:
-          loadTickets,
-      child: ListView(
-        physics:
-            const AlwaysScrollableScrollPhysics(),
-        children: [
-          SizedBox(
-            height:
-                MediaQuery.sizeOf(
-                      context,
-                    ).height *
-                    .22,
-          ),
-
-          const Icon(
-            Icons
-                .confirmation_number_outlined,
-            size: 64,
-            color:
-                AppColors.primary,
-          ),
-
-          const SizedBox(
-            height: 22,
-          ),
-
-          const Text(
-            "No tickets yet",
-            textAlign:
-                TextAlign.center,
-            style:
-                TextStyle(
-              fontSize: 24,
-              fontWeight:
-                  FontWeight.bold,
-            ),
-          ),
-
-          const SizedBox(
-            height: 10,
-          ),
-
-          const Padding(
-            padding:
-                EdgeInsets.symmetric(
-              horizontal: 40,
-            ),
-            child: Text(
-              "Tickets you've successfully acquired will appear here.",
-              textAlign:
-                  TextAlign.center,
-              style:
-                  TextStyle(
-                color:
-                    AppColors.textSecondary,
-                height: 1.5,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  return RefreshIndicator(
-    color: AppColors.primary,
-    backgroundColor: AppColors.card,
-    onRefresh:
-        loadTickets,
-    child: ListView.builder(
-      physics:
-          const AlwaysScrollableScrollPhysics(),
-      padding:
-          const EdgeInsets.fromLTRB(
-        20,
-        20,
-        20,
-        40,
-      ),
-      itemCount:
-          tickets.length,
-      itemBuilder:
-          (
-        context,
-        index,
-      ) {
-        final ticket =
-            tickets[index];
-
-        return _TicketCard(
+  void _openTicket(PurchasedTicket ticket) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => EventHubScreen(
           ticket: ticket,
-          onTap: () =>
-              _openTicket(
-            ticket,
-          ),
-        );
-      },
-    ),
-  );
-}
+        ),
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Build
+  // ---------------------------------------------------------------------------
+
+  @override
+  Widget build(BuildContext context) {
+    final auth = context.watch<AuthProvider>();
+
+    _handleAuthChange(
+      auth.isAuthenticated,
+    );
+
+    if (!auth.isAuthenticated) {
+      return ProtectedFeatureView(
+        icon: Icons.confirmation_number,
+        title: 'Your Tickets',
+        description:
+            'Sign in to access your tickets and event passes.',
+        benefits: const [
+          'View QR event passes',
+          'Access your Event Hub',
+          'View purchase history',
+          'Receive event updates',
+        ],
+        onSignIn: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const LoginScreen(),
+            ),
+          );
+
+          if (!mounted) return;
+
+          await loadTickets();
+        },
+        onCreateAccount: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const RegisterScreen(),
+            ),
+          );
+
+          if (!mounted) return;
+
+          await loadTickets();
+        },
+      );
+    }
+
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        title: const Text('My Tickets'),
+      ),
+      body: _buildBody(),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Body
+  // ---------------------------------------------------------------------------
+
+  Widget _buildBody() {
+    if (loading) {
+      return const Center(
+        child: CircularProgressIndicator(
+          color: AppColors.primary,
+        ),
+      );
+    }
+
+    if (error != null) {
+      return RefreshIndicator(
+        color: AppColors.primary,
+        backgroundColor: AppColors.card,
+        onRefresh: loadTickets,
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: [
+            SizedBox(
+              height: MediaQuery.sizeOf(context).height * .25,
+            ),
+            const Icon(
+              Icons.error_outline_rounded,
+              size: 52,
+              color: AppColors.textSecondary,
+            ),
+            const SizedBox(height: 18),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Text(
+                error!,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Center(
+              child: FilledButton(
+                onPressed: loadTickets,
+                child: const Text('Try Again'),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (tickets.isEmpty) {
+      return RefreshIndicator(
+        color: AppColors.primary,
+        backgroundColor: AppColors.card,
+        onRefresh: loadTickets,
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: [
+            SizedBox(
+              height: MediaQuery.sizeOf(context).height * .22,
+            ),
+            const Icon(
+              Icons.confirmation_number_outlined,
+              size: 64,
+              color: AppColors.primary,
+            ),
+            const SizedBox(height: 22),
+            const Text(
+              'No tickets yet',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 10),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 40),
+              child: Text(
+                "Tickets you've successfully acquired will appear here.",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: AppColors.textSecondary,
+                  height: 1.5,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return RefreshIndicator(
+      color: AppColors.primary,
+      backgroundColor: AppColors.card,
+      onRefresh: loadTickets,
+      child: ListView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(
+          20,
+          20,
+          20,
+          40,
+        ),
+        itemCount: tickets.length,
+        itemBuilder: (
+          context,
+          index,
+        ) {
+          final ticket = tickets[index];
+
+          return _TicketCard(
+            ticket: ticket,
+            onTap: () => _openTicket(ticket),
+          );
+        },
+      ),
+    );
+  }
 }
 
-/*
-|--------------------------------------------------------------------------
-| Ticket Card
-|--------------------------------------------------------------------------
-*/
+// -----------------------------------------------------------------------------
+// Ticket Card
+// -----------------------------------------------------------------------------
 
-class _TicketCard
-    extends StatelessWidget {
+class _TicketCard extends StatelessWidget {
   final PurchasedTicket ticket;
 
   final VoidCallback onTap;
@@ -439,64 +336,45 @@ class _TicketCard
   });
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
+  Widget build(BuildContext context) {
     final image =
-        ticket.coverImage ??
-        ticket.featuredImage;
+        ticket.coverImage ?? ticket.featuredImage;
 
-    final eventDate =
-        _formatDate(
+    final eventDate = _formatDate(
       ticket.startDate,
     );
 
-    final total =
-        _formatAmount(
+    final total = _formatAmount(
       ticket.amount,
       ticket.currency,
     );
 
     return Card(
       color: AppColors.card,
-      margin:
-          const EdgeInsets.only(
+      margin: const EdgeInsets.only(
         bottom: 18,
       ),
-      clipBehavior:
-          Clip.antiAlias,
-      shape:
-          RoundedRectangleBorder(
-        borderRadius:
-            BorderRadius.circular(
-          22,
-        ),
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(22),
       ),
       child: InkWell(
         onTap: onTap,
         child: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /*
-            |--------------------------------------------------------------------------
-            | Event Image
-            |--------------------------------------------------------------------------
-            */
+            // -----------------------------------------------------------------
+            // Event Image
+            // -----------------------------------------------------------------
 
-            if (image != null &&
-                image.isNotEmpty)
+            if (image != null && image.isNotEmpty)
               SizedBox(
-                width:
-                    double.infinity,
+                width: double.infinity,
                 height: 170,
-                child:
-                    Image.network(
+                child: Image.network(
                   image,
-                  fit:
-                      BoxFit.cover,
-                  errorBuilder:
-                      (
+                  fit: BoxFit.cover,
+                  errorBuilder: (
                     context,
                     error,
                     stackTrace,
@@ -508,148 +386,139 @@ class _TicketCard
             else
               _imagePlaceholder(),
 
-            /*
-            |--------------------------------------------------------------------------
-            | Ticket Information
-            |--------------------------------------------------------------------------
-            */
+            // -----------------------------------------------------------------
+            // Ticket Information
+            // -----------------------------------------------------------------
 
             Padding(
-              padding:
-                  const EdgeInsets.all(
-                20,
-              ),
+              padding: const EdgeInsets.all(20),
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
-                        child:
-                            Text(
-                          ticket
-                              .eventTitle,
-                          style:
-                              const TextStyle(
-                            fontSize:
-                                20,
-                            fontWeight:
-                                FontWeight.bold,
+                        child: Text(
+                          ticket.eventTitle,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
-
-                      const SizedBox(
-                        width: 12,
-                      ),
-
+                      const SizedBox(width: 12),
                       Container(
-                        padding:
-                            const EdgeInsets.symmetric(
-                          horizontal:
-                              10,
-                          vertical:
-                              6,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
                         ),
-                        decoration:
-                            BoxDecoration(
-                          color:
-                              AppColors.primary
-                                  .withValues(
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(
                             alpha: .12,
                           ),
-                          borderRadius:
-                              BorderRadius.circular(
-                            20,
-                          ),
+                          borderRadius: BorderRadius.circular(20),
                         ),
-                        child:
-                            const Text(
-                          "PAID",
-                          style:
-                              TextStyle(
-                            color:
-                                AppColors.primary,
-                            fontSize:
-                                11,
-                            fontWeight:
-                                FontWeight.bold,
+                        child: Text(
+                          ticket.status,
+                          style: const TextStyle(
+                            color: AppColors.primary,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
                     ],
                   ),
 
-                  const SizedBox(
-                    height: 8,
-                  ),
-
-                  const SizedBox(
-                    height: 8,
-                  ),
+                  const SizedBox(height: 8),
 
                   Text(
                     ticket.ticketName,
-                    style:
-                        const TextStyle(
-                      color:
-                          AppColors.primary,
-                      fontWeight:
-                          FontWeight.w600,
+                    style: const TextStyle(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
 
-                  const SizedBox(
-                    height: 18,
-                  ),
+                  const SizedBox(height: 18),
 
                   _TicketInfoRow(
-                    icon:
-                        Icons
-                            .calendar_today_outlined,
-                    text:
-                        eventDate,
+                    icon: Icons.calendar_today_outlined,
+                    text: eventDate,
                   ),
 
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
 
                   _TicketInfoRow(
-                    icon:
-                        Icons
-                            .location_on_outlined,
-                    text:
-                        ticket.venue,
+                    icon: Icons.location_on_outlined,
+                    text: ticket.venue,
                   ),
 
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
 
                   _TicketInfoRow(
-                    icon:
-                        Icons
-                            .confirmation_number_outlined,
+                    icon: Icons.confirmation_number_outlined,
                     text:
-                        "${ticket.quantity} ticket${ticket.quantity == 1 ? "" : "s"}",
+                        '${ticket.quantity} ticket${ticket.quantity == 1 ? '' : 's'}',
                   ),
 
-                  const SizedBox(
-                    height: 18,
-                  ),
+                  const SizedBox(height: 18),
 
                   const Divider(
-                    color:
-                        AppColors.border,
+                    color: AppColors.border,
                   ),
 
-                  const SizedBox(
-                    height: 12,
+                  const SizedBox(height: 16),
+
+                  // -----------------------------------------------------------------
+                  // Pass Status
+                  // -----------------------------------------------------------------
+
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: ticket.hasPass
+                          ? AppColors.success.withValues(
+                              alpha: .08,
+                            )
+                          : Colors.orange.withValues(
+                              alpha: .08,
+                            ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          ticket.hasPass
+                              ? Icons.verified
+                              : Icons.schedule,
+                          color: ticket.hasPass
+                              ? AppColors.success
+                              : Colors.orange,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            ticket.hasPass
+                                ? '${ticket.activePasses}/${ticket.totalPasses} active pass(es)'
+                                : 'Pass not yet issued',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
+
+                  const SizedBox(height: 16),
+
+                  // -----------------------------------------------------------------
+                  // Total / Action
+                  // -----------------------------------------------------------------
 
                   Row(
                     mainAxisAlignment:
@@ -660,59 +529,41 @@ class _TicketCard
                             CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            "Total",
-                            style:
-                                TextStyle(
-                              color:
-                                  AppColors.textSecondary,
-                              fontSize:
-                                  12,
+                            'Total',
+                            style: TextStyle(
+                              color: AppColors.textSecondary,
+                              fontSize: 12,
                             ),
                           ),
-
-                          const SizedBox(
-                            height: 3,
-                          ),
-
+                          const SizedBox(height: 3),
                           Text(
                             total,
-                            style:
-                                const TextStyle(
-                              fontSize:
-                                  18,
-                              fontWeight:
-                                  FontWeight.bold,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ],
                       ),
-
                       Row(
                         children: [
                           Text(
                             ticket.checkedIn
-                                ? "Checked In"
-                                : "Open Ticket",
-                            style:
-                                TextStyle(
-                              color:
-                                  ticket.checkedIn
-                                      ? AppColors.success
-                                      : AppColors.primary,
-                              fontWeight:
-                                  FontWeight.w600,
+                                ? 'Checked In'
+                                : ticket.hasPass
+                                    ? 'Open Pass'
+                                    : 'Generate Pass',
+                            style: TextStyle(
+                              color: ticket.checkedIn
+                                  ? AppColors.success
+                                  : AppColors.primary,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
-
-                          const SizedBox(
-                            width: 6,
-                          ),
-
+                          const SizedBox(width: 6),
                           const Icon(
-                            Icons
-                                .chevron_right,
-                            color:
-                                AppColors.primary,
+                            Icons.chevron_right,
+                            color: AppColors.primary,
                           ),
                         ],
                       ),
@@ -727,101 +578,77 @@ class _TicketCard
     );
   }
 
- /*
-|--------------------------------------------------------------------------
-| Placeholder
-|--------------------------------------------------------------------------
-*/
+  // ---------------------------------------------------------------------------
+  // Placeholder
+  // ---------------------------------------------------------------------------
 
-Widget _imagePlaceholder() {
-  return Container(
-    width:
-        double.infinity,
-    height: 170,
-    color:
-        AppColors.surface,
-    child:
-        const Center(
-      child:
-          Icon(
-        Icons.event,
-        size: 52,
-        color:
-            AppColors.textSecondary,
+  Widget _imagePlaceholder() {
+    return Container(
+      width: double.infinity,
+      height: 170,
+      color: AppColors.surface,
+      child: const Center(
+        child: Icon(
+          Icons.event,
+          size: 52,
+          color: AppColors.textSecondary,
+        ),
       ),
-    ),
-  );
-}
-
-/*
-|--------------------------------------------------------------------------
-| Date
-|--------------------------------------------------------------------------
-*/
-
-String _formatDate(
-  DateTime date,
-) {
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-
-  final local =
-      date.toLocal();
-
-  return "${months[local.month - 1]} ${local.day}, ${local.year}";
-}
-
-/*
-|--------------------------------------------------------------------------
-| Amount
-|--------------------------------------------------------------------------
-*/
-
-String _formatAmount(
-  double amount,
-  String currency,
-) {
-  if (amount <= 0) {
-    return "Free";
+    );
   }
 
-  final value =
-      amount ==
-              amount
-                  .truncateToDouble()
-          ? amount
-              .toStringAsFixed(
-                0,
-              )
-          : amount
-              .toStringAsFixed(
-                2,
-              );
+  // ---------------------------------------------------------------------------
+  // Date
+  // ---------------------------------------------------------------------------
 
-  return "$currency $value";
+  String _formatDate(DateTime date) {
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+
+    final local = date.toLocal();
+
+    return '${months[local.month - 1]} '
+        '${local.day}, '
+        '${local.year}';
+  }
+
+  // ---------------------------------------------------------------------------
+  // Amount
+  // ---------------------------------------------------------------------------
+
+  String _formatAmount(
+    double amount,
+    String currency,
+  ) {
+    if (amount <= 0) {
+      return 'Free';
+    }
+
+    final value = amount == amount.truncateToDouble()
+        ? amount.toStringAsFixed(0)
+        : amount.toStringAsFixed(2);
+
+    return '$currency $value';
+  }
 }
-}
 
-/*
-|--------------------------------------------------------------------------
-| Ticket Information Row
-|--------------------------------------------------------------------------
-*/
+// -----------------------------------------------------------------------------
+// Ticket Information Row
+// -----------------------------------------------------------------------------
 
-class _TicketInfoRow
-    extends StatelessWidget {
+class _TicketInfoRow extends StatelessWidget {
   final IconData icon;
 
   final String text;
@@ -832,30 +659,20 @@ class _TicketInfoRow
   });
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
+  Widget build(BuildContext context) {
     return Row(
       children: [
         Icon(
           icon,
           size: 18,
-          color:
-              AppColors.textSecondary,
+          color: AppColors.textSecondary,
         ),
-
-        const SizedBox(
-          width: 10,
-        ),
-
+        const SizedBox(width: 10),
         Expanded(
-          child:
-              Text(
+          child: Text(
             text,
-            style:
-                const TextStyle(
-              color:
-                  AppColors.textSecondary,
+            style: const TextStyle(
+              color: AppColors.textSecondary,
             ),
           ),
         ),

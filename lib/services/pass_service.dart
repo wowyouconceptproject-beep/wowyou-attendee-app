@@ -52,51 +52,99 @@ class PassService {
     );
   }
 
-  /*
-  |--------------------------------------------------------------------------
-  | Secure Pass
-  |--------------------------------------------------------------------------
-  |
-  | Generates a signed JWT used by the QR code.
-  | This token should never be stored permanently.
-  |
-  */
+  Future<List<Map<String, dynamic>>>
+    securePass(
+  String purchaseId,
+) async {
+  final response =
+      await http.post(
+    Uri.parse(
+      "${ApiConfig.baseUrl}$_baseRoute/$purchaseId/secure-pass",
+    ),
+    headers:
+        await _headers(),
+  );
 
-  Future<String> securePass(
+  final data =
+      _decodeResponse(
+    response,
+  );
+
+  if (data["success"] !=
+      true) {
+    throw Exception(
+      data["message"] ??
+          "Unable to generate secure pass.",
+    );
+  }
+
+  final passes =
+      data["passes"];
+
+  if (passes == null ||
+      passes is! List) {
+    throw Exception(
+      "Invalid secure passes returned by server.",
+    );
+  }
+
+  return List<Map<String, dynamic>>
+      .from(passes);
+}
+
+
+
+  Future<List<Map<String, dynamic>>>
+      getIssuedPasses(
     String purchaseId,
   ) async {
-    final response = await http.post(
+    final response =
+        await http.post(
       Uri.parse(
         "${ApiConfig.baseUrl}$_baseRoute/$purchaseId/secure-pass",
       ),
-      headers: await _headers(),
+      headers:
+          await _headers(),
     );
 
-    final data = _decodeResponse(response);
+    final data =
+        _decodeResponse(
+      response,
+    );
 
-    if (data["success"] != true) {
+    if (data["success"] !=
+        true) {
       throw Exception(
         data["message"] ??
-            "Unable to generate secure pass.",
+            "Unable to load passes.",
       );
     }
 
-    final token = data["token"];
+    final passes =
+        data["passes"];
 
-    if (token == null || token is! String) {
+    if (passes == null ||
+        passes is! List) {
       throw Exception(
-        "Invalid secure pass returned by server.",
+        "Invalid passes returned by server.",
       );
     }
 
-    return token;
+    return List<Map<String, dynamic>>
+        .from(passes);
   }
 
-  /*
-  |--------------------------------------------------------------------------
-  | Helpers
-  |--------------------------------------------------------------------------
-  */
+  
+
+  Future<List<Map<String, dynamic>>>
+      refreshPass(
+    String purchaseId,
+  ) {
+    return getIssuedPasses(
+      purchaseId,
+    );
+  }
+
 
   Map<String, dynamic> _parseObjectResponse(
     http.Response response,

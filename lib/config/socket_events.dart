@@ -1,63 +1,71 @@
 class SocketEvents {
   SocketEvents._();
 
-  /*
-  |--------------------------------------------------------------------------
-  | Room Commands
-  |--------------------------------------------------------------------------
-  */
+  // ---------------------------------------------------------------------------
+  // Room Commands
+  // ---------------------------------------------------------------------------
 
-  static const String joinEvent =
-      "join-event";
+  static const String joinEvent = 'join-event';
 
-  static const String leaveEvent =
-      "leave-event";
+  static const String leaveEvent = 'leave-event';
 
-  static const String joinAttendee =
-      "join-attendee";
+  static const String joinAttendee = 'join-attendee';
 
-  static const String leaveAttendee =
-      "leave-attendee";
+  static const String leaveAttendee = 'leave-attendee';
 
-  static const String joinOrganizer =
-      "join-organizer";
+  static const String joinOrganizer = 'join-organizer';
 
-  static const String leaveOrganizer =
-      "leave-organizer";
+  static const String leaveOrganizer = 'leave-organizer';
 
-  /*
-  |--------------------------------------------------------------------------
-  | Realtime Events
-  |--------------------------------------------------------------------------
-  */
+  // ---------------------------------------------------------------------------
+  // Realtime Events
+  // ---------------------------------------------------------------------------
 
-  static const String attendanceUpdated =
-      "attendance.updated";
+  static const String attendanceUpdated = 'attendance.updated';
 
-  static const String activityCreated =
-      "activity.created";
+  static const String activityCreated = 'activity.created';
 
   static const String announcementCreated =
-      "announcement.created";
+      'announcement.created';
 
   static const String announcementUpdated =
-      "announcement.updated";
+      'announcement.updated';
 
   static const String announcementDeleted =
-      "announcement.deleted";
+      'announcement.deleted';
 
-  static const String staffOnline =
-      "staff.online";
+  static const String staffOnline = 'staff.online';
 
-  static const String staffOffline =
-      "staff.offline";
+  static const String staffOffline = 'staff.offline';
 
-  static const String notification =
-      "notification";
+  static const String notification = 'notification';
 
   static const String vendorApplicationCreated =
-      "vendor.application.created";
+      'vendor.application.created';
 
   static const String vendorApplicationUpdated =
-      "vendor.application.updated";
+      'vendor.application.updated';
+
+  // ---------------------------------------------------------------------------
+  // Pass Events
+  // ---------------------------------------------------------------------------
+
+  static const String passIssued = 'pass-issued';
+
+  static const String passCheckedIn = 'pass-checked-in';
+
+  static const String passRevoked = 'pass-revoked';
+
+  // ---------------------------------------------------------------------------
+  // Capacity Events
+  // ---------------------------------------------------------------------------
+
+  static const String capacityUpdated = 'capacity-updated';
+
+  // ---------------------------------------------------------------------------
+  // Event Status Events
+  // ---------------------------------------------------------------------------
+
+  static const String eventStatusChanged =
+      'event-status-changed';
 }

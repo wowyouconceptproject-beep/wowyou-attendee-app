@@ -6,9 +6,11 @@ import "package:attendee_app/theme/app_colors.dart";
 
 import "../providers/auth_provider.dart";
 import "../services/attendee_profile_service.dart";
+import "../utils/storage.dart";
 
 import "attendee_profile_screen.dart";
 import "main_navigation_screen.dart";
+import "policies/policy_consent_screen.dart";
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({
@@ -23,9 +25,11 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState
     extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
+  static const String _policyVersion = "v1.0";
+
   final AttendeeProfileService
       _profileService =
-          AttendeeProfileService();
+      AttendeeProfileService();
 
   late final AnimationController
       _controller;
@@ -58,6 +62,7 @@ class _SplashScreenState
   @override
   void dispose() {
     _controller.dispose();
+
     super.dispose();
   }
 
@@ -74,7 +79,15 @@ class _SplashScreenState
 
     await auth.loadUser();
 
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Authentication
+    |--------------------------------------------------------------------------
+    */
 
     if (!auth.isAuthenticated) {
       Navigator.pushReplacement(
@@ -88,6 +101,62 @@ class _SplashScreenState
       return;
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Policy Consent
+    |--------------------------------------------------------------------------
+    */
+
+    if (mounted) {
+      setState(() {
+        _status =
+            "Checking platform policies...";
+      });
+    }
+
+    final acceptedVersion =
+        await Storage
+            .getPolicyConsentVersion();
+
+    if (!mounted) {
+      return;
+    }
+
+    if (acceptedVersion !=
+        _policyVersion) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) =>
+              PolicyConsentScreen(
+            onAccepted: () {
+              _continueAfterConsent();
+            },
+          ),
+        ),
+      );
+
+      return;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Continue
+    |--------------------------------------------------------------------------
+    */
+
+    await _continueAfterConsent();
+  }
+
+  Future<void>
+      _continueAfterConsent() async {
+    if (!mounted) {
+      return;
+    }
+
+    final auth =
+        context.read<AuthProvider>();
+
     if (mounted) {
       setState(() {
         _status =
@@ -96,15 +165,17 @@ class _SplashScreenState
     }
 
     final profile =
-        await _profileService
-            .getMyProfile(
+        await _profileService.getMyProfile(
       auth.token!,
     );
 
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     setState(() {
-      _status = "Almost ready...";
+      _status =
+          "Almost ready...";
     });
 
     await Future.delayed(
@@ -113,7 +184,9 @@ class _SplashScreenState
       ),
     );
 
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     Navigator.pushReplacement(
       context,
@@ -154,15 +227,15 @@ class _SplashScreenState
                       height: 130,
                       decoration:
                           const BoxDecoration(
-                        shape: BoxShape.circle,
+                        shape:
+                            BoxShape.circle,
                         gradient:
                             RadialGradient(
                           colors: [
                             Color(
                               0x333E86A4,
                             ),
-                            Colors
-                                .transparent,
+                            Colors.transparent,
                           ],
                         ),
                       ),
@@ -261,7 +334,8 @@ class _SplashScreenState
                     color: AppColors
                         .textSecondary,
                     fontSize: 14,
-                    letterSpacing: 0.5,
+                    letterSpacing:
+                        0.5,
                   ),
                 ),
               ),

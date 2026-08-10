@@ -11,6 +11,8 @@ import "../../widgets/settings/account_section.dart";
 import "../../widgets/settings/notification_section.dart";
 import "../../widgets/settings/profile_header.dart";
 import "../../widgets/settings/security_section.dart";
+import "../legal/legal_policies_screen.dart";
+import "../../theme/app_colors.dart";
 
 import "../login_screen.dart";
 import "../register_screen.dart";
@@ -648,9 +650,58 @@ class _SettingsScreenState
 
           const AboutSection(),
 
-          const SizedBox(
-            height: 32,
-          ),
+const SizedBox(
+  height: 20,
+),
+
+Card(
+  child: ListTile(
+    contentPadding:
+        const EdgeInsets.symmetric(
+      horizontal: 18,
+      vertical: 8,
+    ),
+    leading: Container(
+      width: 44,
+      height: 44,
+      decoration: BoxDecoration(
+        color: AppColors.primary
+            .withValues(alpha: 0.10),
+        borderRadius:
+            BorderRadius.circular(12),
+      ),
+      child: const Icon(
+        Icons.gavel_outlined,
+        color: AppColors.primary,
+      ),
+    ),
+    title: const Text(
+      "Legal & Policies",
+      style: TextStyle(
+        fontWeight: FontWeight.w700,
+      ),
+    ),
+    subtitle: const Padding(
+      padding: EdgeInsets.only(
+        top: 4,
+      ),
+      child: Text(
+        "Terms, privacy, refunds, AI and other policies.",
+      ),
+    ),
+    trailing: const Icon(
+      Icons.chevron_right,
+    ),
+    onTap: () {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) =>
+              const LegalPoliciesScreen(),
+        ),
+      );
+    },
+  ),
+),
 
           /*
           |--------------------------------------------------------------------------

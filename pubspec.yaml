@@ -10,10 +10,16 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-    
 
+  # Deep Links / Payment Return
+  app_links: ^6.4.1
+
+  # iOS-style Icons
   cupertino_icons: ^1.0.8
+
+  # Realtime
   socket_io_client: ^3.1.2
+
   # Networking
   http: ^1.6.0
 
@@ -50,12 +56,6 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^5.0.0
-  
 
 flutter:
   uses-material-design: true
-
-
-  
-
-  

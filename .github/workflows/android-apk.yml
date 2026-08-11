@@ -22,13 +22,16 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "21"
+          java-version: "17"
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
+
+      - name: Flutter Version
+        run: flutter --version
 
       - name: Clean Project
         run: flutter clean
@@ -46,8 +49,25 @@ jobs:
       - name: Build Release APK
         run: flutter build apk --release
 
+      - name: Verify APK Exists
+        run: |
+          ls -lh build/app/outputs/flutter-apk/
+          test -f build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Verify APK
+        run: |
+          $ANDROID_HOME/build-tools/$(ls $ANDROID_HOME/build-tools | sort -V | tail -1)/apksigner verify \
+            --verbose \
+            build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Inspect APK
+        run: |
+          $ANDROID_HOME/build-tools/$(ls $ANDROID_HOME/build-tools | sort -V | tail -1)/aapt dump badging \
+            build/app/outputs/flutter-apk/app-release.apk | head -20
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: wowyou-attendee-release
           path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error

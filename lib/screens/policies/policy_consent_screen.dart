@@ -48,6 +48,10 @@ class _PolicyConsentScreenState
         );
       }
 
+      debugPrint(
+        "CONSENT: sending request",
+      );
+
       /*
       |--------------------------------------------------------------------------
       | Record Consent On Backend
@@ -63,26 +67,62 @@ class _PolicyConsentScreenState
             _getRole(auth),
       );
 
+      debugPrint(
+        "CONSENT: backend accepted",
+      );
+
       /*
       |--------------------------------------------------------------------------
       | Cache Current Policy Version
       |--------------------------------------------------------------------------
-      |
-      | Only save this locally after the backend
-      | has successfully recorded the consent.
-      |
       */
 
       await Storage.setPolicyConsent(
         version: policyVersion,
       );
 
+      debugPrint(
+        "CONSENT: local storage saved",
+      );
+
       if (!mounted) {
         return;
       }
 
+      /*
+      |--------------------------------------------------------------------------
+      | Stop Loading
+      |--------------------------------------------------------------------------
+      */
+
+      setState(() {
+        _loading = false;
+      });
+
+      debugPrint(
+        "CONSENT: loading stopped",
+      );
+
+      /*
+      |--------------------------------------------------------------------------
+      | Continue Application
+      |--------------------------------------------------------------------------
+      */
+
       widget.onAccepted();
-    } catch (e) {
+
+      debugPrint(
+        "CONSENT: onAccepted called",
+      );
+    } catch (e, stackTrace) {
+      debugPrint(
+        "CONSENT ERROR: $e",
+      );
+
+      debugPrint(
+        "$stackTrace",
+      );
+
       if (!mounted) {
         return;
       }
@@ -248,7 +288,6 @@ class _PolicyConsentScreenState
                                     );
                                   },
                       ),
-
                       const Expanded(
                         child: Padding(
                           padding:
@@ -282,8 +321,7 @@ class _PolicyConsentScreenState
                 width:
                     double.infinity,
                 height: 54,
-                child:
-                    FilledButton(
+                child: FilledButton(
                   onPressed:
                       _accepted &&
                               !_loading

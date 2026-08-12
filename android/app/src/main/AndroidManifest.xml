@@ -8,6 +8,11 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
+        <!-- Google Maps API Key -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="YOUR_GOOGLE_MAPS_API_KEY" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -35,16 +40,16 @@
             </intent-filter>
 
             <!-- WoWYou payment return deep link -->
-<intent-filter>
-    <action android:name="android.intent.action.VIEW" />
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
 
-    <category android:name="android.intent.category.DEFAULT" />
-    <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
 
-    <data
-        android:scheme="wowyou"
-        android:host="payment-return" />
-</intent-filter>
+                <data
+                    android:scheme="wowyou"
+                    android:host="payment-return" />
+            </intent-filter>
 
         </activity>
 

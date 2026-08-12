@@ -15,6 +15,7 @@ import "../widgets/event_details/event_info_card.dart";
 import "../widgets/event_details/event_about.dart";
 import "../widgets/event_details/ticket_card.dart";
 import "../widgets/event_details/register_button.dart";
+import "../widgets/event_details/event_location_map.dart";
 
 class EventDetailsScreen
     extends StatefulWidget {
@@ -495,37 +496,34 @@ Widget build(
           ),
 
           SliverToBoxAdapter(
-            child:
-                EventInfoCard(
-              event:
-                  event,
-            ),
-          ),
+  child: EventInfoCard(
+    event: event,
+  ),
+),
 
-          const SliverToBoxAdapter(
-            child:
-                SizedBox(
-              height:
-                  32,
-            ),
-          ),
+const SliverToBoxAdapter(
+  child: SizedBox(
+    height: 32,
+  ),
+),
 
-          SliverToBoxAdapter(
-            child:
-                EventAbout(
-              description:
-                  event
-                      .description,
-            ),
-          ),
+SliverToBoxAdapter(
+  child: EventLocationMap(
+    event: event,
+  ),
+),
 
-          const SliverToBoxAdapter(
-            child:
-                SizedBox(
-              height:
-                  32,
-            ),
-          ),
+const SliverToBoxAdapter(
+  child: SizedBox(
+    height: 32,
+  ),
+),
+
+SliverToBoxAdapter(
+  child: EventAbout(
+    description: event.description,
+  ),
+),
 
           /*
           |--------------------------------------------------------------------------

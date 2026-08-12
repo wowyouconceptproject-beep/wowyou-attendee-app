@@ -14,6 +14,9 @@ dependencies:
   # Deep Links / Payment Return
   app_links: ^6.4.1
 
+  # Google Maps
+  google_maps_flutter: ^2.13.1
+
   # iOS-style Icons
   cupertino_icons: ^1.0.8
 

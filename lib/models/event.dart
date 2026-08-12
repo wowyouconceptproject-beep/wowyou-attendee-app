@@ -4,8 +4,33 @@ class Event {
   final String description;
   final String venue;
 
+  /*
+  |--------------------------------------------------------------------------
+  | Location
+  |--------------------------------------------------------------------------
+  */
+
+  final String? venueAddress;
+  final String? city;
+  final String? country;
+
+  final double? venueLatitude;
+  final double? venueLongitude;
+
+  /*
+  |--------------------------------------------------------------------------
+  | Images
+  |--------------------------------------------------------------------------
+  */
+
   final String? coverImage;
   final String? featuredImage;
+
+  /*
+  |--------------------------------------------------------------------------
+  | Event
+  |--------------------------------------------------------------------------
+  */
 
   final int capacity;
   final String status;
@@ -16,6 +41,12 @@ class Event {
   final DateTime startDate;
   final DateTime endDate;
 
+  /*
+  |--------------------------------------------------------------------------
+  | Tickets
+  |--------------------------------------------------------------------------
+  */
+
   final List<TicketType> tickets;
 
   Event({
@@ -23,8 +54,17 @@ class Event {
     required this.title,
     required this.description,
     required this.venue,
+
+    this.venueAddress,
+    this.city,
+    this.country,
+
+    this.venueLatitude,
+    this.venueLongitude,
+
     this.coverImage,
     this.featuredImage,
+
     required this.capacity,
     required this.status,
     required this.currency,
@@ -66,6 +106,12 @@ class Event {
             : [];
 
     return Event(
+      /*
+      |--------------------------------------------------------------------------
+      | Basic Information
+      |--------------------------------------------------------------------------
+      */
+
       id:
           json["id"]?.toString() ??
           "",
@@ -83,6 +129,38 @@ class Event {
           json["venue"]?.toString() ??
           "",
 
+      /*
+      |--------------------------------------------------------------------------
+      | Location
+      |--------------------------------------------------------------------------
+      */
+
+      venueAddress:
+          json["venueAddress"]
+              ?.toString(),
+
+      city:
+          json["city"]?.toString(),
+
+      country:
+          json["country"]?.toString(),
+
+      venueLatitude:
+          _toDoubleOrNull(
+        json["venueLatitude"],
+      ),
+
+      venueLongitude:
+          _toDoubleOrNull(
+        json["venueLongitude"],
+      ),
+
+      /*
+      |--------------------------------------------------------------------------
+      | Images
+      |--------------------------------------------------------------------------
+      */
+
       coverImage:
           json["coverImage"]
               ?.toString(),
@@ -91,10 +169,16 @@ class Event {
           json["featuredImage"]
               ?.toString(),
 
+      /*
+      |--------------------------------------------------------------------------
+      | Event
+      |--------------------------------------------------------------------------
+      */
+
       capacity:
           _toInt(
-            json["capacity"],
-          ),
+        json["capacity"],
+      ),
 
       status:
           json["status"]?.toString() ??
@@ -112,19 +196,25 @@ class Event {
 
       startDate:
           _parseDate(
-            json["startDate"],
-          ),
+        json["startDate"],
+      ),
 
       endDate:
           _parseDate(
-            json["endDate"],
-          ),
+        json["endDate"],
+      ),
+
+      /*
+      |--------------------------------------------------------------------------
+      | Tickets
+      |--------------------------------------------------------------------------
+      */
 
       tickets:
           ticketList
               .whereType<
-                Map<String, dynamic>
-              >()
+                  Map<String, dynamic>
+                >()
               .map(
                 TicketType.fromJson,
               )
@@ -132,30 +222,90 @@ class Event {
     );
   }
 
+  /*
+  |--------------------------------------------------------------------------
+  | JSON
+  |--------------------------------------------------------------------------
+  */
+
   Map<String, dynamic> toJson() {
     return {
       "id": id,
-      "title": title,
+
+      "title":
+          title,
+
       "description":
           description,
-      "venue": venue,
+
+      "venue":
+          venue,
+
+      /*
+      |--------------------------------------------------------------------------
+      | Location
+      |--------------------------------------------------------------------------
+      */
+
+      "venueAddress":
+          venueAddress,
+
+      "city":
+          city,
+
+      "country":
+          country,
+
+      "venueLatitude":
+          venueLatitude,
+
+      "venueLongitude":
+          venueLongitude,
+
+      /*
+      |--------------------------------------------------------------------------
+      | Images
+      |--------------------------------------------------------------------------
+      */
+
       "coverImage":
           coverImage,
+
       "featuredImage":
           featuredImage,
+
+      /*
+      |--------------------------------------------------------------------------
+      | Event
+      |--------------------------------------------------------------------------
+      */
+
       "capacity":
           capacity,
-      "status": status,
+
+      "status":
+          status,
+
       "currency":
           currency,
+
       "category":
           category,
+
       "startDate":
           startDate
               .toIso8601String(),
+
       "endDate":
           endDate
               .toIso8601String(),
+
+      /*
+      |--------------------------------------------------------------------------
+      | Tickets
+      |--------------------------------------------------------------------------
+      */
+
       "tickets":
           tickets
               .map(
@@ -165,6 +315,12 @@ class Event {
               .toList(),
     };
   }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Integer Parser
+  |--------------------------------------------------------------------------
+  */
 
   static int _toInt(
     dynamic value,
@@ -184,6 +340,34 @@ class Event {
         0;
   }
 
+  /*
+  |--------------------------------------------------------------------------
+  | Double Parser
+  |--------------------------------------------------------------------------
+  */
+
+  static double? _toDoubleOrNull(
+    dynamic value,
+  ) {
+    if (value == null) {
+      return null;
+    }
+
+    if (value is num) {
+      return value.toDouble();
+    }
+
+    return double.tryParse(
+      value.toString(),
+    );
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Date Parser
+  |--------------------------------------------------------------------------
+  */
+
   static DateTime _parseDate(
     dynamic value,
   ) {
@@ -191,7 +375,8 @@ class Event {
           value?.toString() ??
               "",
         ) ??
-        DateTime.fromMillisecondsSinceEpoch(
+        DateTime
+            .fromMillisecondsSinceEpoch(
           0,
         );
   }
@@ -228,6 +413,12 @@ class TicketType {
     this.color,
   });
 
+  /*
+  |--------------------------------------------------------------------------
+  | Ticket Availability
+  |--------------------------------------------------------------------------
+  */
+
   int get remaining {
     final value =
         quantity - sold;
@@ -245,6 +436,12 @@ class TicketType {
 
   bool get isFree =>
       price <= 0;
+
+  /*
+  |--------------------------------------------------------------------------
+  | From JSON
+  |--------------------------------------------------------------------------
+  */
 
   factory TicketType.fromJson(
     Map<String, dynamic> json,
@@ -264,18 +461,18 @@ class TicketType {
 
       price:
           _toDouble(
-            json["price"],
-          ),
+        json["price"],
+      ),
 
       quantity:
           _toInt(
-            json["quantity"],
-          ),
+        json["quantity"],
+      ),
 
       sold:
           _toInt(
-            json["sold"],
-          ),
+        json["sold"],
+      ),
 
       isActive:
           json["isActive"] ==
@@ -287,21 +484,45 @@ class TicketType {
     );
   }
 
+  /*
+  |--------------------------------------------------------------------------
+  | To JSON
+  |--------------------------------------------------------------------------
+  */
+
   Map<String, dynamic> toJson() {
     return {
-      "id": id,
-      "name": name,
+      "id":
+          id,
+
+      "name":
+          name,
+
       "description":
           description,
-      "price": price,
+
+      "price":
+          price,
+
       "quantity":
           quantity,
-      "sold": sold,
+
+      "sold":
+          sold,
+
       "isActive":
           isActive,
-      "color": color,
+
+      "color":
+          color,
     };
   }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Integer Parser
+  |--------------------------------------------------------------------------
+  */
 
   static int _toInt(
     dynamic value,
@@ -320,6 +541,12 @@ class TicketType {
         ) ??
         0;
   }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Double Parser
+  |--------------------------------------------------------------------------
+  */
 
   static double _toDouble(
     dynamic value,

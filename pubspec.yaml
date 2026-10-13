@@ -76,5 +76,5 @@ flutter_launcher_icons:
 
   remove_alpha_ios: true
 
-  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_background: "#050505"
   adaptive_icon_foreground: "assets/icon/wowyou_app_icon.png"

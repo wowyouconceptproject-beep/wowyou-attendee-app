@@ -32,15 +32,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _register() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
 
     FocusScope.of(context).unfocus();
 
-    setState(() {
-      _loading = true;
-    });
+    setState(() => _loading = true);
 
     try {
       final auth = context.read<AuthProvider>();
@@ -52,122 +48,124 @@ class _RegisterScreenState extends State<RegisterScreen> {
         password: _passwordController.text,
       );
 
-      if (!mounted) {
+      if (!mounted) return;
+
+      if (!success) {
+        _showError(
+          'We could not create your account. '
+          'Please check your details and try again.',
+        );
         return;
       }
 
-      if (!success) {
-  _showError(
-    'We could not create your account. Please check your details and try again.',
-  );
-  return;
-}
-
-      /*
-       * IMPORTANT:
-       *
-       * Registration is part of the attendee onboarding journey.
-       *
-       * The attendee account is created first, then the attendee
-       * completes their profile before continuing with the rest
-       * of the ticket/event journey.
-       *
-       * We intentionally do NOT stop the user on an email
-       * verification screen here.
-       *
-       * Email verification remains part of account security and
-       * login, while registration continues into profile creation.
-       */
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (_) => const AttendeeProfileScreen(),
         ),
       );
     } catch (error) {
-      if (!mounted) {
-        return;
-      }
+      if (!mounted) return;
 
       _showError(
         error.toString().replaceFirst('Exception: ', ''),
       );
     } finally {
       if (mounted) {
-        setState(() {
-          _loading = false;
-        });
+        setState(() => _loading = false);
       }
     }
   }
 
   void _showError(String message) {
+    final colors = Theme.of(context).colorScheme;
+
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
-          content: Text(message),
+          content: Text(
+            message,
+            style: TextStyle(color: colors.onSurface),
+          ),
           behavior: SnackBarBehavior.floating,
+          backgroundColor: colors.surface,
+          showCloseIcon: true,
+          closeIconColor: colors.onSurface,
         ),
       );
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: theme.scaffoldBackgroundColor,
+        foregroundColor: colors.onSurface,
         elevation: 0,
+        scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
         leading: IconButton(
+          tooltip: 'Go back',
           icon: const Icon(
             Icons.arrow_back_ios_new,
             size: 20,
           ),
           onPressed: _loading
               ? null
-              : () {
-                  Navigator.of(context).pop();
-                },
+              : () => Navigator.of(context).pop(),
         ),
       ),
       body: SafeArea(
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(
-              24,
-              20,
-              24,
-              40,
-            ),
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 36),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Create your account',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.black,
-                    height: 1.15,
+                Container(
+                  width: 48,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: colors.primary,
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
 
-                const SizedBox(height: 10),
+                const SizedBox(height: 24),
 
-                const Text(
-                  'Create an account to continue your attendee journey and manage your events and tickets.',
-                  style: TextStyle(
+                Text(
+                  'Create your account',
+                  style: textTheme.headlineMedium?.copyWith(
+                    fontSize: 30,
+                    fontWeight: FontWeight.w800,
+                    height: 1.15,
+                    letterSpacing: -0.7,
+                    color: colors.onSurface,
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                Text(
+                  'Join WOWYOU to discover events, manage your '
+                  'tickets, and make every experience count.',
+                  style: textTheme.bodyMedium?.copyWith(
                     fontSize: 15,
-                    height: 1.5,
-                    color: Colors.black54,
+                    height: 1.6,
+                    color: colors.onSurface.withValues(alpha: 0.68),
                   ),
                 ),
 
                 const SizedBox(height: 32),
 
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
                       child: _buildTextField(
@@ -182,14 +180,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           }
 
                           if (value.trim().length < 2) {
-                            return 'Enter a valid first name';
+                            return 'Enter a valid name';
                           }
 
                           return null;
                         },
                       ),
                     ),
-                    const SizedBox(width: 14),
+
+                    const SizedBox(width: 12),
+
                     Expanded(
                       child: _buildTextField(
                         controller: _lastNameController,
@@ -203,7 +203,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           }
 
                           if (value.trim().length < 2) {
-                            return 'Enter a valid last name';
+                            return 'Enter a valid name';
                           }
 
                           return null;
@@ -213,7 +213,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ],
                 ),
 
-                const SizedBox(height: 18),
+                const SizedBox(height: 20),
 
                 _buildTextField(
                   controller: _emailController,
@@ -228,9 +228,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       return 'Enter your email address';
                     }
 
-                    final emailRegex = RegExp(
-                      r'^[^@\s]+@[^@\s]+\.[^@\s]+$',
-                    );
+                    final emailRegex =
+                        RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
 
                     if (!emailRegex.hasMatch(email)) {
                       return 'Enter a valid email address';
@@ -240,7 +239,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   },
                 ),
 
-                const SizedBox(height: 18),
+                const SizedBox(height: 20),
 
                 _buildTextField(
                   controller: _passwordController,
@@ -249,22 +248,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   obscureText: _obscurePassword,
                   textInputAction: TextInputAction.done,
                   onFieldSubmitted: (_) {
-                    if (!_loading) {
-                      _register();
-                    }
+                    if (!_loading) _register();
                   },
                   suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscurePassword
-                          ? Icons.visibility_outlined
-                          : Icons.visibility_off_outlined,
-                      color: Colors.black54,
-                    ),
+                    tooltip: _obscurePassword
+                        ? 'Show password'
+                        : 'Hide password',
                     onPressed: () {
                       setState(() {
                         _obscurePassword = !_obscurePassword;
                       });
                     },
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
+                      color: colors.onSurface.withValues(alpha: 0.65),
+                    ),
                   ),
                   validator: (value) {
                     final password = value ?? '';
@@ -283,15 +283,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 const SizedBox(height: 12),
 
-                const Text(
-                  'Use at least 8 characters for your password.',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.black45,
-                  ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.lock_outline,
+                      size: 16,
+                      color: colors.primary,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Use at least 8 characters for your password.',
+                        style: textTheme.bodySmall?.copyWith(
+                          height: 1.5,
+                          color: colors.onSurface.withValues(alpha: 0.65),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
 
-                const SizedBox(height: 30),
+                const SizedBox(height: 32),
 
                 SizedBox(
                   width: double.infinity,
@@ -299,24 +312,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: ElevatedButton(
                     onPressed: _loading ? null : _register,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      foregroundColor: Colors.white,
-                      disabledBackgroundColor: Colors.black12,
-                      disabledForegroundColor: Colors.white70,
+                      backgroundColor: colors.primary,
+                      foregroundColor: colors.onPrimary,
+                      disabledBackgroundColor:
+                          colors.primary.withValues(alpha: 0.4),
+                      disabledForegroundColor:
+                          colors.onPrimary.withValues(alpha: 0.7),
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(16),
                       ),
                     ),
                     child: _loading
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 22,
                             height: 22,
                             child: CircularProgressIndicator(
                               strokeWidth: 2.2,
                               valueColor:
                                   AlwaysStoppedAnimation<Color>(
-                                Colors.white,
+                                colors.onPrimary,
                               ),
                             ),
                           )
@@ -324,40 +339,62 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             'Create account',
                             style: TextStyle(
                               fontSize: 16,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
+                  ),
+                ),
+
+                const SizedBox(height: 22),
+
+                Center(
+                  child: Wrap(
+                    alignment: WrapAlignment.center,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Text(
+                        'Already have an account? ',
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: colors.onSurface.withValues(alpha: 0.7),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: _loading
+                            ? null
+                            : () => Navigator.of(context).pop(),
+                        style: TextButton.styleFrom(
+                          foregroundColor: colors.primary,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 8,
+                          ),
+                          minimumSize: Size.zero,
+                          tapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        child: const Text(
+                          'Log in',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
 
                 const SizedBox(height: 20),
 
                 Center(
-                  child: TextButton(
-                    onPressed: _loading
-                        ? null
-                        : () {
-                            Navigator.of(context).pop();
-                          },
-                    child: const Text(
-                      'Already have an account? Log in',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
+                  child: Text(
+                    'By creating an account, you agree to the '
+                    'WOWYOU terms and privacy policy.',
+                    textAlign: TextAlign.center,
+                    style: textTheme.bodySmall?.copyWith(
+                      fontSize: 12,
+                      height: 1.6,
+                      color: colors.onSurface.withValues(alpha: 0.45),
                     ),
-                  ),
-                ),
-
-                const SizedBox(height: 12),
-
-                const Text(
-                  'By creating an account, you agree to the WOWYOU terms and privacy policy.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 12,
-                    height: 1.45,
-                    color: Colors.black38,
                   ),
                 ),
               ],
@@ -379,6 +416,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
     String? Function(String?)? validator,
     void Function(String)? onFieldSubmitted,
   }) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
+    final outline = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(16),
+      borderSide: BorderSide(
+        color: colors.onSurface.withValues(alpha: 0.10),
+        width: 1,
+      ),
+    );
+
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
@@ -388,43 +436,60 @@ class _RegisterScreenState extends State<RegisterScreen> {
       onFieldSubmitted: onFieldSubmitted,
       autocorrect: false,
       enableSuggestions: !obscureText,
+      style: TextStyle(
+        color: colors.onSurface,
+        fontSize: 15,
+        fontWeight: FontWeight.w500,
+      ),
+      cursorColor: colors.primary,
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
         suffixIcon: suffixIcon,
         filled: true,
-        fillColor: const Color(0xFFF7F7F7),
+        fillColor:
+            theme.inputDecorationTheme.fillColor ?? colors.surface,
+        labelStyle: TextStyle(
+          color: colors.onSurface.withValues(alpha: 0.65),
+          fontSize: 14,
+        ),
+        floatingLabelStyle: TextStyle(
+          color: colors.primary,
+          fontWeight: FontWeight.w600,
+        ),
+        hintStyle: TextStyle(
+          color: colors.onSurface.withValues(alpha: 0.35),
+          fontSize: 14,
+        ),
+        errorStyle: TextStyle(
+          color: colors.error,
+          fontSize: 12,
+        ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
-          vertical: 16,
+          vertical: 18,
         ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide.none,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide.none,
-        ),
+        border: outline,
+        enabledBorder: outline,
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(
-            color: Colors.black,
-            width: 1.2,
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(
+            color: colors.primary,
+            width: 1.5,
           ),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(
-            color: Colors.redAccent,
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(
+            color: colors.error,
             width: 1,
           ),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(
-            color: Colors.redAccent,
-            width: 1.2,
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(
+            color: colors.error,
+            width: 1.5,
           ),
         ),
       ),

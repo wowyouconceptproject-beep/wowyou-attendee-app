@@ -1,3 +1,4 @@
+
 import "dart:convert";
 
 import "package:http/http.dart" as http;
@@ -12,9 +13,7 @@ class PassService {
     final token = await Storage.getToken();
 
     if (token == null || token.isEmpty) {
-      throw Exception(
-        "Authentication required.",
-      );
+      throw Exception("Authentication required.");
     }
 
     return {
@@ -27,12 +26,6 @@ class PassService {
   |--------------------------------------------------------------------------
   | Get Event Pass
   |--------------------------------------------------------------------------
-  |
-  | Returns the attendee's pass information.
-  | The current QR screen does not require this yet,
-  | but the endpoint is exposed for future Event Pass
-  | details and check-in status refresh.
-  |
   */
 
   Future<Map<String, dynamic>> getPass(
@@ -52,99 +45,146 @@ class PassService {
     );
   }
 
-  Future<List<Map<String, dynamic>>>
-    securePass(
-  String purchaseId,
-) async {
-  final response =
-      await http.post(
-    Uri.parse(
-      "${ApiConfig.baseUrl}$_baseRoute/$purchaseId/secure-pass",
-    ),
-    headers:
-        await _headers(),
-  );
+  /*
+  |--------------------------------------------------------------------------
+  | Generate Secure Pass
+  |--------------------------------------------------------------------------
+  |
+  | Returns the permanent signed pass credentials.
+  | These credentials are retained for the NFC writing flow.
+  |
+  */
 
-  final data =
-      _decodeResponse(
-    response,
-  );
-
-  if (data["success"] !=
-      true) {
-    throw Exception(
-      data["message"] ??
-          "Unable to generate secure pass.",
-    );
-  }
-
-  final passes =
-      data["passes"];
-
-  if (passes == null ||
-      passes is! List) {
-    throw Exception(
-      "Invalid secure passes returned by server.",
-    );
-  }
-
-  return List<Map<String, dynamic>>
-      .from(passes);
-}
-
-
-
-  Future<List<Map<String, dynamic>>>
-      getIssuedPasses(
+  Future<List<Map<String, dynamic>>> securePass(
     String purchaseId,
   ) async {
-    final response =
-        await http.post(
+    final response = await http.post(
       Uri.parse(
         "${ApiConfig.baseUrl}$_baseRoute/$purchaseId/secure-pass",
       ),
-      headers:
-          await _headers(),
+      headers: await _headers(),
     );
 
-    final data =
-        _decodeResponse(
-      response,
-    );
+    final data = _decodeResponse(response);
 
-    if (data["success"] !=
-        true) {
+    if (data["success"] != true) {
       throw Exception(
-        data["message"] ??
-            "Unable to load passes.",
+        data["message"] ?? "Unable to generate secure pass.",
       );
     }
 
-    final passes =
-        data["passes"];
+    final passes = data["passes"];
 
-    if (passes == null ||
-        passes is! List) {
+    if (passes is! List) {
+      throw Exception(
+        "Invalid secure passes returned by server.",
+      );
+    }
+
+    return List<Map<String, dynamic>>.from(passes);
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Generate Rotating QR Token
+  |--------------------------------------------------------------------------
+  |
+  | Requests a short-lived QR token from the existing backend route.
+  | The backend signs the token and sets its expiry to 60 seconds.
+  |
+  */
+
+  Future<String> rotatingQrToken(
+    String purchaseId,
+  ) async {
+    final response = await http.post(
+      Uri.parse(
+        "${ApiConfig.baseUrl}$_baseRoute/$purchaseId/rotating-qr",
+      ),
+      headers: await _headers(),
+    );
+
+    final data = _decodeResponse(response);
+
+    if (data["success"] != true) {
+      throw Exception(
+        data["message"] ?? "Unable to refresh QR code.",
+      );
+    }
+
+    final passes = data["passes"];
+
+    if (passes is! List || passes.isEmpty) {
+      throw Exception(
+        "No rotating QR token returned by server.",
+      );
+    }
+
+    final firstPass = passes.first;
+
+    if (firstPass is! Map ||
+        firstPass["token"] is! String ||
+        (firstPass["token"] as String).isEmpty) {
+      throw Exception(
+        "Invalid rotating QR token returned by server.",
+      );
+    }
+
+    return firstPass["token"] as String;
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Get Issued Passes
+  |--------------------------------------------------------------------------
+  */
+
+  Future<List<Map<String, dynamic>>> getIssuedPasses(
+    String purchaseId,
+  ) async {
+    final response = await http.post(
+      Uri.parse(
+        "${ApiConfig.baseUrl}$_baseRoute/$purchaseId/secure-pass",
+      ),
+      headers: await _headers(),
+    );
+
+    final data = _decodeResponse(response);
+
+    if (data["success"] != true) {
+      throw Exception(
+        data["message"] ?? "Unable to load passes.",
+      );
+    }
+
+    final passes = data["passes"];
+
+    if (passes is! List) {
       throw Exception(
         "Invalid passes returned by server.",
       );
     }
 
-    return List<Map<String, dynamic>>
-        .from(passes);
+    return List<Map<String, dynamic>>.from(passes);
   }
 
-  
+  /*
+  |--------------------------------------------------------------------------
+  | Refresh Pass
+  |--------------------------------------------------------------------------
+  */
 
-  Future<List<Map<String, dynamic>>>
-      refreshPass(
+  Future<List<Map<String, dynamic>>> refreshPass(
     String purchaseId,
   ) {
-    return getIssuedPasses(
-      purchaseId,
-    );
+    return getIssuedPasses(purchaseId);
   }
 
+  /*
+  |--------------------------------------------------------------------------
+  | Parse Object Response
+  |--------------------------------------------------------------------------
+  */
 
   Map<String, dynamic> _parseObjectResponse(
     http.Response response,
@@ -155,45 +195,41 @@ class PassService {
 
     if (data["success"] != true) {
       throw Exception(
-        data["message"] ??
-            defaultMessage,
+        data["message"] ?? defaultMessage,
       );
     }
 
     final object = data[key];
 
-    if (object == null ||
-        object is! Map<String, dynamic>) {
-      throw Exception(
-        "Invalid server response.",
-      );
+    if (object is! Map<String, dynamic>) {
+      throw Exception("Invalid server response.");
     }
 
     return object;
   }
 
+  /*
+  |--------------------------------------------------------------------------
+  | Decode Response
+  |--------------------------------------------------------------------------
+  */
+
   Map<String, dynamic> _decodeResponse(
     http.Response response,
   ) {
     if (response.body.isEmpty) {
-      throw Exception(
-        "Empty server response.",
-      );
+      throw Exception("Empty server response.");
     }
 
-    final decoded =
-        jsonDecode(response.body);
+    final decoded = jsonDecode(response.body);
 
     if (decoded is! Map<String, dynamic>) {
-      throw Exception(
-        "Unexpected server response.",
-      );
+      throw Exception("Unexpected server response.");
     }
 
     if (response.statusCode >= 400) {
       throw Exception(
-        decoded["message"] ??
-            "Server error.",
+        decoded["message"] ?? "Server error.",
       );
     }
 

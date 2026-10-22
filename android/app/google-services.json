@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "437698238988",
+    "project_id": "wowyou-eventtech",
+    "storage_bucket": "wowyou-eventtech.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:437698238988:android:d81fd6ef89d12a6c56ec29",
+        "android_client_info": {
+          "package_name": "com.wowyou.eventtech.attendee"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKYIZRxuFdgHWNWrchilRDb3bLLf8NIA8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

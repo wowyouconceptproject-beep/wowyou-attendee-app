@@ -1,4 +1,6 @@
+
 import 'package:flutter/material.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 import '../mixins/refresh_timer_mixin.dart';
 import '../mixins/wakelock_mixin.dart';
@@ -34,16 +36,20 @@ class _QrPassScreenState extends State<QrPassScreen>
 
   bool _loading = true;
 
+  bool _refreshingQr = false;
+
   EventPass? _pass;
+
+  String? _rotatingQrToken;
 
   PurchasedTicket get ticket => widget.ticket;
 
   @override
-  Duration get refreshDuration => const Duration(seconds: 60);
+  Duration get refreshDuration => const Duration(seconds: 50);
 
   @override
   Future<void> onRefresh() async {
-    await _loadSecurePass();
+    await _loadRotatingQr();
   }
 
   @override
@@ -58,14 +64,27 @@ class _QrPassScreenState extends State<QrPassScreen>
 
     await _loadSecurePass();
 
+    if (!mounted) return;
+
+    if (_pass != null && _pass!.canEnter) {
+      await _loadRotatingQr();
+    }
+
     await _initializeRealtime();
 
-    startRefreshTimer();
+    if (mounted) {
+      startRefreshTimer();
+    }
   }
 
-  // ---------------------------------------------------------------------------
-  // Secure Pass
-  // ---------------------------------------------------------------------------
+  /*
+  |--------------------------------------------------------------------------
+  | Load Permanent Pass
+  |--------------------------------------------------------------------------
+  |
+  | This token remains the credential used by the existing NFC writer.
+  |
+  */
 
   Future<void> _loadSecurePass() async {
     if (mounted) {
@@ -83,23 +102,17 @@ class _QrPassScreenState extends State<QrPassScreen>
         throw Exception('No pass issued.');
       }
 
-      if (!mounted) {
-        return;
-      }
+      if (!mounted) return;
 
       setState(() {
         _pass = EventPass.fromJson(
           passes.first,
         );
 
-        secondsRemaining = refreshDuration.inSeconds;
-
         _loading = false;
       });
     } catch (e) {
-      if (!mounted) {
-        return;
-      }
+      if (!mounted) return;
 
       setState(() {
         _loading = false;
@@ -107,17 +120,99 @@ class _QrPassScreenState extends State<QrPassScreen>
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            e.toString(),
-          ),
+          content: Text(e.toString()),
         ),
       );
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // Realtime
-  // ---------------------------------------------------------------------------
+  /*
+  |--------------------------------------------------------------------------
+  | Load Rotating QR
+  |--------------------------------------------------------------------------
+  |
+  | The rotating QR is fetched separately from the permanent pass.
+  | If refreshing fails, remove the previous token from the screen
+  | rather than continuing to display a potentially expired QR code.
+  |
+  */
+
+  Future<void> _loadRotatingQr() async {
+    if (_refreshingQr || !mounted) return;
+
+    final pass = _pass;
+
+    if (pass == null || !pass.canEnter) {
+      setState(() {
+        _rotatingQrToken = null;
+      });
+      return;
+    }
+
+    setState(() {
+      _refreshingQr = true;
+      _rotatingQrToken = null;
+    });
+
+    try {
+      final token = await _passService.rotatingQrToken(
+        ticket.id,
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        _rotatingQrToken = token;
+        secondsRemaining = refreshDuration.inSeconds;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _rotatingQrToken = null;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Unable to refresh QR code. Please try again.',
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _refreshingQr = false;
+        });
+      }
+    }
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Manual Refresh
+  |--------------------------------------------------------------------------
+  */
+
+  Future<void> _refreshPassScreen() async {
+    await _loadSecurePass();
+
+    if (!mounted) return;
+
+    if (_pass != null && _pass!.canEnter) {
+      await _loadRotatingQr();
+    } else {
+      setState(() {
+        _rotatingQrToken = null;
+      });
+    }
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Realtime
+  |--------------------------------------------------------------------------
+  */
 
   Future<void> _initializeRealtime() async {
     final token = await Storage.getToken();
@@ -156,6 +251,8 @@ class _QrPassScreenState extends State<QrPassScreen>
             station: data['station'],
             status: 'CHECKED_IN',
           );
+
+          _rotatingQrToken = null;
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -169,9 +266,15 @@ class _QrPassScreenState extends State<QrPassScreen>
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // NFC
-  // ---------------------------------------------------------------------------
+  /*
+  |--------------------------------------------------------------------------
+  | NFC
+  |--------------------------------------------------------------------------
+  |
+  | NFC continues using the permanent signed pass token.
+  | Do not replace this with the rotating QR token.
+  |
+  */
 
   Future<void> _writeNfc() async {
     if (_pass == null) {
@@ -219,9 +322,7 @@ class _QrPassScreenState extends State<QrPassScreen>
         _pass!.token,
       );
 
-      if (!mounted) {
-        return;
-      }
+      if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -232,9 +333,7 @@ class _QrPassScreenState extends State<QrPassScreen>
         ),
       );
     } catch (e) {
-      if (!mounted) {
-        return;
-      }
+      if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -247,9 +346,11 @@ class _QrPassScreenState extends State<QrPassScreen>
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // UI
-  // ---------------------------------------------------------------------------
+  /*
+  |--------------------------------------------------------------------------
+  | UI
+  |--------------------------------------------------------------------------
+  */
 
   @override
   Widget build(BuildContext context) {
@@ -298,7 +399,7 @@ class _QrPassScreenState extends State<QrPassScreen>
 
   Widget _buildPass(EventPass pass) {
     return RefreshIndicator(
-      onRefresh: _loadSecurePass,
+      onRefresh: _refreshPassScreen,
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.all(20),
@@ -308,10 +409,31 @@ class _QrPassScreenState extends State<QrPassScreen>
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
-                  const Icon(
-                    Icons.qr_code_2,
-                    size: 180,
-                  ),
+                  if (pass.canEnter && _rotatingQrToken != null)
+                    QrImageView(
+                      key: ValueKey(_rotatingQrToken),
+                      data: _rotatingQrToken!,
+                      size: 180,
+                      errorCorrectionLevel:
+                          QrErrorCorrectLevel.M,
+                    )
+                  else
+                    SizedBox(
+                      width: 180,
+                      height: 180,
+                      child: Center(
+                        child: _refreshingQr
+                            ? const CircularProgressIndicator()
+                            : Text(
+                                pass.isCheckedIn
+                                    ? 'Already checked in'
+                                    : pass.isActive
+                                        ? 'QR unavailable.\nPull down to retry.'
+                                        : 'Pass unavailable',
+                                textAlign: TextAlign.center,
+                              ),
+                      ),
+                    ),
                   const SizedBox(height: 16),
                   Text(
                     pass.passNumber,
@@ -322,6 +444,16 @@ class _QrPassScreenState extends State<QrPassScreen>
                   ),
                   const SizedBox(height: 8),
                   _buildStatus(pass),
+                  if (pass.canEnter) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      _refreshingQr
+                          ? 'Refreshing QR code…'
+                          : 'QR refreshes in about '
+                              '$secondsRemaining seconds',
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -350,8 +482,7 @@ class _QrPassScreenState extends State<QrPassScreen>
                   if (pass.checkedInAt != null) ...[
                     const SizedBox(height: 8),
                     Text(
-                      'Checked in at: '
-                      '${pass.checkedInAt}',
+                      'Checked in at: ${pass.checkedInAt}',
                     ),
                   ],
                   if (pass.station != null) ...[
@@ -367,8 +498,7 @@ class _QrPassScreenState extends State<QrPassScreen>
           const SizedBox(height: 16),
           if (pass.nfcEnabled)
             ElevatedButton.icon(
-              onPressed: pass.isCheckedIn ||
-                      !pass.isActive
+              onPressed: pass.isCheckedIn || !pass.isActive
                   ? null
                   : _writeNfc,
               icon: const Icon(Icons.nfc),

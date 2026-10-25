@@ -1,17 +1,12 @@
-
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-import '../mixins/refresh_timer_mixin.dart';
 import '../mixins/wakelock_mixin.dart';
-
 import '../models/event_pass.dart';
 import '../models/purchased_ticket.dart';
-
 import '../services/nfc_writer_service.dart';
 import '../services/pass_service.dart';
 import '../services/socket_service.dart';
-
 import '../utils/storage.dart';
 
 class QrPassScreen extends StatefulWidget {
@@ -27,35 +22,19 @@ class QrPassScreen extends StatefulWidget {
 }
 
 class _QrPassScreenState extends State<QrPassScreen>
-    with RefreshTimerMixin, WakelockMixin {
+    with WakelockMixin {
   final PassService _passService = PassService();
-
   final NfcWriterService _nfcWriter = NfcWriterService();
-
   final SocketService _socket = SocketService.instance;
 
   bool _loading = true;
-
-  bool _refreshingQr = false;
-
   EventPass? _pass;
-
-  String? _rotatingQrToken;
 
   PurchasedTicket get ticket => widget.ticket;
 
   @override
-  Duration get refreshDuration => const Duration(seconds: 50);
-
-  @override
-  Future<void> onRefresh() async {
-    await _loadRotatingQr();
-  }
-
-  @override
   void initState() {
     super.initState();
-
     _initialize();
   }
 
@@ -66,25 +45,15 @@ class _QrPassScreenState extends State<QrPassScreen>
 
     if (!mounted) return;
 
-    if (_pass != null && _pass!.canEnter) {
-      await _loadRotatingQr();
-    }
-
     await _initializeRealtime();
-
-    if (mounted) {
-      startRefreshTimer();
-    }
   }
 
   /*
-  |--------------------------------------------------------------------------
-  | Load Permanent Pass
-  |--------------------------------------------------------------------------
-  |
-  | This token remains the credential used by the existing NFC writer.
-  |
-  */
+   * Load the permanent pass.
+   *
+   * The QR code uses pass.qrToken directly.
+   * NFC continues to use pass.token.
+   */
 
   Future<void> _loadSecurePass() async {
     if (mounted) {
@@ -94,21 +63,18 @@ class _QrPassScreenState extends State<QrPassScreen>
     }
 
     try {
-      final passes = await _passService.securePass(
-        ticket.id,
-      );
+      final passes = await _passService.securePass(ticket.id);
 
       if (passes.isEmpty) {
         throw Exception('No pass issued.');
       }
 
+      final loadedPass = EventPass.fromJson(passes.first);
+
       if (!mounted) return;
 
       setState(() {
-        _pass = EventPass.fromJson(
-          passes.first,
-        );
-
+        _pass = loadedPass;
         _loading = false;
       });
     } catch (e) {
@@ -127,101 +93,30 @@ class _QrPassScreenState extends State<QrPassScreen>
   }
 
   /*
-  |--------------------------------------------------------------------------
-  | Load Rotating QR
-  |--------------------------------------------------------------------------
-  |
-  | The rotating QR is fetched separately from the permanent pass.
-  | If refreshing fails, remove the previous token from the screen
-  | rather than continuing to display a potentially expired QR code.
-  |
-  */
-
-  Future<void> _loadRotatingQr() async {
-    if (_refreshingQr || !mounted) return;
-
-    final pass = _pass;
-
-    if (pass == null || !pass.canEnter) {
-      setState(() {
-        _rotatingQrToken = null;
-      });
-      return;
-    }
-
-    setState(() {
-      _refreshingQr = true;
-      _rotatingQrToken = null;
-    });
-
-    try {
-      final token = await _passService.rotatingQrToken(
-        ticket.id,
-      );
-
-      if (!mounted) return;
-
-      setState(() {
-        _rotatingQrToken = token;
-        secondsRemaining = refreshDuration.inSeconds;
-      });
-    } catch (e) {
-      if (!mounted) return;
-
-      setState(() {
-        _rotatingQrToken = null;
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Unable to refresh QR code. Please try again.',
-          ),
-        ),
-      );
-    } finally {
-      if (mounted) {
-        setState(() {
-          _refreshingQr = false;
-        });
-      }
-    }
-  }
-
-  /*
-  |--------------------------------------------------------------------------
-  | Manual Refresh
-  |--------------------------------------------------------------------------
-  */
+   * Manual refresh.
+   *
+   * Reloads the permanent pass and its current status.
+   * No rotating QR token is requested.
+   */
 
   Future<void> _refreshPassScreen() async {
     await _loadSecurePass();
-
-    if (!mounted) return;
-
-    if (_pass != null && _pass!.canEnter) {
-      await _loadRotatingQr();
-    } else {
-      setState(() {
-        _rotatingQrToken = null;
-      });
-    }
   }
 
   /*
-  |--------------------------------------------------------------------------
-  | Realtime
-  |--------------------------------------------------------------------------
-  */
+   * Realtime check-in updates.
+   */
 
   Future<void> _initializeRealtime() async {
     final token = await Storage.getToken();
 
-    if (token == null) {
+    if (!mounted || token == null) {
       return;
     }
 
     await _socket.connect();
+
+    if (!mounted) return;
 
     _socket.joinAttendee(
       token: token,
@@ -251,8 +146,6 @@ class _QrPassScreenState extends State<QrPassScreen>
             station: data['station'],
             status: 'CHECKED_IN',
           );
-
-          _rotatingQrToken = null;
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -267,21 +160,20 @@ class _QrPassScreenState extends State<QrPassScreen>
   }
 
   /*
-  |--------------------------------------------------------------------------
-  | NFC
-  |--------------------------------------------------------------------------
-  |
-  | NFC continues using the permanent signed pass token.
-  | Do not replace this with the rotating QR token.
-  |
-  */
+   * NFC.
+   *
+   * NFC continues using the permanent signed pass token.
+   * Do not replace this with the QR hash.
+   */
 
   Future<void> _writeNfc() async {
-    if (_pass == null) {
+    final pass = _pass;
+
+    if (pass == null) {
       return;
     }
 
-    if (!_pass!.nfcEnabled) {
+    if (!pass.nfcEnabled) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
@@ -289,11 +181,10 @@ class _QrPassScreenState extends State<QrPassScreen>
           ),
         ),
       );
-
       return;
     }
 
-    if (_pass!.isCheckedIn) {
+    if (pass.isCheckedIn) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
@@ -301,11 +192,10 @@ class _QrPassScreenState extends State<QrPassScreen>
           ),
         ),
       );
-
       return;
     }
 
-    if (!_pass!.isActive) {
+    if (!pass.isActive) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
@@ -313,14 +203,11 @@ class _QrPassScreenState extends State<QrPassScreen>
           ),
         ),
       );
-
       return;
     }
 
     try {
-      await _nfcWriter.writePassToken(
-        _pass!.token,
-      );
+      await _nfcWriter.writePassToken(pass.token);
 
       if (!mounted) return;
 
@@ -338,19 +225,15 @@ class _QrPassScreenState extends State<QrPassScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Colors.red,
-          content: Text(
-            e.toString(),
-          ),
+          content: Text(e.toString()),
         ),
       );
     }
   }
 
   /*
-  |--------------------------------------------------------------------------
-  | UI
-  |--------------------------------------------------------------------------
-  */
+   * Main UI.
+   */
 
   @override
   Widget build(BuildContext context) {
@@ -398,6 +281,9 @@ class _QrPassScreenState extends State<QrPassScreen>
   }
 
   Widget _buildPass(EventPass pass) {
+    final canDisplayQr =
+        pass.canEnter && pass.qrToken.isNotEmpty;
+
     return RefreshIndicator(
       onRefresh: _refreshPassScreen,
       child: ListView(
@@ -409,48 +295,40 @@ class _QrPassScreenState extends State<QrPassScreen>
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
-                  if (pass.canEnter && _rotatingQrToken != null)
+                  if (canDisplayQr)
                     QrImageView(
-                      key: ValueKey(_rotatingQrToken),
-                      data: _rotatingQrToken!,
+                      key: ValueKey(pass.qrToken),
+                      data: pass.qrToken,
                       size: 180,
-                      errorCorrectionLevel:
-                          QrErrorCorrectLevel.M,
+                      errorCorrectionLevel: QrErrorCorrectLevel.M,
                     )
                   else
                     SizedBox(
                       width: 180,
                       height: 180,
                       child: Center(
-                        child: _refreshingQr
-                            ? const CircularProgressIndicator()
-                            : Text(
-                                pass.isCheckedIn
-                                    ? 'Already checked in'
-                                    : pass.isActive
-                                        ? 'QR unavailable.\nPull down to retry.'
-                                        : 'Pass unavailable',
-                                textAlign: TextAlign.center,
-                              ),
+                        child: Text(
+                          pass.isCheckedIn
+                              ? 'Already checked in'
+                              : pass.isActive
+                                  ? 'QR unavailable'
+                                  : 'Pass unavailable',
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     ),
                   const SizedBox(height: 16),
                   Text(
                     pass.passNumber,
-                    style: Theme.of(context)
-                        .textTheme
-                        .headlineSmall,
+                    style: Theme.of(context).textTheme.headlineSmall,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
                   _buildStatus(pass),
-                  if (pass.canEnter) ...[
+                  if (canDisplayQr) ...[
                     const SizedBox(height: 8),
-                    Text(
-                      _refreshingQr
-                          ? 'Refreshing QR code…'
-                          : 'QR refreshes in about '
-                              '$secondsRemaining seconds',
+                    const Text(
+                      'Present this QR code at the entrance.',
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -467,9 +345,7 @@ class _QrPassScreenState extends State<QrPassScreen>
                 children: [
                   Text(
                     'Pass Status',
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 12),
                   Text(
@@ -502,9 +378,7 @@ class _QrPassScreenState extends State<QrPassScreen>
                   ? null
                   : _writeNfc,
               icon: const Icon(Icons.nfc),
-              label: const Text(
-                'Save Pass to NFC',
-              ),
+              label: const Text('Save Pass to NFC'),
             ),
         ],
       ),
@@ -553,12 +427,9 @@ class _QrPassScreenState extends State<QrPassScreen>
 
   @override
   void dispose() {
-    stopRefreshTimer();
-
     disableWakeLock();
 
     _socket.leaveAttendee();
-
     _socket.removePassListeners();
 
     super.dispose();

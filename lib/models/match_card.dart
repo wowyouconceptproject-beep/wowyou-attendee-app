@@ -1,3 +1,4 @@
+
 import "match_reason.dart";
 
 class MatchCard {
@@ -31,49 +32,70 @@ class MatchCard {
     this.explanation,
   });
 
-  String get fullName =>
-      "$firstName $lastName";
+  // ============================================
+  // DISPLAY HELPERS
+  // ============================================
 
-  factory MatchCard.fromJson(
-    Map<String, dynamic> json,
-  ) {
+  String get fullName => "$firstName $lastName".trim();
+
+  String get initials {
+    final first = firstName.isNotEmpty ? firstName[0] : "";
+    final last = lastName.isNotEmpty ? lastName[0] : "";
+
+    return "$first$last".toUpperCase();
+  }
+
+  bool get hasAvatar =>
+      avatar != null && avatar!.trim().isNotEmpty;
+
+  String get fullName => "$firstName $lastName".trim();
+
+  String get initials {
+  final first = firstName.isNotEmpty ? firstName[0] : "";
+  final last = lastName.isNotEmpty ? lastName[0] : "";
+
+  return "$first$last".toUpperCase();
+}
+
+  bool get hasAvatar => avatar != null && avatar!.isNotEmpty;
+
+  // ============================================
+  // JSON PARSING
+  // ============================================
+
+  factory MatchCard.fromJson(Map<String, dynamic> json) {
+    final rawReasons = json["reasons"];
+
     return MatchCard(
-      userId: json["userId"] ?? "",
+      userId: json["userId"]?.toString() ?? "",
+      firstName: json["firstName"]?.toString() ?? "",
+      lastName: json["lastName"]?.toString() ?? "",
 
-      firstName:
-          json["firstName"] ?? "",
+      profession: json["profession"]?.toString(),
+      company: json["company"]?.toString(),
+      jobTitle: json["jobTitle"]?.toString(),
+      avatar: json["avatar"]?.toString(),
 
-      lastName:
-          json["lastName"] ?? "",
+      score: _parseInt(json["score"]),
 
-      profession:
-          json["profession"],
+      explanation: json["explanation"]?.toString(),
 
-      company:
-          json["company"],
-
-      jobTitle:
-          json["jobTitle"],
-
-      avatar:
-          json["avatar"],
-
-      score:
-          json["score"] ?? 0,
-
-      explanation:
-          json["explanation"],
-
-      reasons:
-          (json["reasons"] as List?)
-                  ?.map(
-                    (e) =>
-                        MatchReason.fromJson(e),
-                  )
-                  .toList() ??
-              [],
+      reasons: rawReasons is List
+          ? rawReasons
+              .whereType<Map>()
+              .map(
+                (item) => MatchReason.fromJson(
+                  Map<String, dynamic>.from(item),
+                ),
+              )
+              .toList()
+          : [],
     );
   }
+
+  // ============================================
+  // JSON SERIALIZATION
+  // ============================================
 
   Map<String, dynamic> toJson() {
     return {
@@ -86,12 +108,19 @@ class MatchCard {
       "avatar": avatar,
       "score": score,
       "explanation": explanation,
-      "reasons":
-          reasons
-              .map(
-                (e) => e.toJson(),
-              )
-              .toList(),
+      "reasons": reasons.map((e) => e.toJson()).toList(),
     };
+  }
+
+  // ============================================
+  // HELPERS
+  // ============================================
+
+  static int _parseInt(dynamic value) {
+    if (value is int) return value;
+    if (value is double) return value.round();
+    if (value is String) return int.tryParse(value) ?? 0;
+
+    return 0;
   }
 }

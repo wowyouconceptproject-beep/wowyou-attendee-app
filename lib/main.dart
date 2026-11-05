@@ -1,17 +1,38 @@
-import "package:flutter/material.dart";
-import "package:provider/provider.dart";
 
-import "providers/auth_provider.dart";
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
-import "screens/splash_screen.dart";
-import "screens/main_navigation_screen.dart";
-import "screens/login_screen.dart";
-import "screens/register_screen.dart";
-import "screens/attendee_profile_screen.dart";
+import 'firebase_options.dart';
+import 'services/notification_service.dart';
 
-import "theme/app_theme.dart";
+import 'providers/auth_provider.dart';
 
-void main() {
+import 'screens/splash_screen.dart';
+import 'screens/main_navigation_screen.dart';
+import 'screens/login_screen.dart';
+import 'screens/register_screen.dart';
+import 'screens/attendee_profile_screen.dart';
+
+import 'theme/app_theme.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase.
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  // Register background notification handler.
+  FirebaseMessaging.onBackgroundMessage(
+    firebaseMessagingBackgroundHandler,
+  );
+
+  // Initialize push notification service.
+  await NotificationService.instance.initialize();
+
   runApp(
     MultiProvider(
       providers: [
@@ -33,23 +54,13 @@ class WowYouAttendeeApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-
       title: "WowYou Attendee",
-
       theme: AppTheme.dark,
-
       home: const SplashScreen(),
-
       routes: {
-        "/home": (_) =>
-            const MainNavigationScreen(),
-
-        "/login": (_) =>
-            const LoginScreen(),
-
-        "/register": (_) =>
-            const RegisterScreen(),
-
+        "/home": (_) => const MainNavigationScreen(),
+        "/login": (_) => const LoginScreen(),
+        "/register": (_) => const RegisterScreen(),
         "/profile-onboarding": (_) =>
             const AttendeeProfileScreen(),
       },

@@ -2,8 +2,8 @@
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 
-import "../providers/networking_provider.dart";
-import "../theme/app_colors.dart";
+import "../../providers/networking_provider.dart";
+import "../../theme/app_colors.dart";
 
 class NetworkingRequestsScreen extends StatefulWidget {
   const NetworkingRequestsScreen({super.key});

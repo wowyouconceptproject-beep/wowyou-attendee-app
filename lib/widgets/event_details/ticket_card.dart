@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 
 import "../../models/event.dart";
-import "package:attendee_app/theme/app_colors.dart";
+import "package:wowyou_event/theme/app_colors.dart";
 import "../../services/purchase_service.dart";
 
 class TicketCard extends StatelessWidget {

@@ -22,23 +22,20 @@ class _NetworkingRequestsScreenState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
 
-      context
-          .read<NetworkingProvider>()
-          .loadIncomingRequests();
+      context.read<NetworkingProvider>().loadIncomingRequests();
     });
   }
 
   Future<void> _refresh() async {
-    await context
-        .read<NetworkingProvider>()
-        .loadIncomingRequests();
+    await context.read<NetworkingProvider>().loadIncomingRequests();
   }
 
   Future<void> _accept(String requestId) async {
     final provider = context.read<NetworkingProvider>();
 
-    final success =
-        await provider.acceptRequest(requestId);
+    final success = await provider.acceptRequest(
+      requestId: requestId,
+    );
 
     if (!mounted) return;
 
@@ -56,8 +53,9 @@ class _NetworkingRequestsScreenState
   Future<void> _reject(String requestId) async {
     final provider = context.read<NetworkingProvider>();
 
-    final success =
-        await provider.rejectRequest(requestId);
+    final success = await provider.rejectRequest(
+      requestId: requestId,
+    );
 
     if (!mounted) return;
 
@@ -79,8 +77,7 @@ class _NetworkingRequestsScreenState
     for (final key in keys) {
       final value = data[key];
 
-      if (value != null &&
-          value.toString().trim().isNotEmpty) {
+      if (value != null && value.toString().trim().isNotEmpty) {
         return value.toString();
       }
     }
@@ -206,8 +203,7 @@ class _NetworkingRequestsScreenState
               physics: const AlwaysScrollableScrollPhysics(),
               itemCount: provider.incomingRequests.length,
               itemBuilder: (context, index) {
-                final request =
-                    provider.incomingRequests[index];
+                final request = provider.incomingRequests[index];
 
                 final sender = _requester(request);
 
@@ -226,14 +222,13 @@ class _NetworkingRequestsScreenState
                   ["lastName", "lastname"],
                 );
 
-                final name = _readString(
+                final suppliedName = _readString(
                   sender,
                   ["fullName", "name"],
-                ).isNotEmpty
-                    ? _readString(
-                        sender,
-                        ["fullName", "name"],
-                      )
+                );
+
+                final name = suppliedName.isNotEmpty
+                    ? suppliedName
                     : "$firstName $lastName".trim();
 
                 final profession = _readString(
@@ -291,11 +286,10 @@ class _RequestCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final initials = name.isNotEmpty
-        ? name.trim().split(" ").map((e) => e.isNotEmpty
-            ? e[0].toUpperCase()
-            : "").take(2).join()
-        : "?";
+    final initials = name.trim().split(" ").where((e) => e.isNotEmpty)
+        .map((e) => e[0].toUpperCase())
+        .take(2)
+        .join();
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -312,12 +306,12 @@ class _RequestCard extends StatelessWidget {
               CircleAvatar(
                 radius: 28,
                 backgroundColor: AppColors.primary,
-                backgroundImage: avatar.isNotEmpty
+                backgroundImage: avatar.trim().isNotEmpty
                     ? NetworkImage(avatar)
                     : null,
-                child: avatar.isEmpty
+                child: avatar.trim().isEmpty
                     ? Text(
-                        initials,
+                        initials.isEmpty ? "?" : initials,
                         style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -357,9 +351,7 @@ class _RequestCard extends StatelessWidget {
               ),
             ],
           ),
-
           const SizedBox(height: 20),
-
           Row(
             children: [
               Expanded(

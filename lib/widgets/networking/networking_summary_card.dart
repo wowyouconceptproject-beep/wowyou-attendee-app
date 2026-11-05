@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import "package:attendee_app/theme/app_colors.dart";
+import "package:wowyou_event/theme/app_colors.dart";
 
 class NetworkingSummaryCard extends StatelessWidget {
   final int totalMatches;

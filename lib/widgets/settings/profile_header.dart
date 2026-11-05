@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 
 import "../../models/user_settings.dart";
-import "package:attendee_app/theme/app_colors.dart";
+import "package:wowyou_event/theme/app_colors.dart";
 
 class ProfileHeader extends StatelessWidget {
   final UserSettings settings;

@@ -39,9 +39,8 @@ class NotificationService {
     );
 
     await _localNotifications.initialize(
-      initializationSettings,
-      onDidReceiveNotificationResponse:
-          _onNotificationTap,
+      settings: initializationSettings,
+      onDidReceiveNotificationResponse: _onNotificationTap,
     );
 
     // Create Android notification channel.
@@ -56,6 +55,9 @@ class NotificationService {
       badge: true,
       sound: true,
     );
+
+    // Android 13+ notification permission.
+    await requestAndroidPermission();
 
     // Foreground notifications.
     FirebaseMessaging.onMessage.listen(
@@ -87,10 +89,10 @@ class NotificationService {
     if (notification == null) return;
 
     await _localNotifications.show(
-      notification.hashCode,
-      notification.title ?? 'WowYou',
-      notification.body ?? '',
-      NotificationDetails(
+      id: notification.hashCode,
+      title: notification.title ?? 'WowYou',
+      body: notification.body ?? '',
+      notificationDetails: NotificationDetails(
         android: AndroidNotificationDetails(
           _channel.id,
           _channel.name,
@@ -125,7 +127,7 @@ class NotificationService {
       if (data is Map<String, dynamic>) {
         _handleNotificationPayload(data);
       }
-    } catch (error) {
+    } catch (_) {
       // Invalid notification payload.
     }
   }
@@ -140,7 +142,7 @@ class NotificationService {
     //   "eventId": "123"
     // }
     //
-    // Navigation will be connected to the app router.
+    // Connect this to the app router.
   }
 
   // Notification that launched the app from terminated state.

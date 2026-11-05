@@ -4,7 +4,7 @@ import "package:flutter/material.dart";
 import "../../models/purchased_ticket.dart";
 import "../../screens/networking/networking_screen.dart";
 import "../../screens/networking/networking_requests_screen.dart";
-import "package:attendee_app/theme/app_colors.dart";
+import "package:wowyou_event/theme/app_colors.dart";
 
 class NetworkingCard extends StatelessWidget {
   final PurchasedTicket ticket;
@@ -227,3 +227,4 @@ class _FeatureRow extends StatelessWidget {
     );
   }
 }
+

@@ -6,7 +6,7 @@ import "../../models/event.dart";
 import "../../services/search_service.dart";
 
 import "../event_details_screen.dart";
-import "package:attendee_app/theme/app_colors.dart";
+import "package:wowyou_event/theme/app_colors.dart";
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({

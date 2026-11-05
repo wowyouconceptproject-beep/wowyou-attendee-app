@@ -21,3 +21,4 @@ class DefaultFirebaseOptions {
     storageBucket: 'wowyou-eventtech.firebasestorage.app',
   );
 }
+

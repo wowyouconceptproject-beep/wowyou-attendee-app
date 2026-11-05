@@ -2,7 +2,7 @@ import "dart:async";
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:attendee_app/theme/app_colors.dart";
+import "package:wowyou_event/theme/app_colors.dart";
 
 import "../providers/auth_provider.dart";
 import "../services/attendee_profile_service.dart";

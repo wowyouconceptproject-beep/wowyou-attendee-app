@@ -48,17 +48,6 @@ class MatchCard {
   bool get hasAvatar =>
       avatar != null && avatar!.trim().isNotEmpty;
 
-  String get fullName => "$firstName $lastName".trim();
-
-  String get initials {
-  final first = firstName.isNotEmpty ? firstName[0] : "";
-  final last = lastName.isNotEmpty ? lastName[0] : "";
-
-  return "$first$last".toUpperCase();
-}
-
-  bool get hasAvatar => avatar != null && avatar!.isNotEmpty;
-
   // ============================================
   // JSON PARSING
   // ============================================

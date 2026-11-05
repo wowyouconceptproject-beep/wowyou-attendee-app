@@ -336,3 +336,4 @@ class _NetworkingMatchCardState
     );
   }
 }
+

@@ -4,7 +4,7 @@ import "../../models/announcement.dart";
 import "../../models/purchased_ticket.dart";
 import "../../services/announcement_service.dart";
 import "../../services/socket_service.dart";
-import "package:attendee_app/theme/app_colors.dart";
+import "package:wowyou_event/theme/app_colors.dart";
 
 class AnnouncementPanel extends StatefulWidget {
   final PurchasedTicket ticket;

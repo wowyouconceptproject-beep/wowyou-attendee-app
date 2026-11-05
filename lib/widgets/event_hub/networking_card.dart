@@ -1,7 +1,9 @@
+
 import "package:flutter/material.dart";
 
 import "../../models/purchased_ticket.dart";
 import "../../screens/networking/networking_screen.dart";
+import "../../screens/networking/networking_requests_screen.dart";
 import "package:attendee_app/theme/app_colors.dart";
 
 class NetworkingCard extends StatelessWidget {
@@ -25,10 +27,9 @@ class NetworkingCard extends StatelessWidget {
         ),
       ),
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// Header
+          /// HEADER
           Row(
             children: [
               Container(
@@ -36,10 +37,7 @@ class NetworkingCard extends StatelessWidget {
                 height: 56,
                 decoration: BoxDecoration(
                   color: AppColors.primary,
-                  borderRadius:
-                      BorderRadius.circular(
-                    16,
-                  ),
+                  borderRadius: BorderRadius.circular(16),
                 ),
                 child: const Icon(
                   Icons.auto_awesome,
@@ -52,25 +50,21 @@ class NetworkingCard extends StatelessWidget {
 
               const Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       "AI Networking",
                       style: TextStyle(
-                        color:
-                            AppColors.text,
+                        color: AppColors.text,
                         fontSize: 22,
-                        fontWeight:
-                            FontWeight.bold,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     SizedBox(height: 4),
                     Text(
                       "Meet the right people at this event",
                       style: TextStyle(
-                        color: AppColors
-                            .textSecondary,
+                        color: AppColors.textSecondary,
                       ),
                     ),
                   ],
@@ -82,27 +76,24 @@ class NetworkingCard extends StatelessWidget {
           const SizedBox(height: 24),
 
           const Text(
-            "Our AI analyzes attendee profiles and recommends the most valuable people for you to connect with based on your profession, industry, interests and networking goals.",
+            "Our AI analyzes attendee profiles and recommends "
+            "the most valuable people for you to connect with "
+            "based on your profession, industry, interests "
+            "and networking goals.",
             style: TextStyle(
-              color:
-                  AppColors.textSecondary,
+              color: AppColors.textSecondary,
               height: 1.7,
             ),
           ),
 
           const SizedBox(height: 28),
 
-          /// Features
+          /// FEATURES
           Container(
-            padding: const EdgeInsets.all(
-              18,
-            ),
+            padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
               color: AppColors.surface,
-              borderRadius:
-                  BorderRadius.circular(
-                18,
-              ),
+              borderRadius: BorderRadius.circular(18),
               border: Border.all(
                 color: AppColors.border,
               ),
@@ -110,24 +101,18 @@ class NetworkingCard extends StatelessWidget {
             child: const Column(
               children: [
                 _FeatureRow(
-                  icon:
-                      Icons.groups_rounded,
-                  title:
-                      "Smart AI Matches",
+                  icon: Icons.groups_rounded,
+                  title: "Smart AI Matches",
                 ),
                 SizedBox(height: 14),
                 _FeatureRow(
-                  icon: Icons
-                      .psychology_alt,
-                  title:
-                      "Personalized Recommendations",
+                  icon: Icons.psychology_alt,
+                  title: "Personalized Recommendations",
                 ),
                 SizedBox(height: 14),
                 _FeatureRow(
-                  icon:
-                      Icons.handshake,
-                  title:
-                      "Build Valuable Connections",
+                  icon: Icons.handshake,
+                  title: "Build Valuable Connections",
                 ),
               ],
             ),
@@ -135,46 +120,63 @@ class NetworkingCard extends StatelessWidget {
 
           const SizedBox(height: 28),
 
-          /// CTA
+          /// EXPLORE MATCHES
           SizedBox(
             width: double.infinity,
-            child:
-                ElevatedButton.icon(
+            child: ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => NetworkingScreen(
+                      eventId: ticket.eventId,
+                    ),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.auto_awesome),
+              label: const Text("Explore AI Matches"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 18,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18),
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 14),
+
+          /// CONNECTION REQUESTS
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) =>
-                        NetworkingScreen(
-                      eventId:
-                          ticket.eventId,
-                    ),
+                        const NetworkingRequestsScreen(),
                   ),
                 );
               },
-              icon: const Icon(
-                Icons.auto_awesome,
-              ),
-              label: const Text(
-                "Explore AI Matches",
-              ),
-              style:
-                  ElevatedButton.styleFrom(
-                backgroundColor:
-                    AppColors.primary,
-                foregroundColor:
-                    Colors.white,
-                elevation: 0,
-                padding:
-                    const EdgeInsets.symmetric(
+              icon: const Icon(Icons.person_add_alt_1),
+              label: const Text("Connection Requests"),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.primary,
+                side: const BorderSide(
+                  color: AppColors.primary,
+                ),
+                padding: const EdgeInsets.symmetric(
                   vertical: 18,
                 ),
-                shape:
-                    RoundedRectangleBorder(
-                  borderRadius:
-                      BorderRadius.circular(
-                    18,
-                  ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18),
                 ),
               ),
             ),
@@ -195,28 +197,19 @@ class _FeatureRow extends StatelessWidget {
   });
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
+  Widget build(BuildContext context) {
     return Row(
       children: [
         Container(
           width: 42,
           height: 42,
           decoration: BoxDecoration(
-            color: AppColors.primary
-                .withValues(
-              alpha: 0.15,
-            ),
-            borderRadius:
-                BorderRadius.circular(
-              12,
-            ),
+            color: AppColors.primary.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
             icon,
-            color:
-                AppColors.primary,
+            color: AppColors.primary,
             size: 20,
           ),
         ),
@@ -225,10 +218,8 @@ class _FeatureRow extends StatelessWidget {
           child: Text(
             title,
             style: const TextStyle(
-              color:
-                  AppColors.text,
-              fontWeight:
-                  FontWeight.w600,
+              color: AppColors.text,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ),

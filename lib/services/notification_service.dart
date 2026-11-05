@@ -71,14 +71,15 @@ class NotificationService {
   }
 
   // Register this device with the backend using this token.
-  Future<String?> getDeviceToken() async {
-    return _messaging.getToken();
-  }
+ Future<void> registerDevice() async {
+  await _messaging.register();
+}
 
-  // Listen for refreshed Firebase tokens.
-  Stream<String> get onTokenRefresh {
-    return _messaging.onTokenRefresh;
-  }
+Stream<String> get onRegistered {
+  return _messaging.onRegistered.map(
+    (event) => event.toString(),
+  );
+}
 
   // Display notification while app is foregrounded.
   Future<void> _handleForegroundMessage(

@@ -22,17 +22,13 @@ subprojects {
 
     project.evaluationDependsOn(":app")
 
-    // Force Android library plugins to compile with SDK 37
-    plugins.withId("com.android.library") {
-        extensions.configure<LibraryExtension>("android") {
-            compileSdk = 37
+    afterEvaluate {
+        extensions.findByType(LibraryExtension::class.java)?.let {
+            it.compileSdk = 37
         }
-    }
 
-    // Force Android application plugins to compile with SDK 37
-    plugins.withId("com.android.application") {
-        extensions.configure<ApplicationExtension>("android") {
-            compileSdk = 37
+        extensions.findByType(ApplicationExtension::class.java)?.let {
+            it.compileSdk = 37
         }
     }
 }

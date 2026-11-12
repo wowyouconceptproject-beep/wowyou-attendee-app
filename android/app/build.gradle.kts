@@ -12,7 +12,9 @@ plugins {
 extensions.configure<ApplicationExtension>("android") {
     namespace = "com.wowyou.eventtech.attendee"
 
-    compileSdk = flutter.compileSdkVersion
+    // Updated for AndroidX dependency requirements
+    compileSdk = 37
+
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

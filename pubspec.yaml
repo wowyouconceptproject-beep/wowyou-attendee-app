@@ -1,3 +1,4 @@
+
 name: wowyou_event
 description: WowYou Attendee Experience
 publish_to: "none"
@@ -53,6 +54,8 @@ dependencies:
 
   # External Links
   url_launcher: ^6.3.2
+
+  # Firebase
   firebase_core: ^5.0.0
   firebase_messaging: ^17.0.0
   flutter_local_notifications: ^20.1.0
@@ -66,9 +69,12 @@ dev_dependencies:
   # App Launcher Icons
   flutter_launcher_icons: ^0.14.4
 
-flutter:
-  uses-material-design: true
+# Local NFC plugin override
+dependency_overrides:
+  nfc_manager:
+    path: packages/nfc_manager
 
+# Launcher Icon Configuration
 flutter_launcher_icons:
   android: true
   ios: true
@@ -81,3 +87,6 @@ flutter_launcher_icons:
 
   adaptive_icon_background: "#050505"
   adaptive_icon_foreground: "assets/icon/wowyou_app_icon.png"
+
+flutter:
+  uses-material-design: true

@@ -523,10 +523,9 @@ packages:
   nfc_manager:
     dependency: "direct main"
     description:
-      name: nfc_manager
-      sha256: "071faa6e43317f9feeef316067456ae6e61a40f7748ed6e93470a812e103c326"
-      url: "https://pub.dev"
-    source: hosted
+      path: "packages/nfc_manager"
+      relative: true
+    source: path
     version: "3.5.1"
   octo_image:
     dependency: transitive

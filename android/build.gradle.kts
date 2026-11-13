@@ -22,13 +22,15 @@ subprojects {
 
     project.evaluationDependsOn(":app")
 
-    afterEvaluate {
-        extensions.findByType(LibraryExtension::class.java)?.let {
-            it.compileSdk = 37
+    plugins.withId("com.android.library") {
+        extensions.configure<LibraryExtension>("android") {
+            compileSdk = 37
         }
+    }
 
-        extensions.findByType(ApplicationExtension::class.java)?.let {
-            it.compileSdk = 37
+    plugins.withId("com.android.application") {
+        extensions.configure<ApplicationExtension>("android") {
+            compileSdk = 37
         }
     }
 }

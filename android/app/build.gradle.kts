@@ -1,6 +1,14 @@
 ﻿
 import com.android.build.api.dsl.ApplicationExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
+
+val keystoreProperties = Properties()
+val keystorePropertiesFile = rootProject.file("key.properties")
+
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(keystorePropertiesFile.inputStream())
+}
 
 plugins {
     id("com.android.application")
@@ -12,9 +20,7 @@ plugins {
 extensions.configure<ApplicationExtension>("android") {
     namespace = "com.wowyou.eventtech.attendee"
 
-    // Updated for AndroidX dependency requirements
     compileSdk = 37
-
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -25,16 +31,31 @@ extensions.configure<ApplicationExtension>("android") {
 
     defaultConfig {
         applicationId = "com.wowyou.eventtech.attendee"
-
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        create("release") {
+            if (keystorePropertiesFile.exists()) {
+                storeFile = file(
+                    keystoreProperties["storeFile"] as String
+                )
+                storePassword =
+                    keystoreProperties["storePassword"] as String
+                keyAlias =
+                    keystoreProperties["keyAlias"] as String
+                keyPassword =
+                    keystoreProperties["keyPassword"] as String
+            }
+        }
+    }
+
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 }

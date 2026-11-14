@@ -1,5 +1,5 @@
 
-name: Build Android APK
+name: Build Android APK and AAB
 
 on:
   push:
@@ -47,6 +47,7 @@ jobs:
         run: flutter test
         continue-on-error: true
 
+      # Build APK
       - name: Build Release APK
         run: flutter build apk --release
 
@@ -69,6 +70,22 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: wowyou-attendee-release
+          name: wowyou-attendee-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+
+      # Build Google Play App Bundle
+      - name: Build Release App Bundle
+        run: flutter build appbundle --release
+
+      - name: Verify App Bundle Exists
+        run: |
+          ls -lh build/app/outputs/bundle/release/
+          test -f build/app/outputs/bundle/release/app-release.aab
+
+      - name: Upload App Bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: wowyou-attendee-release-aab
+          path: build/app/outputs/bundle/release/app-release.aab
           if-no-files-found: error
